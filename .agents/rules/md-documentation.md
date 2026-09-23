@@ -16,9 +16,9 @@ alwaysApply: false
 ## METHOD /api/path
 
 - 설명:
-- 요청:
+- 요청 Body:
 - 응답:
-- 관련 파일: back/src/routes/..., back/src/controllers/...
+- 관련 파일: Back/src/routes/..., Back/src/controllers/...
 ```
 
 엔드포인트 삭제 시 해당 섹션을 제거한다.
@@ -31,10 +31,10 @@ alwaysApply: false
 
 | 경로 | 용도 |
 |------|------|
-| `jobs/back/` | back 작업 내역 |
-| `jobs/front/` | front 작업 내역 |
+| `jobs/back/` | Back 작업 내역 |
+| `jobs/front/` | Front 작업 내역 |
 
 - 날짜 형식: `YYYY-MM-DD`
 - 큰 작업: `YYYY-MM-DD_작업요약.md`
 - 사소한 수정: `YYYY-MM-DD.md`에 시간별 항목 추가
-- front jobs에는 **사용 API 엔드포인트**와 **변경 파일명**을 반드시 포함
+- Front jobs에는 **사용 API 엔드포인트**와 **변경 파일명**을 반드시 포함

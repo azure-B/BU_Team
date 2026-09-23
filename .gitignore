@@ -1,0 +1,21 @@
+# 의존성
+node_modules/
+
+# 환경 변수
+.env
+*.env.local
+
+# 빌드 결과 (publish는 git에 포함 — 배포용)
+# Front/publish/  ← 배포용으로 포함
+
+# 로그
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+*.swp
