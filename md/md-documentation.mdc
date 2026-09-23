@@ -1,0 +1,40 @@
+---
+description: md 문서 작성 형식 — API, jobs, folder
+globs: md/**
+alwaysApply: false
+---
+
+# md 문서 작성 규칙
+
+모든 md 문서는 **한국어**로 작성한다.
+
+## md/API/README.md
+
+단일 API 명세 파일. 엔드포인트마다 아래 형식으로 누적한다.
+
+```markdown
+## METHOD /api/path
+
+- 설명:
+- 요청:
+- 응답:
+- 관련 파일: back/src/routes/..., back/src/controllers/...
+```
+
+엔드포인트 삭제 시 해당 섹션을 제거한다.
+
+## md/folder.md
+
+프로젝트 폴더 구조의 SSOT. 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
+
+## md/jobs/
+
+| 경로 | 용도 |
+|------|------|
+| `jobs/back/` | back 작업 내역 |
+| `jobs/front/` | front 작업 내역 |
+
+- 날짜 형식: `YYYY-MM-DD`
+- 큰 작업: `YYYY-MM-DD_작업요약.md`
+- 사소한 수정: `YYYY-MM-DD.md`에 시간별 항목 추가
+- front jobs에는 **사용 API 엔드포인트**와 **변경 파일명**을 반드시 포함
