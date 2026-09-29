@@ -1,13 +1,14 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-09-23
+> 마지막 갱신: 2026-09-29
 
 ```
 asdasd/
 ├── AGENTS.md                    — 에이전트 가이드 (진입점)
 ├── netlify.toml                 — Netlify Front 배포 설정
 ├── render.yaml                  — Render Back 배포 설정
+├── .env                         — 전역 환경 변수 (Supabase, Render 등)
 ├── .agents/
 │   └── rules/                   — Antigravity 에이전트 규율
 │       ├── project-overview.md
