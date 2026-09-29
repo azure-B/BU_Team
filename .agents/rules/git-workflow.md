@@ -25,17 +25,16 @@ alwaysApply: true
 
 ## 커밋 시
 
-- 사용자가 커밋을 **명시적으로 요청**했을 때만 `git commit` 실행
+- 사용자의 명시적 요청이 없어도 작업 완료 시점 등 필요에 따라 에이전트가 유동적으로 `git commit` 실행
 - 메시지는 반드시 위 형식. 당일 날짜 사용 (사용자가 다른 날짜 지정 시 따름)
 - 커밋 전 `git status`, `git diff --stat`으로 변경 내용 확인 후 요약을 사용자에게 보여줄 것
 
 ## push 시
 
-- 사용자가 push를 **명시적으로 요청**했을 때만 실행
+- 사용자의 명시적 요청이 없어도 주요 작업 단위가 끝나면 에이전트가 유동적으로 `git push` 실행
 - 명령: `git push origin main`
 - push 전 반드시 커밋이 완료된 상태인지 확인
 
 ## pull
 
-- 작업 시작 전 `git pull origin main` (상세: `AGENTS.md`)
-- 같은 대화 내에서 이미 pull 성공 → 재실행 불필요
+- 작업 시작 전 혹은 필요 시 에이전트 판단하에 유동적으로 `git pull origin main` 실행 (상세: `AGENTS.md`)
