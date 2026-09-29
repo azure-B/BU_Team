@@ -6,29 +6,22 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500
   let message = err.message || '서버 내부 오류'
 
-  /* Mongoose CastError (잘못된 ObjectId) */
-  if (err.name === 'CastError') {
+  /* Supabase (PostgreSQL) 고유키 중복 에러 */
+  if (err.code === '23505') {
     statusCode = 400
-    message = '잘못된 ID 형식입니다.'
+    message = '이미 사용 중인 데이터입니다. (중복값 오류)'
   }
 
-  /* Mongoose 중복 키 */
-  if (err.code === 11000) {
+  /* Supabase (PostgreSQL) 유효성/제약조건 오류 */
+  if (err.code === '23502' || err.code === '23503' || err.code === '23514') {
     statusCode = 400
-    const field = Object.keys(err.keyValue)[0]
-    message = `이미 사용 중인 ${field}입니다.`
-  }
-
-  /* Mongoose 유효성 검사 */
-  if (err.name === 'ValidationError') {
-    statusCode = 400
-    message = Object.values(err.errors).map((e) => e.message).join(', ')
+    message = '필수 데이터가 누락되었거나 제약 조건을 위반했습니다.'
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack, details: err.details || err.hint }),
   })
 }
 

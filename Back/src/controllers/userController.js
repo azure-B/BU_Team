@@ -1,4 +1,4 @@
-const User = require('../models/User')
+const supabase = require('../config/supabase')
 
 /**
  * @desc  전체 유저 조회
@@ -7,8 +7,9 @@ const User = require('../models/User')
  */
 const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password')
-    res.status(200).json({ success: true, count: users.length, data: users })
+    const { data, error } = await supabase.from('users').select('*')
+    if (error) throw error
+    res.status(200).json({ success: true, count: data.length, data })
   } catch (error) {
     next(error)
   }
@@ -21,11 +22,18 @@ const getUsers = async (req, res, next) => {
  */
 const getUserById = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id)
-    if (!user) {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', req.params.id)
+      .single()
+    
+    // PGRST116: 결과를 찾지 못함
+    if (error && error.code !== 'PGRST116') throw error
+    if (!data) {
       return res.status(404).json({ success: false, message: '유저를 찾을 수 없습니다.' })
     }
-    res.status(200).json({ success: true, data: user })
+    res.status(200).json({ success: true, data })
   } catch (error) {
     next(error)
   }
@@ -38,8 +46,13 @@ const getUserById = async (req, res, next) => {
  */
 const createUser = async (req, res, next) => {
   try {
-    const user = await User.create(req.body)
-    res.status(201).json({ success: true, data: user })
+    const { data, error } = await supabase
+      .from('users')
+      .insert(req.body)
+      .select()
+      .single()
+    if (error) throw error
+    res.status(201).json({ success: true, data })
   } catch (error) {
     next(error)
   }
@@ -52,14 +65,14 @@ const createUser = async (req, res, next) => {
  */
 const updateUser = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
-    if (!user) {
-      return res.status(404).json({ success: false, message: '유저를 찾을 수 없습니다.' })
-    }
-    res.status(200).json({ success: true, data: user })
+    const { data, error } = await supabase
+      .from('users')
+      .update(req.body)
+      .eq('id', req.params.id)
+      .select()
+      .single()
+    if (error) throw error
+    res.status(200).json({ success: true, data })
   } catch (error) {
     next(error)
   }
@@ -72,8 +85,14 @@ const updateUser = async (req, res, next) => {
  */
 const deleteUser = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id)
-    if (!user) {
+    const { data, error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', req.params.id)
+      .select()
+      
+    if (error) throw error
+    if (data.length === 0) {
       return res.status(404).json({ success: false, message: '유저를 찾을 수 없습니다.' })
     }
     res.status(200).json({ success: true, message: '유저가 삭제되었습니다.' })

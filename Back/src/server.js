@@ -4,13 +4,10 @@ const cors = require('cors')
 const helmet = require('helmet')
 const morgan = require('morgan')
 
-const connectDB = require('./config/db')
+// DB 연결은 각 컨트롤러에서 Supabase 클라이언트를 통해 처리됩니다.
 const userRoutes = require('./routes/userRoutes')
 const errorHandler = require('./middlewares/errorHandler')
 const notFound = require('./middlewares/notFound')
-
-/* ── DB 연결 ── */
-connectDB()
 
 const app = express()
 
