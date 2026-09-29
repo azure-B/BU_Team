@@ -1,5 +1,5 @@
 ---
-description: Back 작업 시 — MVC 구조, API 명세·작업 내역 갱신
+description: Back 작업 시 — MVC 구조, API 명세·작업 내역 갱신 및 Supabase 연동
 globs: Back/**
 alwaysApply: false
 ---
@@ -11,24 +11,28 @@ alwaysApply: false
 ```
 Back/src/
 ├── config/
-│   └── db.js           — MongoDB 연결
-├── models/             — Mongoose 스키마 (데이터 로직)
-├── controllers/        — 요청·응답 처리 (비즈니스 로직)
+│   └── supabase.js     — Supabase(PostgreSQL) 클라이언트 설정
+├── controllers/        — 요청·응답 처리 (비즈니스 및 DB 로직)
 ├── routes/             — URL 매핑만 (라우터)
 ├── middlewares/
-│   ├── errorHandler.js — 전역 에러 처리
+│   ├── errorHandler.js — 전역 에러 처리 (PostgREST 에러 포함)
 │   └── notFound.js     — 404 처리
 ├── utils/
 │   └── response.js     — sendSuccess / sendError 헬퍼
 └── server.js           — 앱 진입점
 ```
 
-흐름: `routes/` → `controllers/` → `models/`
+흐름: `routes/` → `controllers/`
 
 - **라우트**: URL 매핑만. 로직 없음
 - **컨트롤러**: 요청·응답 처리, 비즈니스 로직. `try/catch` + `next(error)` 패턴 사용
-- **모델**: Mongoose 스키마, 데이터 접근 로직
 - 에러는 반드시 `next(error)`로 전파 → `errorHandler` 미들웨어가 처리
+
+## 데이터베이스 (Supabase PostgreSQL) 처리 규율 (필수)
+
+- 작업 중 DB 접근이 필요할 때, 에이전트는 먼저 Supabase DB를 조회하여 필요한 테이블이나 컬럼이 존재하는지 확인한다.
+- **만약 필요한 테이블이나 컬럼이 없다면, 에이전트가 알아서 판단하여 올바른 PK(기본키)와 FK(외래키) 관계를 설정하여 스키마(테이블/컬럼)를 추가해야 한다.**
+- 이때, SQL 쿼리를 통해 직접 반영하거나 마이그레이션 스크립트를 작성하여 사용자에게 실행을 제안할 수 있다.
 
 ## API 응답 형식 (표준)
 
@@ -50,7 +54,8 @@ Back/src/
 ```
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/myapp
+SUPABASE_URL=your_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 JWT_SECRET=your_secret
 JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:3000
@@ -96,7 +101,6 @@ Front 개발 서버에서 `/api/...` 요청 시 자동으로 Back으로 프록�
 ## 변경 파일
 - Back/src/routes/...
 - Back/src/controllers/...
-- Back/src/models/...
 
 ## API 변경
 - GET /api/... (추가|수정|삭제)
