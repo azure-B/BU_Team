@@ -6,6 +6,8 @@
 ```
 asdasd/
 ├── AGENTS.md                    — 에이전트 가이드 (진입점)
+├── netlify.toml                 — Netlify Front 배포 설정
+├── render.yaml                  — Render Back 배포 설정
 ├── .agents/
 │   └── rules/                   — Antigravity 에이전트 규율
 │       ├── project-overview.md
