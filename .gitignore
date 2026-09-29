@@ -19,3 +19,7 @@ Thumbs.db
 # 에디터
 .vscode/
 *.swp
+
+# 개인 Codex 설정
+/AGENTS.override.md
+/.codex-local/
