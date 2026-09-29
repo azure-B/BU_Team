@@ -17,6 +17,7 @@ asdasd/
 │       └── md-documentation.md
 │
 ├── Front/                       — React + Vite 클라이언트
+│   ├── designs/                 — 원본 HTML 보관소 (JSX 변환 참고용)
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
@@ -48,9 +49,7 @@ asdasd/
 ├── Back/                        — Express MVC 서버
 │   ├── src/
 │   │   ├── config/
-│   │   │   └── db.js            — MongoDB 연결
-│   │   ├── models/
-│   │   │   └── User.js          — Mongoose 유저 스키마
+│   │   │   └── supabase.js      — Supabase(PostgreSQL) 클라이언트 설정
 │   │   ├── controllers/
 │   │   │   └── userController.js
 │   │   ├── routes/
