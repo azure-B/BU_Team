@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
+import LoginPage from './pages/LoginPage'
 import './styles/global.css'
 
 /**
@@ -15,6 +16,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/"        element={<HomePage />} />
+        <Route path="/login"   element={<LoginPage />} />
         <Route path="*"        element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
