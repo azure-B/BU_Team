@@ -20,6 +20,7 @@ asdasd/
 ├── Front/                       — React + Vite 클라이언트
 │   ├── designs/                 — 원본 HTML 보관소 (JSX 변환 참고용)
 │   │   ├── dashboard.html
+│   │   ├── sample.html
 │   │   └── README.md
 │   ├── src/
 │   │   ├── api/
@@ -39,6 +40,7 @@ asdasd/
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── HomePage.css
+│   │   │   ├── LoginPage.jsx
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)
