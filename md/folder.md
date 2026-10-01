@@ -1,7 +1,7 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-09-29
+> 마지막 갱신: 2026-10-01
 
 ```
 asdasd/
@@ -19,6 +19,8 @@ asdasd/
 │
 ├── Front/                       — React + Vite 클라이언트
 │   ├── designs/                 — 원본 HTML 보관소 (JSX 변환 참고용)
+│   │   ├── dashboard.html
+│   │   └── README.md
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
@@ -26,7 +28,9 @@ asdasd/
 │   │   ├── components/
 │   │   │   ├── common/
 │   │   │   │   ├── Button/      — Button.jsx, Button.css, index.js
-│   │   │   │   └── Card/        — Card.jsx, Card.css, index.js
+│   │   │   │   ├── Card/        — Card.jsx, Card.css, index.js
+│   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
+│   │   │   ├── dashboard/       — DashboardSections.jsx, DashboardSections.css
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js
 │   │   │       ├── Footer/      — Footer.jsx, Footer.css, index.js

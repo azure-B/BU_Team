@@ -1,10 +1,10 @@
-.layout {
+.app-layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
-.layout__main {
+.app-layout__main {
   flex: 1;
-  padding-top: var(--header-height);
+  padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
 }

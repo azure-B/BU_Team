@@ -1,0 +1,7 @@
+.section-card {
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-border) 82%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}

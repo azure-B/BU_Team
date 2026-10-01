@@ -1,0 +1,43 @@
+# 작업 내역
+
+- **작업일**: 2026-10-01
+- **작업 내용**:
+  - `designs/dashboard.html` 디자인 기반 백석 AI 메인 대시보드 컴포넌트화 및 React 전환
+  - Phosphor Icons 패키지(`@phosphor-icons/react`) 도입 및 아이콘 시스템 구축
+  - 공용 레이아웃 개편:
+    - **Header**: 백석 AI 브랜드, 블러 배경, 알림/설정 버튼, 원격 로고 에러 시 BU 엠블럼 fallback 처리
+    - **Footer**: 390px 모바일 최적화 플로팅 5탭 내비게이션 (홈, 일정, AI 비서, 캠퍼스, MY)
+    - **AI 비서 바텀시트**: 하단 플로팅 시트, ESC 단축키 및 배경 터치 닫기, 추천 질문 칩 연동, 전송 상태 피드백 시뮬레이션
+    - **Layout**: 고정 헤더/푸터 영역으로 인한 스크롤 콘텐츠 가림 방지 패딩(`safe-area` 대응)
+  - 대시보드 컴포넌트 모듈화:
+    - `SectionCard`: 공용 카드 컨테이너
+    - `NextClassCard`: 다음 수업, 시작 카운트다운 칩, 이동 경로 및 강의실 팁 안내
+    - `TodaySchedule`: 오늘 시간표 및 AI 추천 복습 일정
+    - `DeadlineList`: D-Day 마감 임박 과제/장학금 신청 리스트
+    - `NoticeList`: 카테고리별 학사 공지사항 목록
+  - 반응형 및 접근성/테마 최적화:
+    - 390px 모바일 기준 반응형 레이아웃 및 380px 이하 세부 요소 간소화
+    - 좁은 화면 텍스트 잘림 방지 (`word-break: keep-all`)
+    - 시스템 다크 모드(`prefers-color-scheme: dark`) 전역 토큰 대응
+    - 시맨틱 마크업 및 WAI-ARIA 명세(`role="dialog"`, `aria-modal`, `aria-label`) 적용
+  - 프로덕션 빌드 검증 (`npm run build` 성공)
+- **사용 API 엔드포인트**:
+  - 현재 정적/시뮬레이션 UI 단계로 외부 백엔드 API 호출 없음 (추후 백석대 LMS/학사 API 연동 예정)
+- **변경 및 추가 파일**:
+  - `Front/designs/dashboard.html` (신규 원본 디자인)
+  - `Front/package.json`, `Front/package-lock.json` (`@phosphor-icons/react` 추가)
+  - `Front/src/components/common/SectionCard/SectionCard.jsx`
+  - `Front/src/components/common/SectionCard/SectionCard.css`
+  - `Front/src/components/common/SectionCard/index.js`
+  - `Front/src/components/dashboard/DashboardSections.jsx`
+  - `Front/src/components/dashboard/DashboardSections.css`
+  - `Front/src/components/layout/Header/Header.jsx`
+  - `Front/src/components/layout/Header/Header.css`
+  - `Front/src/components/layout/Footer/Footer.jsx`
+  - `Front/src/components/layout/Footer/Footer.css`
+  - `Front/src/components/layout/Layout/Layout.jsx`
+  - `Front/src/components/layout/Layout/Layout.css`
+  - `Front/src/pages/HomePage.jsx`
+  - `Front/src/pages/HomePage.css`
+  - `Front/src/styles/global.css`
+  - `md/folder.md`

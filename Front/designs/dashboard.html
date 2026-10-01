@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="antialiased" lang="ko" style="width: 390px; height: 1566px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>백석대학교 학생 맞춤 AI 비서</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+            display: ['Outfit', 'Pretendard', 'sans-serif'],
+          },
+          colors: {
+            baekseok: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#00236f',
+              950: '#0a1028',
+            },
+            canvas: '#f8fafc',
+            surface: {
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+              slate: '#0f172a',
+            }
+          },
+          boxShadow: {
+            'bezel': '0 0 0 1px rgba(15, 23, 42, 0.05), 0 2px 8px -2px rgba(15, 23, 42, 0.04)',
+            'float': '0 12px 36px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+            'glow-blue': '0 0 24px -4px rgba(37, 99, 235, 0.45)',
+            'inner-subtle': 'inset 0 1px 1px rgba(255, 255, 255, 0.9)',
+            'drawer': '0 -16px 40px -12px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.06)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      overscroll-behavior-y: none;
+    }
+    .supanova-transition {
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .sheet-spring-transition {
+      transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .backdrop-fade-transition {
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .safe-top {
+      padding-top: max(env(safe-area-inset-top, 0px), 12px);
+    }
+    .safe-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-[100dvh] flex flex-col relative overflow-x-hidden selection:bg-baekseok-600 selection:text-white">
+<!-- Atmospheric Background Aura -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-24 -left-20 w-96 h-96 rounded-full bg-blue-400/10 blur-3xl"></div>
+<div class="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-indigo-300/10 blur-3xl"></div>
+</div>
+<!-- Header Section -->
+<header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/70 safe-top supanova-transition"><div class="max-w-[440px] mx-auto px-4 h-12 flex items-center justify-between"><div class="flex items-center gap-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOdfMd_GnsPkLtxMfMpIrNwUv9A1s10jY6w4JHYwNPtQ8W_5hAYDf74Be_E6-_mSL3jQmdNV4LFzh637CVhocuYcjVhiZAX_Xk1xOIk5mbd-d913oM6xZrv-H_3FPaXp-kHiXErjK1rWYE_DZFB9TMXKSH_au3l0XPSsg3FaMjKc8I20DtAslrVRiTpCu1UHQM8osH9X-EFF6s3YAYOgVDt2qL5S_E_eU_c8op9B1L5ZnZvsUKGPfExVY3WohudaoBnlU" alt="BU 로고" class="w-8 h-8 rounded-full shadow-sm object-cover shrink-0"><span class="font-display font-extrabold text-[18px] text-slate-900 tracking-tight" style="white-space: nowrap;">백석 AI</span></div><div class="flex items-center gap-1"><button type="button" aria-label="알림" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors relative"><iconify-icon class="text-[20px]" icon="solar:bell-linear"></iconify-icon></button><button type="button" aria-label="설정" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors"><iconify-icon class="text-[22px]" icon="solar:settings-linear"></iconify-icon></button></div></div></header>
+<!-- Main Scrollable Body -->
+<main class="flex-1 w-full max-w-[440px] mx-auto px-4 pt-3 pb-28 z-10 flex flex-col gap-4"><div class="flex items-center justify-between pt-0.5"><div class="flex flex-col min-w-0"><h1 class="text-[19px] font-bold text-slate-900 tracking-tight leading-snug mt-0.5 break-keep-all" style="white-space: nowrap;">안녕하세요, <font color="#1d4ed8">홍길동</font>&nbsp;학우님</h1><p class="text-xs text-slate-500 break-keep-all" style="white-space: nowrap;">컴퓨터공학부 3학년 · 학번 20221340</p></div></div><article class="bg-white border border-slate-200/70 rounded-2xl shadow-sm overflow-hidden"><div class="p-3.5 flex items-center justify-between border-b border-slate-100"><div class="flex items-center gap-2.5"><div class="w-9 h-9 rounded-full bg-gradient-to-tr from-baekseok-600 to-indigo-500 p-0.5 text-white flex items-center justify-center"><div class="w-full h-full rounded-full bg-white flex items-center justify-center text-baekseok-600"><iconify-icon class="text-[18px]" icon="solar:stars-minimalistic-bold"></iconify-icon></div></div><div><div class="flex items-center gap-1.5"><span class="text-xs font-bold text-slate-900">9월 17일 목요일 <span class="text-slate-400 font-normal">· 2학기 3주차</span></span></div><p class="text-[11px] text-slate-400 font-medium">실시간 캠퍼스 이동 &amp; 강의 안내</p></div></div><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200/60" style="white-space: nowrap;">시작 42분 전</span></div><div class="p-4 flex flex-col gap-3"><div class="flex items-baseline justify-between" style="white-space: nowrap;"><div class="flex flex-col"><span class="text-[11px] font-bold text-baekseok-600 uppercase tracking-wider">NEXT CLASS</span><h2 class="font-display text-[26px] font-extrabold text-slate-900 tracking-tight mt-0.5">인공지능</h2></div><span class="text-[18px] font-bold text-baekseok-700 font-display">15:00 — 16:30</span></div><div class="flex items-center gap-1.5 text-xs text-slate-600 break-keep-all"><iconify-icon class="text-baekseok-600 text-[15px] shrink-0" icon="solar:map-point-bold"></iconify-icon><span class="font-semibold text-slate-800">본부동 302호</span><span class="text-slate-300">•</span><span class="">현재 위치(자유관 203호)에서 도보 11분</span></div><div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5 text-slate-700"><div class="w-6 h-6 rounded-lg bg-baekseok-100/70 text-baekseok-700 flex items-center justify-center shrink-0 mt-0.5"><iconify-icon class="text-[15px]" icon="solar:lightbulb-bolt-bold"></iconify-icon></div><p class="text-xs leading-relaxed break-keep-all"><strong class="text-baekseok-700 font-bold">14:35까지 출발</strong>을 권장해요. 본부동 3층 엘리베이터 혼잡이 예상됩니다.</p></div><div class="grid grid-cols-2 gap-2 pt-1" style="white-space: nowrap;"><button class="h-10 px-3 rounded-xl bg-baekseok-600 hover:bg-baekseok-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] supanova-transition" type="button"><iconify-icon class="text-[16px]" icon="solar:routing-2-bold"></iconify-icon><span class="">이동 경로 보기</span></button><button class="h-10 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-[0.98] supanova-transition border border-slate-200/60" type="button"><iconify-icon class="text-[16px] text-slate-600" icon="solar:document-text-bold"></iconify-icon><span class="">수업자료 미리보기</span></button></div></div></article><article class="bg-white border border-slate-200/70 rounded-2xl shadow-sm p-4 flex flex-col gap-3.5"><div class="flex items-center justify-between pb-2 border-b border-slate-100" style="white-space: nowrap;"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-md bg-blue-50 text-baekseok-700 flex items-center justify-center"><iconify-icon class="text-[16px]" icon="solar:clock-circle-bold"></iconify-icon></div><h3 class="font-bold text-sm text-slate-900 tracking-tight">오늘 일정</h3></div><button class="text-xs font-semibold text-baekseok-600 hover:text-baekseok-800 flex items-center gap-0.5 supanova-transition" type="button"><span class="">전체보기</span><iconify-icon class="text-[14px]" icon="solar:alt-arrow-right-linear"></iconify-icon></button></div><div class="flex flex-col gap-0 pl-1" style="white-space: nowrap;"><div class="flex items-start gap-3 relative pb-4"><div class="absolute left-2.5 top-5 bottom-0 w-0.5 bg-slate-200"></div><div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center shrink-0 z-10 text-emerald-600"><iconify-icon class="text-[13px]" icon="solar:check-circle-bold"></iconify-icon></div><div class="flex flex-col flex-1 min-w-0"><div class="flex items-center justify-between"><span class="text-[11px] font-medium text-slate-400 font-display">10:00 – 11:30</span><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">종료</span></div><div class="flex items-baseline justify-between mt-0.5"><p class="text-xs font-semibold text-slate-400 line-through truncate">자료구조</p><span class="text-[11px] text-slate-400">본부동 201호</span></div></div></div><div class="flex items-start gap-3 relative pb-4"><div class="absolute left-2.5 top-5 bottom-0 w-0.5 bg-slate-200"></div><div class="w-5 h-5 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center shrink-0 z-10 text-slate-400"><iconify-icon class="text-[11px]" icon="solar:cup-hot-linear"></iconify-icon></div><div class="flex flex-col flex-1 min-w-0"><div class="flex items-center justify-between"><span class="text-[11px] font-medium text-slate-400 font-display">12:00 – 13:00</span><span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">점심</span></div><div class="flex items-baseline justify-between mt-0.5"><p class="text-xs font-semibold text-slate-500 truncate">점심 식사</p><span class="text-[11px] text-slate-400">학생식당 (학식)</span></div></div></div><div class="flex items-start gap-3 relative pb-4"><div class="absolute left-2.5 top-5 bottom-0 w-0.5 bg-slate-200"></div><div class="w-5 h-5 rounded-full bg-baekseok-100 ring-4 ring-baekseok-50 flex items-center justify-center shrink-0 z-10"><div class="w-2.5 h-2.5 rounded-full bg-baekseok-600"></div></div><div class="flex flex-col flex-1 min-w-0 p-3 -mt-1.5 rounded-xl bg-blue-50/70 border border-blue-100/90 shadow-sm"><div class="flex items-center justify-between"><span class="text-[11px] font-bold text-baekseok-700 font-display">15:00 – 16:30</span><span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-baekseok-600 text-white">다음 일정</span></div><div class="flex items-baseline justify-between mt-1"><p class="text-xs font-bold text-slate-900 truncate">인공지능</p><span class="text-[11px] font-semibold text-baekseok-700">본부동 302호</span></div></div></div><div class="flex items-start gap-3 relative"><div class="w-5 h-5 rounded-full bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0 z-10 text-purple-600"><iconify-icon class="text-[12px]" icon="solar:stars-minimalistic-bold"></iconify-icon></div><div class="flex flex-col flex-1 min-w-0"><div class="flex items-center justify-between"><span class="text-[11px] font-medium text-slate-500 font-display">17:00 – 18:00</span><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200/60">AI 추천</span></div><div class="flex items-baseline justify-between mt-0.5"><p class="text-xs font-bold text-slate-800 truncate">자료구조 복습</p><span class="text-[11px] text-slate-500">학술정보관 2열람실</span></div></div></div></div></article><article class="bg-white border border-slate-200/70 rounded-2xl shadow-sm p-4 flex flex-col gap-3"><div class="flex items-center justify-between pb-1 border-b border-slate-100" style="white-space: nowrap;"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-md bg-rose-50 text-rose-600 flex items-center justify-center"><iconify-icon class="text-[15px]" icon="solar:danger-triangle-bold"></iconify-icon></div><h3 class="font-bold text-sm text-slate-900 tracking-tight">놓치면 안 돼요</h3></div><span class="px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-200/60">3건 마감 임박</span></div><div class="flex flex-col gap-2"><div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100"><div class="flex items-center gap-3 min-w-0"><span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-extrabold shrink-0 border border-rose-200/60 font-display">D-2</span><div class="flex flex-col min-w-0"><p class="text-xs font-bold text-slate-900 truncate">인공지능 과제 초안 작성</p><span class="text-[11px] text-slate-400">컴퓨터공학부 · 예상 소요 90분</span></div></div><button aria-label="과제 상세" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700" type="button"><iconify-icon class="text-[16px]" icon="solar:alt-arrow-right-linear"></iconify-icon></button></div><div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100"><div class="flex items-center gap-3 min-w-0"><span class="px-2.5 py-1 rounded-lg bg-blue-50 text-baekseok-700 text-[11px] font-extrabold shrink-0 border border-blue-200/60 font-display">D-5</span><div class="flex flex-col min-w-0"><p class="text-xs font-bold text-slate-900 truncate">2025-2학기 백석드림 성적장학금 신청</p><span class="text-[11px] text-slate-400">장학복지팀 · 온라인 접수</span></div></div><button aria-label="장학금 상세" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700" type="button"><iconify-icon class="text-[16px]" icon="solar:alt-arrow-right-linear"></iconify-icon></button></div><div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100"><div class="flex items-center gap-3 min-w-0"><span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-extrabold shrink-0 border border-slate-200 font-display">D-7</span><div class="flex flex-col min-w-0"><p class="text-xs font-bold text-slate-900 truncate">자료구조 중간고사 대비</p><span class="text-[11px] text-slate-400">3~5주차 트리/그래프 알고리즘</span></div></div><button aria-label="시험 대비 상세" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700" type="button"><iconify-icon class="text-[16px]" icon="solar:alt-arrow-right-linear"></iconify-icon></button></div></div></article><article class="bg-white border border-slate-200/70 rounded-2xl shadow-sm p-4 flex flex-col gap-3"><div class="flex items-center justify-between pb-2 border-b border-slate-100" style="white-space: nowrap;"><div class="flex items-center gap-2"><div class="w-6 h-6 rounded-md bg-blue-50 text-baekseok-700 flex items-center justify-center"><iconify-icon class="text-[16px]" icon="solar:volume-loud-bold"></iconify-icon></div><h3 class="font-bold text-sm text-slate-900 tracking-tight">주요 공지사항</h3><span class="px-2 py-0.5 rounded-full bg-blue-50 text-baekseok-700 text-[10px] font-bold border border-blue-200/60">4건 새글</span></div><button class="text-xs font-semibold text-baekseok-600 hover:text-baekseok-800 flex items-center gap-0.5 supanova-transition" type="button"><span class="">전체보기</span><iconify-icon class="text-[14px]" icon="solar:alt-arrow-right-linear"></iconify-icon></button></div><div class="flex flex-col divide-y divide-slate-100"><div class="py-2.5 flex items-start justify-between gap-3 hover:bg-slate-50 rounded-xl px-1.5 transition-colors cursor-pointer group"><div class="flex flex-col min-w-0 flex-1 gap-1"><div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-blue-50 text-baekseok-700 text-[10px] font-bold shrink-0">학사/장학</span><span class="px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 text-[9px] font-extrabold border border-rose-200/60 shrink-0 font-display">D-5</span><span class="text-[11px] text-slate-400 truncate">백석대 · 컴퓨터공학부</span></div><p class="text-xs font-bold text-slate-900 truncate group-hover:text-baekseok-700 transition-colors">2025학년도 2학기 백석드림 장학금 신청 요강 안내</p><div class="flex items-center gap-2 text-[11px] text-slate-400"><span class="text-baekseok-600 font-medium">오늘 09:20</span><span class="">·</span><span class="">온라인 접수</span></div></div><div class="flex items-center self-center shrink-0"><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors" icon="solar:alt-arrow-right-linear"></iconify-icon></div></div><div class="py-2.5 flex items-start justify-between gap-3 hover:bg-slate-50 rounded-xl px-1.5 transition-colors cursor-pointer group"><div class="flex flex-col min-w-0 flex-1 gap-1"><div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold shrink-0">학사</span><span class="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-600 text-[9px] font-bold border border-emerald-200/60 shrink-0">NEW</span><span class="text-[11px] text-slate-400 truncate">학사지원팀</span></div><p class="text-xs font-bold text-slate-900 truncate group-hover:text-baekseok-700 transition-colors">2025-2학기 수강철회 및 성적포기 신청 기간 안내</p><div class="flex items-center gap-2 text-[11px] text-slate-400"><span class="">어제</span><span class="">·</span><span class="">포털 종합정보시스템</span></div></div><div class="flex items-center self-center shrink-0"><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors" icon="solar:alt-arrow-right-linear"></iconify-icon></div></div><div class="py-2.5 flex items-start justify-between gap-3 hover:bg-slate-50 rounded-xl px-1.5 transition-colors cursor-pointer group"><div class="flex flex-col min-w-0 flex-1 gap-1"><div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-bold shrink-0">취업/비교과</span><span class="text-[11px] text-slate-400 truncate">인재개발원</span></div><p class="text-xs font-bold text-slate-900 truncate group-hover:text-baekseok-700 transition-colors">백석 글로벌 IT 인재 해외 인턴십 프로그램 2기 모집</p><div class="flex items-center gap-2 text-[11px] text-slate-400"><span class="">9.15</span><span class="">·</span><span class="">글로벌 역량강화 지원</span></div></div><div class="flex items-center self-center shrink-0"><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors" icon="solar:alt-arrow-right-linear"></iconify-icon></div></div><div class="py-2.5 flex items-start justify-between gap-3 hover:bg-slate-50 rounded-xl px-1.5 transition-colors cursor-pointer group"><div class="flex flex-col min-w-0 flex-1 gap-1"><div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold shrink-0">도서관</span><span class="text-[11px] text-slate-400 truncate">학술정보관</span></div><p class="text-xs font-bold text-slate-900 truncate group-hover:text-baekseok-700 transition-colors">학술정보관 2학기 중간고사 24시간 특별 개방 및 좌석 배정 안내</p><div class="flex items-center gap-2 text-[11px] text-slate-400"><span class="">9.14</span><span class="">·</span><span class="">모바일 열람증 필수</span></div></div><div class="flex items-center self-center shrink-0"><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors" icon="solar:alt-arrow-right-linear"></iconify-icon></div></div></div></article></main>
+<!-- Floating Glass Bottom Navigation (Supanova Style Detached Pill) -->
+<aside class="fixed bottom-3 inset-x-0 z-40 px-4 pointer-events-none safe-bottom">
+<div class="max-w-[420px] mx-auto pointer-events-auto">
+<nav class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl ring-1 ring-black/10 shadow-float rounded-full px-2 py-1.5 flex items-center justify-between" style="white-space: nowrap;"><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-900 font-bold group supanova-transition" href="#"><iconify-icon class="text-[24px]" icon="solar:home-2-bold"></iconify-icon><span class="text-[10px]">홈</span></a><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-900 font-medium group supanova-transition" href="#"><iconify-icon class="text-[24px]" icon="solar:calendar-linear"></iconify-icon><span class="text-[10px]">일정</span></a><button aria-controls="ai-drawer-sheet" aria-expanded="false" aria-label="AI 비서 실행" class="flex-1 min-h-[44px] flex flex-col items-center justify-center -mt-3.5 group supanova-transition relative focus:outline-none" id="ai-trigger-btn" type="button"><div class="relative w-12 h-12 rounded-full bg-gradient-to-tr from-baekseok-800 via-baekseok-700 to-baekseok-500 text-white flex items-center justify-center shadow-glow-blue ring-4 ring-white group-hover:scale-105 active:scale-95 transition-transform duration-200"><iconify-icon class="text-[23px]" icon="solar:stars-minimalistic-bold"></iconify-icon></div><span class="text-[10px] font-bold text-baekseok-700 mt-0.5 tracking-tight group-hover:text-baekseok-800">AI 비서</span></button><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-900 font-medium group supanova-transition" href="#"><iconify-icon class="text-[24px]" icon="solar:compass-linear"></iconify-icon><span class="text-[10px]">캠퍼스</span></a><a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-900 font-medium group supanova-transition" href="#"><iconify-icon class="text-[24px]" icon="solar:user-linear"></iconify-icon><span class="text-[10px]">MY</span></a></nav>
+</div>
+</aside>
+<!-- Premium Floating AI Bottom Sheet Modal & Backdrop -->
+<div aria-hidden="true" class="fixed inset-0 z-50 pointer-events-none" id="ai-modal-container">
+<!-- Backdrop Overlay with Glassmorphism Blur -->
+<div class="absolute inset-0 bg-slate-950/40 backdrop-blur-md cursor-pointer hidden" id="ai-backdrop"></div>
+<!-- Sliding Bottom Sheet (Middle-Lower layer ~48vh height) -->
+<div aria-label="AI 비서 질문 창" aria-modal="true" class="absolute bottom-0 inset-x-0 w-full max-w-[440px] mx-auto px-3 pb-3 safe-bottom hidden" id="ai-drawer-sheet" role="dialog">
+<!-- Supanova Double-Bezel Frame Container -->
+<div class="bg-slate-200/90 dark:bg-slate-800/90 ring-1 ring-black/10 dark:ring-white/10 p-1.5 rounded-[2rem] shadow-drawer backdrop-blur-2xl">
+<div class="bg-white dark:bg-slate-900 rounded-[calc(2rem-0.375rem)] p-4 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] flex flex-col gap-3.5 relative overflow-hidden">
+<!-- Top Sheet Drag Handle Bar -->
+<div class="flex items-center justify-center pt-0.5 pb-1 -mt-1 cursor-grab active:cursor-grabbing" id="sheet-handle">
+<div class="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 transition-colors"></div>
+</div>
+<!-- Sheet Header with AI Status & Close Button -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-xl bg-baekseok-50 dark:bg-slate-800 text-baekseok-600 flex items-center justify-center border border-baekseok-100 dark:border-slate-700 shadow-sm">
+<iconify-icon class="text-[18px]" icon="solar:chat-round-dots-bold"></iconify-icon>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<h3 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AI 비서 실시간 질의</h3>
+<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200/60">
+<span class="w-1 h-1 rounded-full bg-emerald-500"></span>
+                    연동됨
+                  </span>
+</div>
+<p class="text-[11px] text-slate-400">캠퍼스 일정, 학사 공지, 과제 질의가 가능해요</p>
+</div>
+</div>
+<!-- Close Button -->
+<button aria-label="바텀 시트 닫기" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-500 dark:text-slate-300 flex items-center justify-center transition-colors active:scale-95" id="ai-drawer-close" type="button">
+<iconify-icon class="text-[18px]" icon="solar:close-circle-bold"></iconify-icon>
+</button>
+</div>
+<!-- Interactive AI Input Bar -->
+<div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700 rounded-2xl px-3.5 py-2 focus-within:ring-2 focus-within:ring-baekseok-600/30 focus-within:border-baekseok-600 transition-all shadow-inner">
+<input autocomplete="off" class="bg-transparent flex-1 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 border-none p-0 focus:ring-0 focus:outline-none min-w-0" id="ai-quick-input" placeholder="무엇이든 물어보세요 (예: 오늘 공강 활용법)" type="text">
+<button aria-label="음성 명령" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-baekseok-600 transition-colors" type="button">
+<iconify-icon class="text-[19px]" icon="solar:microphone-3-bold"></iconify-icon>
+</button>
+<button aria-label="질문 전송" class="w-8 h-8 rounded-xl bg-baekseok-600 hover:bg-baekseok-700 text-white flex items-center justify-center shrink-0 shadow-sm active:scale-95 transition-transform" id="ai-send-btn" type="button">
+<iconify-icon class="text-[15px]" icon="solar:plain-3-bold"></iconify-icon>
+</button>
+</div>
+<!-- Recommended Query Chips -->
+<div class="flex flex-col gap-1.5 pt-0.5">
+<span class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+<iconify-icon class="text-[13px] text-baekseok-600" icon="solar:sparkles-bold"></iconify-icon>
+                추천 질문
+              </span>
+<div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+<button class="quick-chip shrink-0 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-baekseok-50 hover:text-baekseok-700 text-slate-700 dark:text-slate-200 text-[11px] font-semibold transition-colors border border-slate-200/70 dark:border-slate-700 flex items-center gap-1" type="button">
+<iconify-icon class="text-baekseok-600 text-[12px]" icon="solar:clock-circle-bold"></iconify-icon>
+<span class="">오늘 남은 일정 알려줘</span>
+</button>
+<button class="quick-chip shrink-0 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-baekseok-50 hover:text-baekseok-700 text-slate-700 dark:text-slate-200 text-[11px] font-semibold transition-colors border border-slate-200/70 dark:border-slate-700 flex items-center gap-1" type="button">
+<iconify-icon class="text-rose-500 text-[12px]" icon="solar:danger-triangle-bold"></iconify-icon>
+<span class="">이번 주 마감 과제</span>
+</button>
+<button class="quick-chip shrink-0 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-baekseok-50 hover:text-baekseok-700 text-slate-700 dark:text-slate-200 text-[11px] font-semibold transition-colors border border-slate-200/70 dark:border-slate-700 flex items-center gap-1" type="button">
+<iconify-icon class="text-purple-500 text-[12px]" icon="solar:book-bookmark-bold"></iconify-icon>
+<span class="">중간고사 공부 계획</span>
+</button>
+</div>
+</div>
+<!-- Context Hint Footer -->
+<div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
+<span class="flex items-center gap-1">
+<iconify-icon class="text-[12px] text-baekseok-500" icon="solar:info-circle-linear"></iconify-icon>
+                백석대학교 공식 LMS 및 포털 연동
+              </span>
+<span class="font-display">GPT-4o Campus v2.4</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Bottom Sheet Interactivity Controller
+    const triggerBtn = document.getElementById('ai-trigger-btn');
+    const closeBtn = document.getElementById('ai-drawer-close');
+    const sheetHandle = document.getElementById('sheet-handle');
+    const backdrop = document.getElementById('ai-backdrop');
+    const drawer = document.getElementById('ai-drawer-sheet');
+    const input = document.getElementById('ai-quick-input');
+    const sendBtn = document.getElementById('ai-send-btn');
+
+    let isOpen = false;
+
+    function openDrawer() {
+      if (isOpen) return;
+      isOpen = true;
+      triggerBtn.setAttribute('aria-expanded', 'true');
+      
+      // Backdrop
+      backdrop.classList.remove('opacity-0', 'pointer-events-none');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
+
+      // Drawer Sheet
+      drawer.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+      drawer.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+
+      // Auto focus with tiny delay for smooth animation frame
+      setTimeout(() => {
+        if (input) input.focus();
+      }, 300);
+    }
+
+    function closeDrawer() {
+      if (!isOpen) return;
+      isOpen = false;
+      triggerBtn.setAttribute('aria-expanded', 'false');
+
+      // Backdrop
+      backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+
+      // Drawer Sheet
+      drawer.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+      drawer.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+
+      if (input) input.blur();
+    }
+
+    // Toggle on trigger click
+    triggerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isOpen) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
+
+    // Close on backdrop touch/click
+    backdrop.addEventListener('click', closeDrawer);
+
+    // Close on X button
+    closeBtn.addEventListener('click', closeDrawer);
+
+    // Close on drag handle touch
+    sheetHandle.addEventListener('click', closeDrawer);
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeDrawer();
+      }
+    });
+
+    // Handle Quick Query Chips
+    document.querySelectorAll('.quick-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if (input) {
+          const text = chip.querySelector('span') ? chip.querySelector('span').textContent.trim() : chip.textContent.trim();
+          input.value = text;
+          input.focus();
+        }
+      });
+    });
+
+    // Send action feedback
+    if (sendBtn && input) {
+      sendBtn.addEventListener('click', () => {
+        if (input.value.trim()) {
+          input.placeholder = `'${input.value.trim()}' 분석 중...`;
+          input.value = '';
+          setTimeout(() => {
+            closeDrawer();
+            input.placeholder = "무엇이든 물어보세요 (예: 오늘 공강 활용법)";
+          }, 600);
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && input.value.trim()) {
+          sendBtn.click();
+        }
+      });
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

@@ -1,107 +1,27 @@
-import { Link, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { Bell, GearSix } from '@phosphor-icons/react'
+import { Link } from 'react-router-dom'
 import './Header.css'
 
-const NAV_LINKS = [
-  { path: '/', label: 'Home' },
-  { path: '/about', label: 'About' },
-  { path: '/work', label: 'Work' },
-  { path: '/contact', label: 'Contact' },
-]
+const LOGO_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOdfMd_GnsPkLtxMfMpIrNwUv9A1s10jY6w4JHYwNPtQ8W_5hAYDf74Be_E6-_mSL3jQmdNV4LFzh637CVhocuYcjVhiZAX_Xk1xOIk5mbd-d913oM6xZrv-H_3FPaXp-kHiXErjK1rWYE_DZFB9TMXKSH_au3l0XPSsg3FaMjKc8I20DtAslrVRiTpCu1UHQM8osH9X-EFF6s3YAYOgVDt2qL5S_E_eU_c8op9B1L5ZnZvsUKGPfExVY3WohudaoBnlU'
 
 export default function Header() {
-  const { pathname } = useLocation()
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // 라우트 변경시 모바일 메뉴 닫기
-  useEffect(() => { setMenuOpen(false) }, [pathname])
-
   return (
-    <motion.header
-      className={`header ${scrolled ? 'header--scrolled' : ''}`}
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-    >
-      <div className="container header__inner">
-        {/* Logo */}
-        <Link to="/" className="header__logo">
-          <motion.span whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            MyApp
-          </motion.span>
+    <header className="app-header">
+      <div className="app-header__inner">
+        <Link to="/" className="app-header__brand" aria-label="백석 AI 홈">
+          <img src={LOGO_URL} alt="백석대학교 로고" className="app-header__logo" />
+          <span>백석 AI</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="header__nav" aria-label="Main navigation">
-          <ul className="header__nav-list">
-            {NAV_LINKS.map(({ path, label }) => (
-              <li key={path}>
-                <Link to={path} className={`header__nav-link ${pathname === path ? 'active' : ''}`}>
-                  {label}
-                  {pathname === path && (
-                    <motion.span
-                      className="header__nav-indicator"
-                      layoutId="nav-indicator"
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* CTA Button */}
-        <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-          <Link to="/contact" className="header__cta">시작하기</Link>
-        </motion.div>
-
-        {/* Hamburger (mobile) */}
-        <button
-          className={`header__hamburger ${menuOpen ? 'open' : ''}`}
-          onClick={() => setMenuOpen(v => !v)}
-          aria-label="Toggle menu"
-          aria-expanded={menuOpen}
-        >
-          <span /><span /><span />
-        </button>
+        <div className="app-header__actions">
+          <button className="icon-button" type="button" aria-label="알림">
+            <Bell size={21} weight="regular" aria-hidden="true" />
+          </button>
+          <button className="icon-button" type="button" aria-label="설정">
+            <GearSix size={22} weight="regular" aria-hidden="true" />
+          </button>
+        </div>
       </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            className="header__mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-          >
-            <ul>
-              {NAV_LINKS.map(({ path, label }, i) => (
-                <motion.li
-                  key={path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.07 }}
-                >
-                  <Link to={path} className={pathname === path ? 'active' : ''}>
-                    {label}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+    </header>
   )
 }
