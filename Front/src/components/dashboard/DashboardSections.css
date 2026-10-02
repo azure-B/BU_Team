@@ -19,6 +19,8 @@
   font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -26,6 +28,7 @@
   display: grid;
   width: 26px;
   height: 26px;
+  flex: 0 0 auto;
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border-radius: 8px;
@@ -41,6 +44,7 @@
 }
 
 .section-heading__badge {
+  flex-shrink: 0;
   padding: 3px 7px;
   font-size: 10px;
   font-weight: 800;
@@ -53,10 +57,12 @@
 .text-action {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   padding: 6px 0 6px 8px;
   font-size: 12px;
   font-weight: 700;
   color: var(--color-primary);
+  white-space: nowrap;
   cursor: pointer;
   background: transparent;
   border: 0;
@@ -145,6 +151,12 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
+}
+
+.next-class__title-row > div {
+  min-width: 0;
+  flex: 1;
 }
 
 .next-class__label {
@@ -161,9 +173,13 @@
   font-size: 26px;
   line-height: 1.1;
   letter-spacing: -0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .next-class__title-row > strong {
+  flex-shrink: 0;
   padding-bottom: 2px;
   font-size: 17px;
   color: var(--color-primary-strong);
@@ -178,6 +194,8 @@
   margin: 0;
   font-size: 12px;
   color: var(--color-muted);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .location-line svg {
@@ -186,8 +204,16 @@
 }
 
 .location-line strong {
+  flex: 0 0 auto;
   color: var(--color-text);
   white-space: nowrap;
+}
+
+.location-line span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .location-line span::before {
@@ -199,14 +225,14 @@
 .class-tip {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
-  padding: 11px;
+  gap: 10px;
+  padding: 10px 12px;
   background: var(--color-surface-subtle);
   border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
   border-radius: var(--radius-control);
 }
 
-.class-tip > span {
+.class-tip__icon {
   display: grid;
   width: 24px;
   height: 24px;
@@ -215,16 +241,37 @@
   background: var(--color-primary-soft);
   border-radius: 7px;
   place-items: center;
+  margin-top: 1px;
 }
 
-.class-tip p {
-  margin: 1px 0 0;
+.class-tip__content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.class-tip__highlight,
+.class-tip__sub {
+  margin: 0;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.class-tip__highlight {
   font-size: 12px;
-  line-height: 1.55;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
-.class-tip strong {
+.class-tip__highlight strong {
   color: var(--color-primary);
+}
+
+.class-tip__sub {
+  font-size: 11px;
+  color: var(--color-muted);
 }
 
 .class-actions {
@@ -286,10 +333,11 @@
   display: grid;
   grid-template-columns: 86px 29px minmax(0, 1fr);
   align-items: center;
-  min-height: 51px;
-  gap: 7px;
-  padding: 4px 5px;
+  min-height: 52px;
+  gap: 8px;
+  padding: 6px 6px;
   border-radius: 10px;
+  transition: background var(--transition);
 }
 
 .schedule-row--primary {
@@ -301,12 +349,14 @@
   font-weight: 700;
   color: var(--color-muted);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .schedule-row__icon {
   display: grid;
   width: 27px;
   height: 27px;
+  flex: 0 0 auto;
   color: var(--color-muted);
   background: var(--color-surface-subtle);
   border-radius: 8px;
@@ -325,29 +375,68 @@
 }
 
 .schedule-row__content {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
   min-width: 0;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 7px;
+  flex: 1;
+  overflow: hidden;
 }
 
-.schedule-row__content span {
+.schedule-row__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.schedule-row__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5px 5.5px;
   font-size: 10px;
   font-weight: 800;
+  line-height: 1.25;
   color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 13%, transparent);
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.schedule-row__content strong {
+.schedule-row--lunch .schedule-row__status {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.schedule-row--muted .schedule-row__status {
+  color: var(--color-muted);
+  background: color-mix(in srgb, var(--color-muted) 15%, transparent);
+}
+
+.schedule-row__title {
+  display: block;
   overflow: hidden;
   font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text);
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.35;
+  min-width: 0;
+  flex: 1;
 }
 
-.schedule-row__content small {
-  grid-column: 1 / -1;
+.schedule-row__location {
+  display: block;
+  overflow: hidden;
   font-size: 10px;
   color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
 }
 
 .deadline-list,
@@ -361,13 +450,15 @@
   width: 100%;
   align-items: center;
   gap: 10px;
-  padding: 9px 4px;
+  padding: 9px 6px;
   text-align: left;
   cursor: pointer;
   background: transparent;
   border: 0;
   border-radius: 10px;
   transition: background var(--transition);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .deadline-row:hover,
@@ -382,13 +473,15 @@
 }
 
 .due-chip {
-  min-width: 42px;
+  flex: 0 0 auto;
+  min-width: 44px;
   padding: 5px 8px;
   font-size: 11px;
   font-weight: 850;
   text-align: center;
   border: 1px solid;
   border-radius: 9px;
+  white-space: nowrap;
 }
 
 .due-chip--danger {
@@ -411,37 +504,41 @@
 
 .deadline-row__content,
 .notice-row__content {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
   flex: 1;
-  gap: 2px;
+  overflow: hidden;
 }
 
 .deadline-row__content strong,
 .notice-row__content strong {
+  display: block;
+  max-width: 100%;
   overflow: hidden;
   font-size: 12px;
+  font-weight: 700;
   color: var(--color-text);
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.4;
 }
 
 .deadline-row__content small,
 .notice-row__content small {
+  display: block;
+  max-width: 100%;
   overflow: hidden;
   font-size: 10px;
   color: var(--color-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.3;
 }
 
 .notice-list .notice-row + .notice-row {
   border-top: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
-}
-
-.notice-row {
-  align-items: center;
-  padding-block: 10px;
 }
 
 .notice-row__meta {
@@ -457,17 +554,22 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .category-chip {
+  flex-shrink: 0;
   padding: 2px 5px;
   font-weight: 800;
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border-radius: 5px;
+  white-space: nowrap;
 }
 
 .notice-badge {
+  flex-shrink: 0;
   padding: 1px 4px;
   font-size: 9px;
   font-weight: 850;
@@ -475,6 +577,7 @@
   background: var(--color-danger-soft);
   border: 1px solid color-mix(in srgb, var(--color-danger) 20%, transparent);
   border-radius: 5px;
+  white-space: nowrap;
 }
 
 .notice-badge--new {
@@ -518,7 +621,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .schedule-row--lunch .schedule-row__icon {
+  .schedule-row--lunch .schedule-row__icon,
+  .schedule-row--lunch .schedule-row__status {
     color: #fbbf24;
     background: #422006;
   }

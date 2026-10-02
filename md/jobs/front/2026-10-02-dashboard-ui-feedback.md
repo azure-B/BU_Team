@@ -1,0 +1,24 @@
+# 작업 내역
+
+- **작업일**: 2026-10-02
+- **작업 내용**:
+  - **상단 메인 카드 팁 구조 개선**:
+    - `NextClassCard`의 출발 권장 안내 문구(`14:35까지 출발을 권장해요.`)와 상세 사유(`본부동 3층 엘리베이터 혼잡이 예상됩니다.`)를 전용 컴포넌트 구조(`class-tip__highlight`, `class-tip__sub`)로 분리하여 가독성 및 시각적 구분감 강화
+  - **오늘 일정 상태 칩 세로 가운데 정렬**:
+    - `TodaySchedule`의 상태 텍스트(종료, 점심, 다음 일정, AI 추천)와 제목(자료구조, 점심 식사 등)을 `schedule-row__header` flexbox로 감싸고 `align-items: center`를 적용하여 텍스트 간 동떨어짐 방지 및 세로 축 정렬 완성
+  - **전체 컴포넌트 긴 텍스트 말줄임(...) 전면 최적화**:
+    - `NoticeList` (공지사항): 제목, 상세 메타, 출처 태그 긴 텍스트 말줄임표 처리 및 뱃지 축소 방지(`flex-shrink: 0`)
+    - `DeadlineList` (마감 임박): 과제명, 설명 말줄임표 처리 및 D-Day 칩 축소 방지
+    - `TodaySchedule` (오늘 일정): 과목명, 강의실 위치 텍스트 오버플로 시 말줄임표 축약
+    - `NextClassCard` (다음 강의): 과목명(`h2`), 위치 안내 라인 말줄임표 축약
+    - `SectionHeading` (섹션 헤더): 헤더 타이틀 오버플로 시 축약 및 액션 버튼 축소 방지
+  - **Vite 프로덕션 빌드 성공 검증 (`npm run build`)**
+- **사용 API 엔드포인트**:
+  - 없음 (클라이언트 UI 최적화)
+- **변경 파일**:
+  - `Front/src/components/dashboard/DashboardSections.jsx`
+  - `Front/src/components/dashboard/DashboardSections.css`
+  - `Front/publish/index.html`
+  - `Front/publish/assets/index-B-WwVN7Y.css`
+  - `Front/publish/assets/index-CVTk89kY.js`
+  - `md/jobs/front/2026-10-02-dashboard-ui-feedback.md`

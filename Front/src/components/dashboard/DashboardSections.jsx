@@ -78,8 +78,11 @@ export function NextClassCard() {
         </p>
 
         <div className="class-tip">
-          <span><Lightbulb size={16} weight="fill" aria-hidden="true" /></span>
-          <p><strong>14:35까지 출발</strong>을 권장해요. 본부동 3층 엘리베이터 혼잡이 예상됩니다.</p>
+          <span className="class-tip__icon"><Lightbulb size={16} weight="fill" aria-hidden="true" /></span>
+          <div className="class-tip__content">
+            <p className="class-tip__highlight"><strong>14:35까지 출발</strong>을 권장해요.</p>
+            <p className="class-tip__sub">본부동 3층 엘리베이터 혼잡이 예상됩니다.</p>
+          </div>
         </div>
 
         <div className="class-actions">
@@ -105,9 +108,11 @@ export function TodaySchedule() {
             <time>{time}</time>
             <span className="schedule-row__icon"><Icon size={16} weight="fill" aria-hidden="true" /></span>
             <div className="schedule-row__content">
-              <span>{status}</span>
-              <strong>{title}</strong>
-              <small>{location}</small>
+              <div className="schedule-row__header">
+                <span className="schedule-row__status">{status}</span>
+                <strong className="schedule-row__title">{title}</strong>
+              </div>
+              <small className="schedule-row__location">{location}</small>
             </div>
           </div>
         ))}
