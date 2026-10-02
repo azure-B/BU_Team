@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ko" style="">
+
+<head></head>
+
+<body
+  class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-blue-500 selection:text-white relative">
+  <svg aria-hidden="true" class="inline-defs-container"
+    style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>백석 AI - 스마트한 백석 라이프의 시작 | 로그인 · 회원가입</title>
+  <!-- Pretendard Font for Korean typography -->
+  <link as="style" crossorigin=""
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Tailwind CSS v3 with Plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            baekseok: {
+              navy: '#0b1638',
+              deep: '#10204d',
+              blue: '#1a56db',
+              primary: '#2563eb',
+              accent: '#38bdf8',
+              violet: '#6366f1',
+              soft: '#eff6ff'
+            }
+          },
+          boxShadow: {
+            'glow-sparkle': '0 0 25px -4px rgba(56, 189, 248, 0.4)',
+            'card-elevated': '0 25px 60px -15px rgba(0, 0, 0, 0.45), 0 0 35px 2px rgba(99, 102, 241, 0.08)',
+            'btn-glow': '0 8px 24px -4px rgba(37, 99, 235, 0.55), 0 4px 12px -2px rgba(99, 102, 241, 0.4)'
+          },
+          animation: {
+            'pulse-subtle': 'pulseSubtle 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'twinkle': 'twinkle 3s ease-in-out infinite',
+            'shake': 'shake 0.45s cubic-bezier(.36,.07,.19,.97) both',
+            'scale-up': 'scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+          },
+          keyframes: {
+            pulseSubtle: {
+              '0%, 100%': { opacity: '0.85', transform: 'scale(1)' },
+              '50%': { opacity: '1', transform: 'scale(1.03)' }
+            },
+            twinkle: {
+              '0%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },
+              '50%': { opacity: '1', transform: 'scale(1.2)' }
+            },
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            },
+            scaleUp: {
+              '0%': { opacity: '0', transform: 'scale(0.92)' },
+              '100%': { opacity: '1', transform: 'scale(1)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- BEGIN: Style Section -->
+  <style data-purpose="custom-background-and-atmosphere">
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #070d1e;
+      overflow-x: hidden;
+    }
+
+    /* Multi-layered atmospheric twilight background matching mountain silhouette aesthetics */
+    .sky-canvas-wrapper {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(ellipse 90% 65% at 50% -10%, #1e3a8a 0%, #0e1e47 45%, #080f24 85%, #050a18 100%);
+    }
+
+    /* Ambient sunset dusk glow at mountain horizon */
+    .twilight-glow {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48%;
+      background: linear-gradient(to top, rgba(147, 51, 234, 0.22) 0%, rgba(59, 130, 246, 0.16) 35%, rgba(15, 23, 42, 0) 100%);
+      pointer-events: none;
+    }
+
+    /* Mountain Silhouettes using clean SVG layers for landscape fidelity */
+    .mountain-silhouette-bg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      min-height: 260px;
+      color: #080d1e;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.94;
+    }
+
+    .mountain-silhouette-fg {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: auto;
+      min-height: 200px;
+      color: #040711;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Input focus custom border animation */
+    .input-group-field {
+      border: 0;
+      border-bottom: 1.5px solid #e2e8f0;
+      border-radius: 0;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .input-group-field:focus {
+      outline: none;
+      border-bottom-color: #2563eb;
+      box-shadow: 0 1px 0 0 #2563eb;
+    }
+
+    /* Glass card fine stroke & backdrop filter */
+    .auth-glass-card {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Error highlight state */
+    .input-error {
+      border-bottom-color: #ef4444 !important;
+      box-shadow: 0 1px 0 0 #ef4444 !important;
+    }
+
+    /* Progress bar smooth fill */
+    .progress-bar-fill {
+      transition: width 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+  <!-- END: Style Section -->
+
+
+  <!-- BEGIN: AtmosphericBackground -->
+  <div aria-hidden="true" class="sky-canvas-wrapper">
+    <div class="twilight-glow"></div>
+    <!-- Starry celestial particles -->
+    <div class="absolute inset-0">
+      <div class="absolute top-[8%] left-[18%] w-1 h-1 bg-white rounded-full opacity-60 animate-twinkle"
+        style="animation-delay: 0.2s;"></div>
+      <div class="absolute top-[14%] left-[34%] w-1.5 h-1.5 bg-blue-100 rounded-full opacity-80 animate-twinkle"
+        style="animation-delay: 1.1s;"></div>
+      <div class="absolute top-[22%] left-[12%] w-1 h-1 bg-white rounded-full opacity-40 animate-twinkle"
+        style="animation-delay: 2.3s;"></div>
+      <div class="absolute top-[11%] right-[24%] w-1 h-1 bg-indigo-100 rounded-full opacity-70 animate-twinkle"
+        style="animation-delay: 0.7s;"></div>
+      <div class="absolute top-[19%] right-[15%] w-1.5 h-1.5 bg-white rounded-full opacity-85 animate-twinkle"
+        style="animation-delay: 1.8s;"></div>
+      <div class="absolute top-[28%] right-[32%] w-1 h-1 bg-cyan-200 rounded-full opacity-50 animate-twinkle"
+        style="animation-delay: 1.4s;"></div>
+      <div class="absolute top-[35%] left-[8%] w-1 h-1 bg-white rounded-full opacity-40 animate-twinkle"
+        style="animation-delay: 0.5s;"></div>
+      <div class="absolute top-[6%] left-[68%] w-1.5 h-1.5 bg-sky-100 rounded-full opacity-75 animate-twinkle"
+        style="animation-delay: 2.7s;"></div>
+    </div>
+    <!-- Distant Mountain Ridge Layer -->
+    <svg class="mountain-silhouette-bg" fill="currentColor" preserveAspectRatio="none" viewBox="0 0 1440 320">
+      <path
+        d="M0,224L60,213.3C120,203,240,181,360,192C480,203,600,245,720,229.3C840,213,960,139,1080,149.3C1200,160,1320,256,1380,304L1440,352L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z">
+      </path>
+    </svg>
+    <!-- Foreground Mountain Ridge Layer -->
+    <svg class="mountain-silhouette-fg" fill="currentColor" preserveAspectRatio="none" viewBox="0 0 1440 260">
+      <path
+        d="M0,160L48,154.7C96,149,192,139,288,149.3C384,160,480,192,576,186.7C672,181,768,139,864,138.7C960,139,1056,181,1152,192C1248,203,1344,181,1392,170.7L1440,160L1440,260L1392,260C1344,260,1248,260,1152,260C1056,260,960,260,864,260C768,260,672,260,576,260C480,260,384,260,288,260C192,260,96,260,48,260L0,260Z">
+      </path>
+    </svg>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" data-purpose="baekseok-constellation"><svg
+        class="w-full h-full opacity-80 md:opacity-90 transition-opacity duration-1000" fill="none"
+        preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="constellationGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" in="SourceGraphic" result="blur"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+          <filter id="sparkleIntense" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="5" in="SourceGraphic" result="blur1"></feGaussianBlur>
+            <feGaussianBlur stdDeviation="2" in="SourceGraphic" result="blur2"></feGaussianBlur>
+            <feMerge>
+              <feMergeNode in="blur1"></feMergeNode>
+              <feMergeNode in="blur2"></feMergeNode>
+              <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+          </filter>
+          <linearGradient id="baekStrokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#67e8f9" stop-opacity="0.75"></stop>
+            <stop offset="50%" stop-color="#93c5fd" stop-opacity="0.6"></stop>
+            <stop offset="100%" stop-color="#a5b4fc" stop-opacity="0.4"></stop>
+          </linearGradient>
+          <linearGradient id="seokStrokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a5b4fc" stop-opacity="0.5"></stop>
+            <stop offset="50%" stop-color="#67e8f9" stop-opacity="0.65"></stop>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.8"></stop>
+          </linearGradient>
+        </defs>
+        <g id="constellation-baek">
+          <g stroke="url(#baekStrokeGrad)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="185" y1="75" x2="160" y2="125" stroke-dasharray="3 3"></line>
+            <polyline points="110,140 215,140 215,280 110,280 110,140"></polyline>
+            <line x1="110" y1="205" x2="215" y2="205" stroke-dasharray="4 2"></line>
+            <line x1="185" y1="75" x2="110" y2="140" stroke-opacity="0.35" stroke-dasharray="2 4"></line>
+            <line x1="185" y1="75" x2="215" y2="140" stroke-opacity="0.35" stroke-dasharray="2 4"></line>
+            <line x1="215" y1="205" x2="250" y2="240" stroke-opacity="0.4" stroke-dasharray="3 3"></line>
+            <line x1="110" y1="280" x2="85" y2="320" stroke-opacity="0.35" stroke-dasharray="3 3"></line>
+          </g>
+          <g fill="#ffffff" filter="url(#constellationGlow)">
+            <circle cx="185" cy="75" r="4" fill="#67e8f9" class="animate-twinkle"></circle>
+            <circle cx="160" cy="125" r="2.5" fill="#e0f2fe"></circle>
+            <circle cx="110" cy="140" r="3.5" fill="#38bdf8" class="animate-pulse-subtle"></circle>
+            <circle cx="215" cy="140" r="3.5" fill="#67e8f9" class="animate-twinkle"></circle>
+            <circle cx="110" cy="205" r="2.8" fill="#93c5fd"></circle>
+            <circle cx="215" cy="205" r="3" fill="#67e8f9"></circle>
+            <circle cx="110" cy="280" r="3.5" fill="#38bdf8" class="animate-pulse-subtle"></circle>
+            <circle cx="215" cy="280" r="3.5" fill="#93c5fd" class="animate-twinkle"></circle>
+            <circle cx="250" cy="240" r="2" fill="#bae6fd"></circle>
+            <circle cx="85" cy="320" r="2" fill="#bae6fd"></circle>
+          </g>
+          <g fill="#e0f2fe" filter="url(#sparkleIntense)">
+            <polygon points="185,67 187,73 193,75 187,77 185,83 183,77 177,75 183,73" opacity="0.95"
+              class="animate-twinkle"></polygon>
+            <polygon points="215,133 216.5,138.5 222,140 216.5,141.5 215,147 213.5,141.5 208,140 213.5,138.5"
+              opacity="0.9" class="animate-pulse-subtle"></polygon>
+          </g><text x="162" y="370" text-anchor="middle" fill="#67e8f9" fill-opacity="0.75"
+            font-family="'Noto Serif KR', serif" font-size="24" font-weight="300" letter-spacing="0.1em"
+            filter="url(#constellationGlow)">白</text>
+        </g>
+        <g id="constellation-seok">
+          <g stroke="url(#seokStrokeGrad)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="1200" y1="90" x2="1345" y2="90"></line>
+            <line x1="1260" y1="90" x2="1190" y2="225"></line>
+            <polyline points="1245,175 1335,175 1335,270 1245,270 1245,175"></polyline>
+            <line x1="1345" y1="90" x2="1335" y2="175" stroke-opacity="0.35" stroke-dasharray="3 3"></line>
+            <line x1="1190" y1="225" x2="1245" y2="225" stroke-opacity="0.4" stroke-dasharray="3 3"></line>
+            <line x1="1190" y1="225" x2="1155" y2="285" stroke-opacity="0.35" stroke-dasharray="2 4"></line>
+            <line x1="1335" y1="270" x2="1365" y2="320" stroke-opacity="0.35" stroke-dasharray="3 3"></line>
+          </g>
+          <g fill="#ffffff" filter="url(#constellationGlow)">
+            <circle cx="1200" cy="90" r="3.5" fill="#67e8f9" class="animate-twinkle"></circle>
+            <circle cx="1260" cy="90" r="3" fill="#e0f2fe"></circle>
+            <circle cx="1345" cy="90" r="4" fill="#38bdf8" class="animate-pulse-subtle"></circle>
+            <circle cx="1190" cy="225" r="3.5" fill="#93c5fd" class="animate-twinkle"></circle>
+            <circle cx="1245" cy="175" r="3" fill="#67e8f9"></circle>
+            <circle cx="1335" cy="175" r="3.5" fill="#38bdf8" class="animate-twinkle"></circle>
+            <circle cx="1245" cy="270" r="3" fill="#93c5fd"></circle>
+            <circle cx="1335" cy="270" r="3.5" fill="#67e8f9" class="animate-pulse-subtle"></circle>
+            <circle cx="1155" cy="285" r="2" fill="#bae6fd"></circle>
+            <circle cx="1365" cy="320" r="2" fill="#bae6fd"></circle>
+          </g>
+          <g fill="#e0f2fe" filter="url(#sparkleIntense)">
+            <polygon points="1345,82 1347,88 1353,90 1347,92 1345,98 1343,92 1337,90 1343,88" opacity="0.95"
+              class="animate-twinkle"></polygon>
+            <polygon points="1245,167 1246.5,173 1252,175 1246.5,177 1245,183 1243.5,177 1238,175 1243.5,173"
+              opacity="0.9" class="animate-pulse-subtle"></polygon>
+          </g><text x="1270" y="370" text-anchor="middle" fill="#67e8f9" fill-opacity="0.75"
+            font-family="'Noto Serif KR', serif" font-size="24" font-weight="300" letter-spacing="0.1em"
+            filter="url(#constellationGlow)">石</text>
+        </g>
+      </svg></div>
+  </div>
+  <!-- END: AtmosphericBackground -->
+  <!-- BEGIN: TopNavigation -->
+  <header class="relative z-10 w-full px-6 py-5 md:px-10 flex items-center justify-between"
+    data-purpose="top-navigation-bar">
+    <div class="flex items-center space-x-6">
+      <a class="inline-flex items-center text-sm font-medium text-slate-200/90 hover:text-white transition-colors duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-lg px-2.5 py-1.5 -ml-2.5 hover:bg-white/10"
+        href="#back" title="홈 화면으로 이동">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-left"
+          aria-hidden="true"
+          class="lucide lucide-arrow-left w-4 h-4 mr-2 stroke-[2] transition-transform duration-200 group-hover:-translate-x-1">
+          <path d="m12 19-7-7 7-7"></path>
+          <path d="M19 12H5"></path>
+        </svg>
+        <span class="">백석 AI 홈으로</span>
+      </a>
+      <a class="hidden sm:inline-flex items-center text-xs text-slate-300/70 hover:text-white transition-colors border-l border-white/20 pl-4 py-0.5"
+        href="https://portal.bu.ac.kr" rel="noopener noreferrer" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          data-lucide="external-link" aria-hidden="true" class="lucide lucide-external-link w-3.5 h-3.5 mr-1.5">
+          <path d="M15 3h6v6"></path>
+          <path d="M10 14 21 3"></path>
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        </svg>
+        <span class="">종합정보시스템</span>
+      </a>
+    </div>
+    <div class="flex items-center space-x-2 text-right">
+      <span
+        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider uppercase bg-blue-500/20 text-blue-200 border border-blue-400/30">
+        Campus AI Suite
+      </span>
+      <span class="hidden md:inline-block text-xs font-medium text-slate-300 tracking-wide">
+        백석대학교 스마트캠퍼스
+      </span>
+    </div>
+  </header>
+  <!-- END: TopNavigation -->
+  <!-- BEGIN: MainContentSection -->
+  <main class="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-10"
+    data-purpose="main-login-container">
+    <!-- Hero Branding Header -->
+    <div class="text-center mb-5 sm:mb-7" data-purpose="hero-title-section">
+      <div class="inline-flex items-center justify-center mb-2.5 sm:mb-3 animate-pulse-subtle">
+        <div class="relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center">
+          <div class="absolute inset-0 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-full blur-xl opacity-60">
+          </div>
+          <svg class="w-12 h-12 sm:w-14 sm:h-14 relative drop-shadow-[0_4px_12px_rgba(56,189,248,0.5)]" fill="none"
+            viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient gradientUnits="userSpaceOnUse" id="sparkleGrad" x1="6" x2="58" y1="8" y2="56">
+                <stop offset="0%" stop-color="#67e8f9"></stop>
+                <stop offset="50%" stop-color="#38bdf8"></stop>
+                <stop offset="100%" stop-color="#3b82f6"></stop>
+              </linearGradient>
+              <linearGradient gradientUnits="userSpaceOnUse" id="subSparkle" x1="40" x2="56" y1="12" y2="28">
+                <stop offset="0%" stop-color="#ffffff"></stop>
+                <stop offset="100%" stop-color="#93c5fd"></stop>
+              </linearGradient>
+            </defs>
+            <path d="M30 6C30.8 19 39 27.2 52 28C39 28.8 30.8 37 30 50C29.2 37 21 28.8 8 28C21 27.2 29.2 19 30 6Z"
+              fill="url(#sparkleGrad)"></path>
+            <path
+              d="M47 8C47.4 13.5 50.5 16.6 56 17C50.5 17.4 47.4 20.5 47 26C46.6 20.5 43.5 17.4 38 17C43.5 16.6 46.6 13.5 47 8Z"
+              fill="url(#subSparkle)"></path>
+          </svg>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight ml-3 drop-shadow-sm font-sans"
+          id="heroTitle">
+          백석 AI
+        </h1>
+      </div>
+      <p class="text-sm sm:text-base text-slate-200/90 font-normal tracking-tight" id="heroSubtitle">스마트한 백석 라이프의 시작</p>
+    </div>
+    <!-- Main Authentication Glass Card -->
+    <div
+      class="auth-glass-card w-full rounded-3xl p-6 sm:p-8 shadow-card-elevated relative overflow-hidden transition-all duration-300 max-w-[440px]"
+      data-purpose="auth-card" id="cardContainer">
+      <!-- Top Segmented Tabs: 로그인 / 회원가입 전환 탭 -->
+      <div
+        class="relative bg-slate-100/90 p-1 rounded-2xl flex items-center mb-6 border border-slate-200/60 select-none"
+        role="tablist">
+        <button aria-selected="true"
+          class="w-1/2 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-1.5 bg-white text-blue-600 shadow-sm"
+          id="tabBtnLogin" role="tab" type="button">
+          <span class="">로그인</span>
+        </button>
+        <button aria-selected="false"
+          class="w-1/2 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-800"
+          id="tabBtnSignup" role="tab" type="button">
+          <span class="">&nbsp;회원가입</span>
+        </button>
+      </div>
+      <!-- ==================== VIEW 1: LOGIN VIEW ==================== -->
+      <div class="transition-all duration-300 ease-out" id="loginView">
+        <form class="space-y-5" data-purpose="credential-form" id="loginForm"
+          onsubmit="event.preventDefault(); handleFormSubmit();">
+          <!-- Field 1: 학번 / 교번 -->
+          <div class="space-y-1.5" id="studentIdFieldWrapper">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold text-blue-600 tracking-tight" for="studentId">
+                학번 / 교번
+              </label>
+              <button
+                class="text-[11px] text-slate-500 hover:text-blue-600 transition-colors bg-slate-100 hover:bg-blue-50 px-2 py-0.5 rounded-full font-medium"
+                id="autoFillBtn" title="테스트용 예시 학번 자동 입력" type="button">
+                예시 학번
+              </button>
+            </div>
+            <div class="relative flex items-center">
+              <span
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                  data-lucide="user" aria-hidden="true" class="lucide lucide-user w-4 h-4 text-blue-500/80">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input autocomplete="username"
+                class="input-group-field w-full py-2.5 pl-10 pr-3 text-sm text-slate-800 placeholder-slate-400 bg-transparent border-0 border-b border-slate-200 transition-all font-sans"
+                id="studentId" name="studentId" placeholder="학번 또는 교번 입력 (예: 20221340)" required="" type="text">
+            </div>
+            <p class="text-[11px] pt-0.5 pl-0.5 text-slate-400 transition-colors" id="idHelperText">학번을 입력하시면 비밀번호 입력창이
+              자동으로 활성화됩니다.</p>
+          </div>
+          <!-- Password Drawer Container -->
+          <div class="overflow-hidden transition-all duration-300 ease-in-out space-y-3.5 max-h-0 opacity-0"
+            id="passwordDrawer">
+            <!-- Field 2: 비밀번호 -->
+            <div class="space-y-1.5" id="passwordFieldWrapper">
+              <div class="flex items-center justify-between">
+                <label class="block text-xs font-semibold text-blue-600 tracking-tight" for="password">
+                  비밀번호
+                </label>
+                <button
+                  class="text-[11px] text-slate-400 hover:text-blue-600 transition-colors bg-slate-100 hover:bg-blue-50 px-2 py-0.5 rounded-full"
+                  id="autoFillPwBtn" title="유효한 비밀번호 자동 입력" type="button">
+                  예시 비밀번호
+                </button>
+              </div>
+              <div class="relative flex items-center">
+                <span
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="lock" aria-hidden="true" class="lucide lucide-lock w-4 h-4 text-blue-500/80">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input autocomplete="current-password"
+                  class="input-group-field w-full py-2.5 pl-10 pr-10 text-sm text-slate-800 placeholder-slate-400 bg-transparent border-0 border-b border-slate-200 transition-all font-sans"
+                  id="password" name="password" placeholder="비밀번호 8자리 이상" type="password">
+                <button aria-label="비밀번호 표시/숨기기"
+                  class="absolute right-1 text-slate-400 hover:text-slate-600 p-1.5 transition-colors focus:outline-none rounded-md"
+                  id="passwordToggleBtn" title="비밀번호 표시 전환" type="button">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="eye" aria-hidden="true" class="lucide lucide-eye w-4 h-4 stroke-[1.8]"
+                    id="toggleEyeIcon">
+                    <path
+                      d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0">
+                    </path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <!-- Password Strength & Guide (Compact) -->
+            <div class="pt-1 pb-1 px-3 py-2 bg-slate-50/90 rounded-xl border border-slate-100 text-xs space-y-1.5">
+              <div class="flex items-center justify-between text-[11px] text-slate-500">
+                <span class="">비밀번호 충족도</span>
+                <span class="font-medium text-slate-400" id="ruleProgressCount">0 / 3 충족</span>
+              </div>
+              <div class="flex items-center space-x-3 text-[11px]">
+                <span class="flex items-center text-slate-400" id="ruleLength">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-300 mr-1" id="dotLength"></span>8자 이상
+                </span>
+                <span class="flex items-center text-slate-400" id="ruleAlphaNum">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-300 mr-1" id="dotAlphaNum"></span>영문+숫자
+                </span>
+                <span class="flex items-center text-slate-400" id="ruleSpecial">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-300 mr-1" id="dotSpecial"></span>특수문자
+                </span>
+              </div>
+            </div>
+            <!-- Options Row: 로그인 상태 유지 & 비밀번호 찾기 -->
+            <div class="flex items-center justify-between pt-1 text-xs">
+              <label class="flex items-center cursor-pointer select-none group">
+                <input
+                  class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 focus:ring-offset-0 focus:ring-1 cursor-pointer transition"
+                  id="rememberMe" type="checkbox">
+                <span class="ml-2 text-slate-600 group-hover:text-slate-800 font-medium">로그인 상태 유지</span>
+              </label>
+              <a class="text-blue-600 hover:text-blue-700 font-medium hover:underline focus:outline-none transition-colors"
+                href="javascript:alert('학생포털 종합정보시스템에서 비밀번호 재설정이 가능합니다.');">
+                비밀번호 찾기
+              </a>
+            </div>
+          </div>
+          <!-- Submit Button -->
+          <div class="pt-2 relative">
+            <button
+              class="relative w-full py-3.5 px-4 rounded-full text-slate-400 font-medium text-sm tracking-wide bg-slate-100 border border-slate-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 flex items-center justify-center space-x-2 cursor-not-allowed group shadow-none"
+              id="submitBtn" type="submit">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white hidden" fill="none" id="btnSpinner"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  fill="currentColor"></path>
+              </svg>
+              <span class="" id="btnText">학번을 입력해주세요</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                data-lucide="arrow-right" aria-hidden="true"
+                class="lucide lucide-arrow-right w-4 h-4 transition-transform duration-200 text-slate-300"
+                id="btnArrowIcon">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+          <!-- Sign Up Link Matching Reference -->
+          <div class="text-center pt-1 pb-1">
+            <p class="text-xs text-slate-500">
+              아직 회원이 아니신가요?
+              <button
+                class="text-blue-600 hover:text-blue-700 font-semibold ml-1.5 inline-flex items-center hover:underline group cursor-pointer focus:outline-none"
+                id="goToSignupLink" type="button">
+                <span class="">회원가입하기</span>
+                <span class="inline-block transition-transform duration-200 group-hover:translate-x-1 ml-0.5">→</span>
+              </button>
+            </p>
+          </div>
+        </form>
+      </div>
+      <!-- ==================== VIEW 2: SIGNUP VIEW ==================== -->
+      <div class="transition-all duration-300 ease-out opacity-0 hidden" id="signupView">
+        <form class="space-y-4" id="signupForm" onsubmit="event.preventDefault(); handleSignupSubmit();">
+          <!-- 1. 학번 / 교번 간편 입력 & 즉시 조회 -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold text-blue-600 tracking-tight" for="signupStudentId">
+                학번 / 교번 <span class="text-blue-600">*</span>
+              </label>
+              <button
+                class="text-[11px] text-slate-500 hover:text-blue-600 transition-colors bg-slate-100 hover:bg-blue-50 px-2 py-0.5 rounded-full font-medium"
+                id="signupAutoFillBtn" title="예시 학번 자동 완성" type="button">
+                예시 학번 채우기
+              </button>
+            </div>
+            <div class="relative flex items-center">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  data-lucide="id-card" aria-hidden="true" class="lucide lucide-id-card w-4 h-4 text-blue-500/80">
+                  <path d="M13 19a4 4 0 00-8 0"></path>
+                  <path d="M16 10h2"></path>
+                  <path d="M16 14h2"></path>
+                  <circle cx="9" cy="12" r="3"></circle>
+                  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                </svg>
+              </span>
+              <input autocomplete="username"
+                class="input-group-field w-full py-2.5 pl-10 pr-24 text-sm text-slate-800 placeholder-slate-400 bg-transparent border-0 border-b border-slate-200 transition-all font-sans"
+                id="signupStudentId" placeholder="학번 8자리 (예: 20241001)" required="" type="text">
+              <button
+                class="absolute right-0 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-md transition-colors"
+                id="btnVerifyId" type="button">
+                학적 확인
+              </button>
+            </div>
+            <!-- Verified Student Profile Badge -->
+            <div
+              class="mt-1.5 flex items-center justify-between px-3 py-1.5 bg-blue-50/70 border border-blue-100 rounded-xl text-xs"
+              id="studentVerifiedBadge">
+              <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="font-semibold text-slate-800" id="verifiedStudentName">김백석</span>
+                <span class="text-slate-500 text-[11px]" id="verifiedStudentMajor">(AI소프트웨어학부)</span>
+              </div>
+              <span
+                class="text-[10px] font-bold text-blue-600 bg-white px-2 py-0.5 rounded-full border border-blue-100">재학
+                인증됨</span>
+            </div>
+          </div>
+          <!-- 2. 비밀번호 간편 설정 -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold text-blue-600 tracking-tight" for="signupPw">
+                비밀번호 설정 <span class="text-blue-600">*</span>
+              </label>
+              <span class="text-[10px] text-slate-400 font-normal">8자 이상 영문/숫자/특수</span>
+            </div>
+            <div class="relative flex items-center">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  data-lucide="lock" aria-hidden="true" class="lucide lucide-lock w-4 h-4 text-blue-500/80">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input autocomplete="new-password"
+                class="input-group-field w-full py-2.5 pl-10 pr-3 text-sm text-slate-800 placeholder-slate-400 bg-transparent border-0 border-b border-slate-200 transition-all font-sans"
+                id="signupPw" placeholder="8자 이상 영문·숫자·특수문자 조합" required="" type="password">
+            </div>
+            <p class="text-[11px] text-slate-400 pt-0.5 pl-0.5" id="signupPwHelper">단일 입력으로 안전하게 스마트 캠퍼스 계정을 생성합니다.</p>
+          </div>
+          <!-- 3. 단일 필수 약관 전체 간편 동의 -->
+          <div class="pt-1">
+            <label
+              class="flex items-center p-2.5 bg-slate-50/80 rounded-xl border border-slate-100 hover:bg-slate-100 cursor-pointer select-none transition-colors group">
+              <input checked=""
+                class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 focus:ring-offset-0 focus:ring-1 cursor-pointer"
+                id="agreeAllCheckbox" placeholder="on" required="" type="checkbox" value="">
+              <div class="ml-2.5 flex-1">
+                <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">서비스 이용 및 학사
+                  데이터 연동 전체 동의 <span class="text-blue-600">[필수]</span></p>
+              </div>
+              <span class="text-[11px] text-slate-400 hover:text-blue-600 underline ml-2"
+                onclick="alert('백석 AI 서비스 이용약관 및 개인정보 처리방침에 동의합니다.');">전문</span>
+            </label>
+          </div>
+          <!-- 4. 원클릭 가입 완료 버튼 -->
+          <div class="pt-2">
+            <button
+              class="w-full py-3.5 px-4 rounded-full text-white font-semibold text-sm tracking-wide bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-btn-glow hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center space-x-2 cursor-pointer"
+              id="btnCompleteSignup" type="submit">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white hidden" fill="none" id="signupBtnSpinner"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  fill="currentColor"></path>
+              </svg>
+              <span class="" id="signupBtnText">회원가입 완료하기</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                data-lucide="arrow-right" aria-hidden="true" class="lucide lucide-arrow-right w-4 h-4 ml-1">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+          <!-- 하단 로그인 전환 링크 -->
+        </form>
+      </div>
+      <!-- Login Success Feedback Overlay Card -->
+      <div
+        class="absolute inset-0 bg-white/95 backdrop-blur-xl p-7 flex flex-col justify-between items-center text-center rounded-3xl opacity-0 pointer-events-none transition-opacity duration-300 z-30"
+        id="successCard">
+        <div class="w-full flex justify-end">
+          <button
+            class="text-slate-400 hover:text-slate-600 text-xs px-2 py-1 rounded hover:bg-slate-100 transition-colors"
+            id="closeSuccessBtn" title="시뮬레이션 닫기" type="button">
+            ✕
+          </button>
+        </div>
+        <div class="my-auto space-y-4 max-w-[280px]">
+          <div
+            class="w-16 h-16 mx-auto rounded-full bg-blue-50 border-4 border-blue-100 flex items-center justify-center text-blue-600 shadow-md">
+            <svg class="w-8 h-8 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div>
+            <span
+              class="inline-block px-2.5 py-0.5 bg-blue-100 text-blue-700 text-[11px] font-semibold rounded-full mb-1.5">인증
+              완료</span>
+            <h3 class="text-xl font-bold text-slate-900" id="successCardUserTitle">김백석 학우님, 환영합니다!</h3>
+            <p class="text-xs text-slate-500 mt-1">백석 AI 스마트 캠퍼스에 안전하게 로그인되었습니다.</p>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full w-0 progress-bar-fill"
+              id="redirectProgressBar"></div>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium" id="redirectStatusText">캠퍼스 대시보드로 이동 중...</p>
+        </div>
+        <div class="w-full space-y-2 pt-2">
+          <button
+            class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl hover:from-blue-500 hover:to-indigo-500 transition-all shadow-md shadow-blue-500/20"
+            id="goDashboardBtn" type="button">
+            메인 홈으로 즉시 이동
+          </button>
+          <button
+            class="w-full py-2 px-4 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-medium rounded-xl transition-colors"
+            id="resetTestBtn" type="button">
+            다시 로그인 테스트 (초기화)
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Quick Help & Demo Toast Feedback Container -->
+    <div
+      class="mt-4 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 text-xs font-medium text-slate-700 transition-opacity duration-300 flex items-center space-x-2 opacity-0 pointer-events-none"
+      id="statusToast">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping" id="toastDot"></span>
+      <span class="" id="toastMsg">회원가입 양식으로 전환되었습니다.</span>
+    </div>
+  </main>
+  <!-- END: MainContentSection -->
+  <!-- BEGIN: SiteFooter -->
+  <footer class="relative z-10 w-full py-6 text-center text-xs text-slate-300/80 space-y-1.5"
+    data-purpose="site-footer">
+    <p class="font-medium tracking-wide drop-shadow-sm text-slate-200">
+      백석대학교 • 진리가 너희를 자유케 하리라
+    </p>
+    <p class="text-[11px] text-slate-400/90 drop-shadow-sm font-light">
+      © 2025 Baekseok University Smart Campus AI Assistant. All rights reserved.
+    </p>
+  </footer>
+  <!-- END: SiteFooter -->
+  <!-- BEGIN: ScriptsSection -->
+  <script data-purpose="icon-initialization">
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  </script>
+  <script data-purpose="interactive-login-and-tab-switching">
+    // DOM Elements - Navigation & Tabs
+    const tabBtnLogin = document.getElementById('tabBtnLogin');
+    const tabBtnSignup = document.getElementById('tabBtnSignup');
+    const loginView = document.getElementById('loginView');
+    const signupView = document.getElementById('signupView');
+    const cardContainer = document.getElementById('cardContainer');
+    const goToSignupLink = document.getElementById('goToSignupLink');
+    const backToLoginBtnBottom = document.getElementById('backToLoginBtnBottom');
+    const heroSubtitle = document.getElementById('heroSubtitle');
+
+    // DOM Elements - Login Form
+    const studentIdInput = document.getElementById('studentId');
+    const studentIdFieldWrapper = document.getElementById('studentIdFieldWrapper');
+    const passwordDrawer = document.getElementById('passwordDrawer');
+    const passwordInput = document.getElementById('password');
+    const passwordFieldWrapper = document.getElementById('passwordFieldWrapper');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnArrowIcon = document.getElementById('btnArrowIcon');
+    const passwordToggleBtn = document.getElementById('passwordToggleBtn');
+    const toggleEyeIcon = document.getElementById('toggleEyeIcon');
+    const autoFillBtn = document.getElementById('autoFillBtn');
+    const autoFillPwBtn = document.getElementById('autoFillPwBtn');
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    const idHelperText = document.getElementById('idHelperText');
+
+    // Validation Indicators
+    const ruleLength = document.getElementById('ruleLength');
+    const ruleAlphaNum = document.getElementById('ruleAlphaNum');
+    const ruleSpecial = document.getElementById('ruleSpecial');
+    const dotLength = document.getElementById('dotLength');
+    const dotAlphaNum = document.getElementById('dotAlphaNum');
+    const dotSpecial = document.getElementById('dotSpecial');
+    const ruleProgressCount = document.getElementById('ruleProgressCount');
+
+    // DOM Elements - Signup Form
+    const signupStudentId = document.getElementById('signupStudentId');
+    const signupPw = document.getElementById('signupPw');
+    const signupAutoFillBtn = document.getElementById('signupAutoFillBtn');
+    const btnVerifyId = document.getElementById('btnVerifyId');
+    const agreeAllCheckbox = document.getElementById('agreeAllCheckbox');
+    const btnCompleteSignup = document.getElementById('btnCompleteSignup');
+    const signupBtnSpinner = document.getElementById('signupBtnSpinner');
+    const signupBtnText = document.getElementById('signupBtnText');
+
+    // Success Overlay Elements
+    const successCard = document.getElementById('successCard');
+    const redirectProgressBar = document.getElementById('redirectProgressBar');
+    const redirectStatusText = document.getElementById('redirectStatusText');
+    const goDashboardBtn = document.getElementById('goDashboardBtn');
+    const resetTestBtn = document.getElementById('resetTestBtn');
+    const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+    const successCardUserTitle = document.getElementById('successCardUserTitle');
+
+    let currentMode = 'login'; // 'login' | 'signup'
+    let isPasswordVisible = false;
+    let isSubmitting = false;
+    let isSignupSubmitting = false;
+
+    // View Switching Core Functions
+    function setMode(mode, showNotice = false) {
+      if (mode === 'signup') {
+        currentMode = 'signup';
+        // Tab styling
+        tabBtnSignup.className = 'w-1/2 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-1.5 bg-white text-blue-600 shadow-sm';
+        tabBtnSignup.setAttribute('aria-selected', 'true');
+        tabBtnLogin.className = 'w-1/2 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-800';
+        tabBtnLogin.setAttribute('aria-selected', 'false');
+
+        // Form View Transition
+        loginView.classList.add('opacity-0');
+        setTimeout(() => {
+          loginView.classList.add('hidden');
+          signupView.classList.remove('hidden');
+          void signupView.offsetWidth; // reflow
+          signupView.classList.remove('opacity-0');
+          heroSubtitle.innerText = '백석대학교 스마트캠퍼스 통합 계정 생성';
+          if (showNotice) showToast('회원가입 양식으로 전환되었습니다.');
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+        }, 150);
+
+      } else {
+        currentMode = 'login';
+        // Tab styling
+        tabBtnLogin.className = 'w-1/2 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-1.5 bg-white text-blue-600 shadow-sm';
+        tabBtnLogin.setAttribute('aria-selected', 'true');
+        tabBtnSignup.className = 'w-1/2 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-1.5 text-slate-500 hover:text-slate-800';
+        tabBtnSignup.setAttribute('aria-selected', 'false');
+
+        // Form View Transition
+        signupView.classList.add('opacity-0');
+        setTimeout(() => {
+          signupView.classList.add('hidden');
+          loginView.classList.remove('hidden');
+          void loginView.offsetWidth; // reflow
+          loginView.classList.remove('opacity-0');
+          heroSubtitle.innerText = '스마트한 백석 라이프의 시작';
+          if (showNotice) showToast('로그인 화면으로 전환되었습니다.');
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+        }, 150);
+      }
+    }
+
+    // Tab Listeners
+    if (tabBtnLogin) {
+      tabBtnLogin.addEventListener('click', () => setMode('login'));
+    }
+    if (tabBtnSignup) {
+      tabBtnSignup.addEventListener('click', () => setMode('signup'));
+    }
+
+    // Bottom link listeners
+    if (goToSignupLink) {
+      goToSignupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        setMode('signup', true);
+      });
+    }
+
+    if (backToLoginBtnBottom) {
+      backToLoginBtnBottom.addEventListener('click', (e) => {
+        e.preventDefault();
+        setMode('login', true);
+      });
+    }
+
+    // Password evaluation
+    function evaluatePassword(pwd) {
+      const hasLength = pwd.length >= 8;
+      const hasAlphaNum = /[A-Za-z]/.test(pwd) && /[0-9]/.test(pwd);
+      const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+
+      return {
+        hasLength,
+        hasAlphaNum,
+        hasSpecial,
+        validCount: (hasLength ? 1 : 0) + (hasAlphaNum ? 1 : 0) + (hasSpecial ? 1 : 0),
+        isValidAll: hasLength && hasAlphaNum && hasSpecial
+      };
+    }
+
+    function updateRuleStatus(elem, dot, ok) {
+      if (ok) {
+        elem.classList.remove('text-slate-400');
+        elem.classList.add('text-blue-600', 'font-medium');
+        dot.classList.remove('bg-slate-300');
+        dot.classList.add('bg-blue-600');
+      } else {
+        elem.classList.add('text-slate-400');
+        elem.classList.remove('text-blue-600', 'font-medium');
+        dot.classList.add('bg-slate-300');
+        dot.classList.remove('bg-blue-600');
+      }
+    }
+
+    function updatePasswordValidationUI() {
+      const val = passwordInput.value;
+      const { hasLength, hasAlphaNum, hasSpecial, validCount } = evaluatePassword(val);
+
+      updateRuleStatus(ruleLength, dotLength, hasLength);
+      updateRuleStatus(ruleAlphaNum, dotAlphaNum, hasAlphaNum);
+      updateRuleStatus(ruleSpecial, dotSpecial, hasSpecial);
+      ruleProgressCount.innerText = `${validCount} / 3 충족`;
+
+      syncSubmitButtonState();
+    }
+
+    function syncDrawerState() {
+      const val = studentIdInput.value.trim();
+      const hasId = val.length > 0;
+
+      if (hasId) {
+        passwordDrawer.classList.remove('max-h-0', 'opacity-0');
+        passwordDrawer.classList.add('max-h-[500px]', 'opacity-100');
+        passwordInput.required = true;
+
+        if (idHelperText) {
+          if (val.length >= 6) {
+            idHelperText.innerText = '학번/교번 형식 확인 완료. 비밀번호를 입력해주세요.';
+            idHelperText.className = 'text-[11px] pt-0.5 pl-0.5 text-blue-600 transition-colors font-medium';
+          } else {
+            idHelperText.innerText = '학번 6자리 이상 입력 권장';
+            idHelperText.className = 'text-[11px] pt-0.5 pl-0.5 text-amber-500 transition-colors';
+          }
+        }
+      } else {
+        passwordDrawer.classList.add('max-h-0', 'opacity-0');
+        passwordDrawer.classList.remove('max-h-[500px]', 'opacity-100');
+        passwordInput.required = false;
+
+        if (idHelperText) {
+          idHelperText.innerText = '학번을 입력하시면 비밀번호 입력창이 자동으로 활성화됩니다.';
+          idHelperText.className = 'text-[11px] pt-0.5 pl-0.5 text-slate-400 transition-colors';
+        }
+      }
+
+      syncSubmitButtonState();
+    }
+
+    const activeBtnClasses = [
+      'text-white', 'bg-gradient-to-r', 'from-blue-600', 'via-blue-500', 'to-indigo-600',
+      'hover:from-blue-500', 'hover:to-indigo-500', 'shadow-btn-glow', 'hover:shadow-lg',
+      'active:scale-[0.98]', 'cursor-pointer'
+    ];
+    const inactiveBtnClasses = [
+      'text-slate-400', 'bg-slate-100', 'shadow-none', 'border', 'border-slate-200', 'cursor-not-allowed'
+    ];
+
+    function syncSubmitButtonState() {
+      if (isSubmitting) return;
+
+      const studentId = studentIdInput.value.trim();
+      const password = passwordInput.value;
+      const { isValidAll } = evaluatePassword(password);
+
+      if (studentId.length === 0) {
+        submitBtn.classList.remove(...activeBtnClasses);
+        submitBtn.classList.add(...inactiveBtnClasses);
+        btnText.innerText = '학번을 입력해주세요';
+        btnArrowIcon.className = 'lucide lucide-arrow-right w-4 h-4 transition-transform duration-200 text-slate-300';
+        btnSpinner.classList.add('hidden');
+      } else if (!isValidAll) {
+        submitBtn.classList.remove(...activeBtnClasses);
+        submitBtn.classList.add(...inactiveBtnClasses);
+        btnText.innerText = '비밀번호를 입력해주세요';
+        btnArrowIcon.className = 'lucide lucide-arrow-right w-4 h-4 transition-transform duration-200 text-slate-300';
+        btnSpinner.classList.add('hidden');
+      } else {
+        submitBtn.classList.remove(...inactiveBtnClasses);
+        submitBtn.classList.add(...activeBtnClasses);
+        btnText.innerText = '로그인하기';
+        btnArrowIcon.className = 'lucide lucide-arrow-right w-4 h-4 transition-transform duration-200 text-white group-hover:translate-x-1';
+        btnSpinner.classList.add('hidden');
+      }
+    }
+
+    if (studentIdInput) {
+      studentIdInput.addEventListener('input', () => {
+        studentIdInput.classList.remove('input-error');
+        syncDrawerState();
+      });
+    }
+
+    if (passwordInput) {
+      passwordInput.addEventListener('input', () => {
+        passwordInput.classList.remove('input-error');
+        updatePasswordValidationUI();
+      });
+    }
+
+    if (passwordToggleBtn && passwordInput) {
+      passwordToggleBtn.addEventListener('click', () => {
+        isPasswordVisible = !isPasswordVisible;
+        passwordInput.type = isPasswordVisible ? 'text' : 'password';
+        toggleEyeIcon.setAttribute('data-lucide', isPasswordVisible ? 'eye-off' : 'eye');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      });
+    }
+
+    // Auto-fill Helpers
+    if (autoFillBtn && studentIdInput) {
+      autoFillBtn.addEventListener('click', () => {
+        studentIdInput.value = '20221340';
+        studentIdInput.classList.remove('input-error');
+        syncDrawerState();
+        showToast('예시 학번이 입력되었습니다 (20221340)');
+        setTimeout(() => {
+          if (passwordInput && !passwordInput.value) passwordInput.focus();
+        }, 200);
+      });
+    }
+
+    if (autoFillPwBtn && passwordInput) {
+      autoFillPwBtn.addEventListener('click', () => {
+        passwordInput.value = 'Baekseok2025!@';
+        passwordInput.classList.remove('input-error');
+        updatePasswordValidationUI();
+        rememberMeCheckbox.checked = true;
+        showToast('안전한 예시 비밀번호가 자동 입력되었습니다.');
+      });
+    }
+
+    // Signup form logic
+    if (signupAutoFillBtn && signupStudentId) {
+      signupAutoFillBtn.addEventListener('click', () => {
+        signupStudentId.value = '20241001';
+        signupPw.value = 'Baekseok2025!@';
+        agreeAllCheckbox.checked = true;
+        showToast('회원가입 예시 데이터가 완성되었습니다 (20241001)');
+      });
+    }
+
+    if (btnVerifyId) {
+      btnVerifyId.addEventListener('click', () => {
+        const idVal = signupStudentId.value.trim();
+        if (!idVal || idVal.length < 4) {
+          showToast('학번 4자리 이상을 먼저 입력해주세요.', true);
+          signupStudentId.focus();
+          return;
+        }
+        btnVerifyId.innerText = '확인 중...';
+        setTimeout(() => {
+          btnVerifyId.innerText = '인증완료 ✓';
+          btnVerifyId.className = 'absolute right-0 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md transition-colors';
+          showToast(`학적 조회 완료: [${idVal}] 정상 재학생입니다.`);
+        }, 500);
+      });
+    }
+
+    function handleSignupSubmit() {
+      if (isSignupSubmitting) return;
+
+      const sid = signupStudentId.value.trim();
+      const spw = signupPw.value;
+      const isAgreed = agreeAllCheckbox.checked;
+
+      if (!sid || sid.length < 4) {
+        showToast('학번을 정확히 입력해주세요.', true);
+        signupStudentId.focus();
+        return;
+      }
+      if (spw.length < 8) {
+        showToast('비밀번호는 8자 이상이어야 합니다.', true);
+        signupPw.focus();
+        return;
+      }
+      if (!isAgreed) {
+        showToast('필수 약관에 동의해주세요.', true);
+        return;
+      }
+
+      isSignupSubmitting = true;
+      signupBtnSpinner.classList.remove('hidden');
+      signupBtnText.innerText = '학적 계정 발급 중...';
+
+      setTimeout(() => {
+        isSignupSubmitting = false;
+        signupBtnSpinner.classList.add('hidden');
+        signupBtnText.innerText = '3초 만에 가입 완료하기';
+
+        showToast('🎉 회원가입 완료! 자동 로그인 화면으로 이동합니다.');
+
+        // Prepopulate login form
+        studentIdInput.value = sid;
+        passwordInput.value = spw;
+        syncDrawerState();
+        updatePasswordValidationUI();
+
+        // Switch back to login
+        setTimeout(() => {
+          setMode('login');
+        }, 800);
+      }, 1000);
+    }
+
+    // Toast alert helper
+    const toast = document.getElementById('statusToast');
+    const toastMsg = document.getElementById('toastMsg');
+    const toastDot = document.getElementById('toastDot');
+    let toastTimeout;
+
+    function showToast(message, isError = false) {
+      if (!toast || !toastMsg) return;
+      toastMsg.innerText = message;
+      toastDot.className = isError ? 'w-2 h-2 rounded-full bg-rose-500 animate-ping' : 'w-2 h-2 rounded-full bg-emerald-500 animate-ping';
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    function triggerShake(element) {
+      element.classList.remove('animate-shake');
+      void element.offsetWidth;
+      element.classList.add('animate-shake');
+      setTimeout(() => element.classList.remove('animate-shake'), 500);
+    }
+
+    // Login Form Submit Action
+    let progressTimer;
+    function handleFormSubmit() {
+      if (isSubmitting) return;
+
+      const studentId = studentIdInput.value.trim();
+      const password = passwordInput.value;
+      const { isValidAll } = evaluatePassword(password);
+
+      if (!studentId || studentId.length < 4) {
+        studentIdInput.classList.add('input-error');
+        triggerShake(studentIdFieldWrapper);
+        studentIdInput.focus();
+        showToast('학번 또는 교번을 정확히 입력해주세요.', true);
+        return;
+      }
+
+      if (!isValidAll) {
+        passwordInput.classList.add('input-error');
+        triggerShake(passwordFieldWrapper);
+        passwordInput.focus();
+        showToast('비밀번호 보안 조건을 모두 충족해주세요 (8자 이상, 영문+숫자, 특수문자).', true);
+        return;
+      }
+
+      isSubmitting = true;
+      btnSpinner.classList.remove('hidden');
+      btnArrowIcon.classList.add('hidden');
+      btnText.innerText = '백석 AI 인증 중...';
+      submitBtn.classList.add('opacity-90', 'cursor-wait');
+
+      setTimeout(() => {
+        isSubmitting = false;
+        btnSpinner.classList.add('hidden');
+        btnArrowIcon.classList.remove('hidden');
+        btnText.innerText = '로그인하기';
+        submitBtn.classList.remove('opacity-90', 'cursor-wait');
+
+        launchSuccessSimulation(studentId);
+      }, 1000);
+    }
+
+    function launchSuccessSimulation(studentId) {
+      if (successCardUserTitle) {
+        successCardUserTitle.innerText = `${studentId} 학우님, 환영합니다!`;
+      }
+      successCard.classList.remove('opacity-0', 'pointer-events-none');
+      successCard.classList.add('opacity-100', 'pointer-events-auto', 'animate-scale-up');
+
+      redirectProgressBar.style.width = '0%';
+      redirectStatusText.innerText = '캠퍼스 대시보드로 이동 중...';
+
+      setTimeout(() => {
+        redirectProgressBar.style.width = '100%';
+      }, 100);
+
+      clearTimeout(progressTimer);
+      progressTimer = setTimeout(() => {
+        redirectStatusText.innerText = '스마트캠퍼스 준비 완료! 이동합니다.';
+        showToast(`${studentId} 학우님 환영합니다! 포털로 안전하게 연결되었습니다.`);
+      }, 2300);
+    }
+
+    function resetSimulation() {
+      clearTimeout(progressTimer);
+      successCard.classList.add('opacity-0', 'pointer-events-none');
+      successCard.classList.remove('opacity-100', 'pointer-events-auto', 'animate-scale-up');
+      redirectProgressBar.style.width = '0%';
+
+      studentIdInput.value = '';
+      passwordInput.value = '';
+      syncDrawerState();
+      updatePasswordValidationUI();
+      showToast('로그인 테스트 상태가 초기화되었습니다.');
+    }
+
+    if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', () => {
+      successCard.classList.add('opacity-0', 'pointer-events-none');
+      successCard.classList.remove('opacity-100', 'pointer-events-auto');
+    });
+
+    if (resetTestBtn) resetTestBtn.addEventListener('click', resetSimulation);
+    if (goDashboardBtn) goDashboardBtn.addEventListener('click', () => {
+      showToast('백석 AI 캠퍼스 메인 대시보드로 이동했습니다.');
+      redirectStatusText.innerText = '메인 화면 진입 완료';
+    });
+
+    // Hash change handler
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#signup') {
+        setMode('signup');
+      } else if (window.location.hash === '#login') {
+        setMode('login');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.location.hash === '#signup') {
+        setMode('signup');
+      } else {
+        setMode('login');
+      }
+      syncDrawerState();
+      updatePasswordValidationUI();
+    });
+  </script>
+  <!-- END: ScriptsSection -->
+
+
+</body>
+
+</html>
