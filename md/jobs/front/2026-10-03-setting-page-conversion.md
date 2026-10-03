@@ -1,0 +1,33 @@
+# 작업 내역
+
+- **작업일**: 2026-10-03
+- **작업 내용**:
+  - `designs/setting.html` 설정 페이지 디자인을 React JSX 컴포넌트로 완벽 변환
+  - 사이트 우측 상단 톱니바퀴 아이콘(`GearSix`) 클릭 시 `/setting` 경로로 이동하도록 `Header.jsx` 연동
+  - 사이트 접속 시 바로 설정 페이지가 노출되도록 기본 경로(`/`), `/setting`, `/settings` 라우트 매핑
+  - 컴포넌트 모듈화 (`SettingSections.jsx`):
+    - `ProfileSettingCard`: 내 프로필 및 학적 정보(직접 입력), 아바타 변경 액션, 전공/학년/학번 정보, 로컬 저장 안내
+    - `AssistantSettingCard`: AI 실시간 푸시 브리핑 토글, 최근 수업 요약 STT 토글, AI 답변 상세도 3단 세그먼트 버튼(간결하게/보통/자세히), TTS 음성 안내 토글
+    - `NotificationSettingCard`: 학사/장학 공지 실시간 알림 토글, 셔틀버스 도착 알림, 강의실 이동 경로 안내
+    - `GeneralAppSettingCard`: 화면 모드 3단 세그먼트(라이트/다크/시스템), 캐시 데이터 삭제(클릭 시 정리 상태 피드백), 약관 및 오픈소스 라이선스, 앱 버전 정보
+    - `SettingAccountActions`: 로그아웃 버튼, 계정 전환 및 회원 탈퇴 링크
+  - 상태 기반 인터랙션:
+    - 토글 스위치(`ToggleSwitch`) 개별 on/off 상태 관리 (`useState`)
+    - 세그먼트 컨트롤 활성화 탭 전환 관리
+    - 캐시 데이터 삭제 시 '정리하기' -> '완료' 2초 안내 시뮬레이션
+  - 공용 `Layout`(`Header`, `Footer`) 상속으로 일관된 백석 AI 디자인 유지 및 안전영역(`safe-area`) 대응
+  - 프로덕션 빌드 성공 검증 (`npm run build`)
+- **사용 API 엔드포인트**:
+  - 현재 없음 (클라이언트 UI 설정 상태 관리)
+- **변경 및 추가 파일**:
+  - `Front/src/components/setting/SettingSections.jsx`
+  - `Front/src/components/setting/SettingSections.css`
+  - `Front/src/pages/SettingPage.jsx`
+  - `Front/src/pages/SettingPage.css`
+  - `Front/src/components/layout/Header/Header.jsx`
+  - `Front/src/App.jsx`
+  - `Front/publish/index.html`
+  - `Front/publish/assets/index-Da0ZJL1g.js`
+  - `Front/publish/assets/index-Fa2ecHja.css`
+  - `md/folder.md`
+  - `md/jobs/front/2026-10-03-setting-page-conversion.md`

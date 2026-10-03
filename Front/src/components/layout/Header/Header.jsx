@@ -31,9 +31,9 @@ export default function Header() {
           <button className="icon-button" type="button" aria-label="알림">
             <Bell size={21} weight="regular" aria-hidden="true" />
           </button>
-          <button className="icon-button" type="button" aria-label="설정">
+          <Link to="/setting" className="icon-button" aria-label="설정">
             <GearSix size={22} weight="regular" aria-hidden="true" />
-          </button>
+          </Link>
         </div>
       </div>
     </header>

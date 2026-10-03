@@ -1,0 +1,182 @@
+<!DOCTYPE html><html class="antialiased" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>백석 AI 비서 - 설정</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+            display: ['Outfit', 'Pretendard', 'sans-serif'],
+          },
+          colors: {
+            baekseok: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#00236f',
+              950: '#0a1028',
+            },
+            canvas: '#f8fafc',
+            surface: {
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+              slate: '#0f172a',
+            }
+          },
+          boxShadow: {
+            'card': '0 4px 20px rgba(0, 0, 0, 0.03)',
+            'float': '0 12px 36px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+            'glow-blue': '0 0 24px -4px rgba(37, 99, 235, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      overscroll-behavior-y: none;
+    }
+    .supanova-transition {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .safe-top {
+      padding-top: max(env(safe-area-inset-top, 0px), 12px);
+    }
+    .safe-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-[100dvh] flex flex-col relative overflow-x-hidden selection:bg-baekseok-600 selection:text-white">
+<!-- Atmospheric Background Aura matching SCREEN_9 -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-20 -right-10 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/3 -left-20 w-80 h-80 rounded-full bg-indigo-300/10 blur-3xl pointer-events-none"></div>
+</div>
+<!-- Header Section identical to SCREEN_9 -->
+<header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/70 safe-top supanova-transition"><div class="max-w-[440px] mx-auto px-4 h-12 flex items-center justify-between"><div class="flex items-center gap-1.5"><button aria-label="뒤로가기" class="w-9 h-9 -ml-2 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors" type="button"><iconify-icon class="text-[24px]" icon="solar:alt-arrow-left-linear"></iconify-icon></button><div class="flex items-center gap-2"><img alt="BU 로고" class="w-7 h-7 rounded-full object-cover shadow-sm shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdx89y2gUMz5l0l_Dg3zGyaKLprwXytIjhqq_YMMuPqhfMq2DUMgKxUykR1yjt6BVEEZJ3DkLoX7FkMfmgjmzYEbKn1lfrvgeCDpEkGe90LCyAvtLKYUhwJ2hRqc7E84p7G16JPhnld8gHge3pJ-KVGc4AUpCrfqREezkPo75_DgP1twj4DqBZrMTjinnULXuNULQzLfxnDZ1r8ie8BKaiTYXjG7sOR5Uixc73dRmfVNkjSmqDpYd0Nc4qb7ffU9LzmSA"><span class="font-display font-extrabold text-[17px] text-slate-900 tracking-tight">백석 AI</span></div></div><div class="flex items-center gap-1"><button aria-label="알림" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 transition-colors" type="button"><iconify-icon class="text-[20px]" icon="solar:bell-linear"></iconify-icon></button></div></div></header>
+<!-- Main Scrollable Body -->
+<main class="flex-1 w-full max-w-[440px] mx-auto px-4 pt-3 pb-32 z-10 flex flex-col gap-4"><div class="flex items-center justify-between pt-1 pb-0.5 px-0.5"><h1 class="text-[23px] font-bold text-slate-900 tracking-tight break-keep-all">설정</h1></div><section class="flex flex-col gap-1.5">
+  <div class="flex items-center justify-between px-1">
+    <span class="text-[11px] font-semibold text-slate-500 tracking-tight">내 프로필 및 학적 정보 (직접 입력)</span>
+    <span class="inline-flex items-center gap-1 text-[10px] font-medium text-baekseok-700 bg-blue-50 px-1.5 py-0.5 rounded-full">
+      <iconify-icon class="text-[12px]" icon="solar:shield-check-bold"></iconify-icon>
+      로컬 저장
+    </span>
+  </div>
+  <div class="bg-white border border-slate-100 rounded-3xl shadow-card overflow-hidden divide-y divide-slate-100">
+    <!-- Profile Details & Avatar with Photo Change Action -->
+    <div class="p-4 flex items-start justify-between gap-3">
+      <div class="flex items-start gap-3.5 min-w-0 flex-1">
+        <div class="relative shrink-0">
+          <div class="w-14 h-14 rounded-full overflow-hidden bg-slate-100 ring-2 ring-blue-100">
+            <img alt="홍길동 학우" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7bq76F-IIQaZYUY_LwRfTT1W2ZGsFo7RTz-bWTsLD_dit8j15K9_GTK06hVhaBububojMzrdVnugQTlbeM7IWlmT2XrsFvyeA_H9N8LVaxMkjCcu0Jtcj2jazG3btt75lV4jg0a_QQK1_WPHexjTKohS6lwzk1jXKzTqUBjAUQr0OMincgu6kCv4K3mSxqVqAZzYDuUmaucu725bSz7Lva7DOZlmVA63jOqLnYIj7x7V9LYroa890mA">
+          </div>
+          <button aria-label="프로필 사진 변경" class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-baekseok-600 hover:bg-baekseok-700 text-white flex items-center justify-center ring-2 ring-white shadow-xs transition-colors cursor-pointer" type="button">
+            <iconify-icon class="text-[13px]" icon="solar:camera-bold"></iconify-icon>
+          </button>
+        </div>
+        <div class="flex flex-col min-w-0 flex-1">
+          <div class="flex items-center gap-1.5 mb-1">
+            <span class="text-[15px] font-bold text-slate-900 truncate">홍길동 학우</span>
+            <span class="px-1.5 py-0.5 rounded bg-blue-50 text-baekseok-700 text-[10px] font-bold shrink-0">학부생</span>
+          </div>
+          <div class="flex flex-col gap-0.5 text-xs text-slate-600">
+            <div class="flex items-center gap-1.5 truncate">
+              <span class="text-slate-400 text-[11px] shrink-0">전공</span>
+              <span class="font-medium text-slate-800 truncate">컴퓨터공학부 (소프트웨어학)</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-slate-500">
+              <span class="">학년: <strong class="font-semibold text-slate-700">3학년</strong></span>
+              <span class="">·</span>
+              <span class="">학번: <strong class="font-semibold text-slate-700">20221340</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="shrink-0 px-2.5 py-1 text-xs font-semibold text-baekseok-600 hover:text-baekseok-700 hover:bg-blue-50 rounded-lg transition-colors border border-blue-100 flex items-center gap-1" type="button">
+        <iconify-icon class="text-[14px]" icon="solar:pen-new-square-linear"></iconify-icon>
+        <span class="">정보 변경</span>
+      </button>
+    </div>
+    <!-- 학적 정보 직접 수정 & 로컬 저장 안내 -->
+    <a class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors group" href="#">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0">
+          <iconify-icon class="text-[18px]" icon="solar:user-id-bold"></iconify-icon>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-slate-900">학적 정보 직접 수정</span>
+            <span class="text-[10px] font-medium text-slate-400">(전공, 학년, 학번, 관심분야)</span>
+          </div>
+          <span class="text-[11px] text-slate-400 break-keep-all mt-0.5">학교 포털 연동 없이 기기에 안전하게 직접 저장됩니다</span>
+        </div>
+      </div>
+      <iconify-icon class="text-[18px] text-slate-400 group-hover:text-slate-700 transition-colors shrink-0" icon="solar:alt-arrow-right-linear"></iconify-icon>
+    </a>
+  </div>
+</section><section class="flex flex-col gap-1.5"><span class="text-[11px] font-semibold text-slate-500 px-1 tracking-tight">AI 비서 맞춤 설정</span><div class="bg-white border border-slate-100 rounded-3xl shadow-card overflow-hidden divide-y divide-slate-100"><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:bell-bing-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">AI 실시간 푸시 브리핑</span><span class="text-[11px] text-slate-400">다음 수업 30분 전 강의실 및 과제 요약</span></div></div><div class="relative inline-flex items-center cursor-pointer shrink-0"><input checked="" class="sr-only peer" type="checkbox"><div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-baekseok-600"></div></div></div><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:clock-circle-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">최근 수업 요약 서비스</span><span class="text-[11px] text-slate-400">수업 시작시 자동으로 STT 서비스 활성화</span></div></div><div class="relative inline-flex items-center cursor-pointer shrink-0"><input checked="" class="sr-only peer" type="checkbox"><div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-baekseok-600"></div></div></div><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:notes-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">AI 답변 상세도 설정</span><span class="text-[11px] text-slate-400">답변 분량 및 요약 밀도 조절</span></div></div><div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0"><button class="px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 rounded-lg" type="button">간결하게</button><button class="px-2 py-1 text-[11px] font-bold text-baekseok-700 bg-white rounded-lg shadow-xs" type="button">보통</button><button class="px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 rounded-lg" type="button">자세히</button></div></div><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:volume-loud-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">음성 안내 (TTS) 사용</span><span class="text-[11px] text-slate-400">답변 결과 음성 동시 낭독</span></div></div><div class="relative inline-flex items-center cursor-pointer shrink-0"><input class="sr-only peer" type="checkbox"><div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-baekseok-600"></div></div></div></div></section><section class="flex flex-col gap-1.5"><span class="text-[11px] font-semibold text-slate-500 px-1 tracking-tight">알림 및 캠퍼스 데이터</span><div class="bg-white border border-slate-100 rounded-3xl shadow-card overflow-hidden divide-y divide-slate-100"><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:chat-round-dots-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">학사 / 장학 공지 실시간 알림</span><span class="text-[11px] text-slate-400">컴공 학부 및 전교 장학 속보</span></div></div><div class="relative inline-flex items-center cursor-pointer shrink-0"><input checked="" class="sr-only peer" type="checkbox"><div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-baekseok-600"></div></div></div><a class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors group" href="#"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:bus-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">셔틀버스 도착 알림</span><span class="text-[11px] text-slate-400">즐겨찾기: 천안역 ↔ 백석대 순환 노선</span></div></div><div class="flex items-center gap-1.5 shrink-0"><span class="text-xs font-semibold text-baekseok-700">천안역 노선</span><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors" icon="solar:alt-arrow-right-linear"></iconify-icon></div></a><a class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors group" href="#"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:routing-2-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">강의실 이동 경로 안내</span><span class="text-[11px] text-slate-400">진리관 엘리베이터 혼잡 알림 포함</span></div></div><div class="flex items-center gap-1.5 shrink-0"><span class="text-xs font-medium text-slate-500">자동 길안내</span><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors" icon="solar:alt-arrow-right-linear"></iconify-icon></div></a></div></section><section class="flex flex-col gap-1.5"><span class="text-[11px] font-semibold text-slate-500 px-1 tracking-tight">일반 및 앱 정보</span><div class="bg-white border border-slate-100 rounded-3xl shadow-card overflow-hidden divide-y divide-slate-100"><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:sun-2-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">화면 모드</span><span class="text-[11px] text-slate-400">다크 모드 및 테마</span></div></div><div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0"><button class="px-2 py-1 text-[11px] font-bold text-baekseok-700 bg-white rounded-lg shadow-xs" type="button">라이트</button><button class="px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 rounded-lg" type="button">다크</button><button class="px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 rounded-lg" type="button">시스템</button></div></div><button class="w-full p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors text-left group" type="button"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:trash-bin-trash-bold"></iconify-icon></div><div class="flex flex-col min-w-0"><span class="text-xs font-bold text-slate-900">캐시 데이터 삭제</span><span class="text-[11px] text-slate-400">현재 임시 파일 용량 42.8 MB</span></div></div><span class="text-xs font-semibold text-baekseok-600 group-hover:text-baekseok-800">정리하기</span></button><a class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors group" href="#"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:shield-check-bold"></iconify-icon></div><span class="text-xs font-bold text-slate-900">이용약관 및 개인정보 처리방침</span></div><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors shrink-0" icon="solar:alt-arrow-right-linear"></iconify-icon></a><a class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 transition-colors group" href="#"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:code-file-bold"></iconify-icon></div><span class="text-xs font-bold text-slate-900">오픈소스 라이선스</span></div><iconify-icon class="text-[16px] text-slate-400 group-hover:text-slate-700 transition-colors shrink-0" icon="solar:alt-arrow-right-linear"></iconify-icon></a><div class="p-3.5 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><div class="w-8 h-8 rounded-xl bg-blue-50 text-baekseok-700 flex items-center justify-center shrink-0"><iconify-icon class="text-[18px]" icon="solar:info-circle-bold"></iconify-icon></div><span class="text-xs font-bold text-slate-900">앱 버전 정보</span></div><span class="font-display text-xs font-semibold text-slate-400">v2.4.1 (최신 버전)</span></div></div></section><div class="flex flex-col gap-2 pt-2 px-1"><button class="w-full py-3 rounded-2xl bg-white border border-slate-200/80 hover:bg-slate-50 text-rose-500 font-bold text-xs tracking-tight transition-colors shadow-xs" type="button">로그아웃</button><div class="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1"><button class="hover:text-slate-600 transition-colors" type="button">계정 전환</button><span class="">·</span><button class="hover:text-rose-500 transition-colors" type="button">회원 탈퇴</button></div></div></main>
+<!-- Floating Glass Bottom Navigation identical to SCREEN_9 (MY Active) -->
+<aside class="fixed bottom-3 inset-x-0 z-40 px-4 pointer-events-none safe-bottom">
+<div class="max-w-[420px] mx-auto pointer-events-auto">
+<nav class="bg-white/90 backdrop-blur-xl border border-slate-100 ring-1 ring-black/10 shadow-float rounded-full px-2 py-1.5 flex items-center justify-between" style="white-space: nowrap;">
+<!-- Tab 1: 홈 (비활성) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[24px]" icon="solar:home-2-linear"></iconify-icon>
+<span class="text-[10px]">홈</span>
+</a>
+<!-- Tab 2: 일정 (비활성) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[24px]" icon="solar:calendar-linear"></iconify-icon>
+<span class="text-[10px]">일정</span>
+</a>
+<!-- Tab 3: Center AI Assistant FAB (중앙 플로팅 버튼 구조 완벽 일치) -->
+<button aria-label="AI 비서 실행" class="flex-1 min-h-[44px] flex flex-col items-center justify-center -mt-3.5 group supanova-transition relative focus:outline-none" type="button">
+<div class="relative w-12 h-12 rounded-full bg-gradient-to-tr from-baekseok-800 via-baekseok-700 to-baekseok-500 text-white flex items-center justify-center shadow-glow-blue ring-4 ring-white group-hover:scale-105 active:scale-95 transition-transform duration-200">
+<iconify-icon class="text-[23px]" icon="solar:stars-minimalistic-bold"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold text-slate-900 mt-0.5 tracking-tight">AI 비서</span>
+</button>
+<!-- Tab 4: 캠퍼스 (비활성) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-500 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[24px]" icon="solar:compass-linear"></iconify-icon>
+<span class="text-[10px]">캠퍼스</span>
+</a>
+<!-- Tab 5: MY (Active State) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-900 font-bold group supanova-transition" href="#"><div class="relative"><iconify-icon class="text-[24px]" icon="solar:settings-bold"></iconify-icon></div><span class="text-[10px] font-bold">설정</span></a>
+</nav>
+</div>
+</aside>
+
+
+
+
+
+
+</body></html>

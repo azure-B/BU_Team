@@ -1,0 +1,30 @@
+.setting-container {
+  display: flex;
+  width: min(100%, var(--content-width));
+  min-height: calc(100dvh - var(--header-height));
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 14px 112px;
+  margin: 0 auto;
+}
+
+.setting-header {
+  padding: 2px 2px 0;
+}
+
+.setting-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+@media (min-width: 720px) {
+  .setting-container {
+    padding-top: 22px;
+    padding-bottom: 128px;
+  }
+}

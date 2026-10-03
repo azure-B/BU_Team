@@ -115,7 +115,7 @@ export default function Footer() {
   const location = useLocation()
   const path = (location.pathname || '').toLowerCase()
   const isHomeActive = path === '/home' || path === '/dashboard'
-  const isMyPageActive = path === '/' || path === '/mypage'
+  const isMyPageActive = path === '/mypage'
 
   return (
     <>

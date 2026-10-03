@@ -1,0 +1,428 @@
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-group__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.setting-group__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-muted);
+  letter-spacing: -0.01em;
+}
+
+.setting-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.setting-card {
+  overflow: hidden;
+}
+
+.setting-card > * + * {
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+}
+
+/* 프로필 블록 */
+.profile-setting {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 14px;
+}
+
+.profile-setting__avatar-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-surface-subtle);
+  border: 2px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+.profile-setting__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-setting__cam-btn {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #ffffff;
+  cursor: pointer;
+  background: var(--color-primary);
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(15 23 42 / 0.16);
+  place-items: center;
+  transition: transform var(--transition), background var(--transition);
+}
+
+.profile-setting__cam-btn:hover {
+  background: #1e40af;
+  transform: scale(1.05);
+}
+
+.profile-setting__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-setting__name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-setting__name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.setting-role-badge {
+  padding: 1.5px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.profile-setting__details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.profile-setting__detail-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.profile-setting__detail-label {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+.profile-setting__detail-value {
+  color: var(--color-text);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-setting__meta-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.profile-setting__meta-line strong {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.setting-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--color-primary);
+  background: var(--color-surface-subtle);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.setting-edit-btn:hover {
+  background: var(--color-primary-soft);
+}
+
+/* 리스트 행 */
+.setting-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.setting-list-row--interactive {
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.setting-list-row--interactive:hover {
+  background: var(--color-surface-subtle);
+}
+
+.setting-list-row__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.setting-row-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: 10px;
+  place-items: center;
+}
+
+.setting-list-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.setting-list-row__title-line {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.setting-row-title {
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.setting-row-subtext {
+  font-size: 10px;
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.setting-row-desc {
+  font-size: 10px;
+  color: var(--color-muted);
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.setting-list-row__right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.setting-row-arrow {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+.setting-row-action-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.setting-row-badge-soft {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.setting-row-action-link {
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--color-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.setting-version-label {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--color-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 토글 스위치 */
+.setting-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  padding: 2px;
+  cursor: pointer;
+  background: var(--color-border);
+  border: 0;
+  border-radius: 999px;
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+
+.setting-toggle--checked {
+  background: var(--color-primary);
+}
+
+.setting-toggle__thumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+  transition: transform var(--transition);
+}
+
+.setting-toggle--checked .setting-toggle__thumb {
+  transform: translateX(20px);
+}
+
+/* 세그먼트 컨트롤 */
+.setting-segmented-control {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--color-surface-subtle);
+  border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+  border-radius: 10px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.setting-segment-btn {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--color-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  white-space: nowrap;
+  transition: color var(--transition), background var(--transition);
+}
+
+.setting-segment-btn--active {
+  font-weight: 800;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.08);
+}
+
+/* 계정 액션 */
+.setting-account-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 2px 2px;
+}
+
+.setting-logout-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--color-danger);
+  cursor: pointer;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-card);
+  transition: background var(--transition), transform var(--transition);
+}
+
+.setting-logout-btn:active {
+  transform: scale(0.98);
+}
+
+.setting-sub-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 4px;
+  font-size: 11px;
+}
+
+.setting-sub-link {
+  padding: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  transition: color var(--transition);
+}
+
+.setting-sub-link:hover {
+  color: var(--color-text);
+}
+
+.setting-sub-link--danger:hover {
+  color: var(--color-danger);
+}
+
+.setting-sub-divider {
+  color: var(--color-border);
+}
