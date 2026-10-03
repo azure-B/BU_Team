@@ -85,7 +85,13 @@
   display: flex;
   align-items: center;
   min-width: 0;
+  flex: 1;
   gap: 10px;
+}
+
+.next-class__date > div {
+  min-width: 0;
+  flex: 1;
 }
 
 .next-class__spark {
@@ -106,9 +112,18 @@
 }
 
 .next-class__date p {
+  display: flex;
+  gap: 4px;
   overflow: hidden;
   font-size: 12px;
   font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.next-class__date p span {
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -122,7 +137,10 @@
 .next-class__date small {
   display: block;
   margin-top: 2px;
+  overflow: hidden;
   font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .status-chip {
@@ -210,6 +228,7 @@
 }
 
 .location-line span {
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -605,11 +624,6 @@
 }
 
 @media (max-width: 380px) {
-  .next-class__date p span,
-  .location-line span {
-    display: none;
-  }
-
   .next-class__title-row > strong {
     font-size: 15px;
   }
