@@ -1,0 +1,31 @@
+# 작업 내역
+
+- **작업일**: 2026-10-03
+- **작업 내용**:
+  - `designs/myPage.html` 마이페이지 디자인을 React JSX 컴포넌트로 완벽 변환
+  - 메인페이지와 동일한 공용 `Layout`(`Header`, `Footer`) 재사용 및 중복 마크업 제거
+  - 컴포넌트 모듈화:
+    - `ProfileSummaryCard`: 학적 기본 정보, 프로필 아바타, 3분할 통계 리본(AI 동행, 학기 질문, 요약 노트)
+    - `AcademicPerformanceCard`: 신청 학점, 누적 평점(GPA) 2열 그리드 및 백석인증 졸업요건 충족률 게이지 바
+    - `ActivityArchiveCard`: 시간표 등록, 수강 과목/과제 관리, 성적 관리 리스트
+    - `IntegrationUtilityCard`: 직접 입력 관리 배너 및 앱 버전, 약관, 계정 전환/로그아웃 유틸리티
+  - 하단 네비게이션 연동 및 접속 첫 화면 처리:
+    - 하단 네비게이션 5번 탭 **[사람 프로필 아이콘 + 'MY']**을 `/mypage` 라우트로 연결
+    - `useLocation` 기반 현재 경로(`pathname`) 감지로 홈/MY 탭 활성(`bottom-nav__item--active`) 자동 전환
+    - 사이트 접속 시 바로 마이페이지가 나타나도록 기본 경로(`/`) 및 `/mypage` 매핑 (`/home`, `/dashboard`로 대시보드 진입)
+  - 다크모드, 반응형 레이아웃, WAI-ARIA 프로그레스바 및 Phosphor Icons 아이콘 시스템 적용
+  - 프로덕션 빌드 성공 검증 (`npm run build`)
+- **사용 API 엔드포인트**:
+  - 현재 없음 (클라이언트 정적/로컬 데이터 UI 단계)
+- **변경 및 추가 파일**:
+  - `Front/src/components/mypage/MyPageSections.jsx`
+  - `Front/src/components/mypage/MyPageSections.css`
+  - `Front/src/pages/MyPage.jsx`
+  - `Front/src/pages/MyPage.css`
+  - `Front/src/components/layout/Footer/Footer.jsx`
+  - `Front/src/App.jsx`
+  - `Front/publish/index.html`
+  - `Front/publish/assets/index-BOuvIczI.js`
+  - `Front/publish/assets/index-FzTDOOQp.css`
+  - `md/folder.md`
+  - `md/jobs/front/2026-10-03-mypage-conversion.md`

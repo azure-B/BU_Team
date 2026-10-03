@@ -19,6 +19,11 @@ asdasd/
 │
 ├── Front/                       — React + Vite 클라이언트
 │   ├── designs/                 — 원본 HTML 보관소 (JSX 변환 참고용)
+│   │   ├── dashboard.html
+│   │   ├── myPage.html
+│   │   ├── sample.html
+│   │   ├── sample2.html
+│   │   └── README.md
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
@@ -26,7 +31,10 @@ asdasd/
 │   │   ├── components/
 │   │   │   ├── common/
 │   │   │   │   ├── Button/      — Button.jsx, Button.css, index.js
-│   │   │   │   └── Card/        — Card.jsx, Card.css, index.js
+│   │   │   │   ├── Card/        — Card.jsx, Card.css, index.js
+│   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
+│   │   │   ├── dashboard/       — DashboardSections.jsx, DashboardSections.css
+│   │   │   ├── mypage/          — MyPageSections.jsx, MyPageSections.css
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js
 │   │   │       ├── Footer/      — Footer.jsx, Footer.css, index.js
@@ -35,6 +43,9 @@ asdasd/
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── HomePage.css
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── MyPage.jsx
+│   │   │   ├── MyPage.css
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)

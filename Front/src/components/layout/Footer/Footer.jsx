@@ -14,7 +14,7 @@ import {
   X,
 } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import './Footer.css'
 
 const QUICK_QUESTIONS = [
@@ -112,13 +112,20 @@ function AssistantSheet({ open, onClose }) {
 
 export default function Footer() {
   const [assistantOpen, setAssistantOpen] = useState(false)
+  const location = useLocation()
+  const isHomeActive = location.pathname === '/home' || location.pathname === '/dashboard'
+  const isMyPageActive = location.pathname === '/' || location.pathname === '/mypage'
 
   return (
     <>
       <footer className="app-footer">
         <nav className="bottom-nav" aria-label="주요 메뉴">
-          <Link className="bottom-nav__item bottom-nav__item--active" to="/">
-            <House size={24} weight="fill" aria-hidden="true" /><span>홈</span>
+          <Link
+            className={`bottom-nav__item ${isHomeActive ? 'bottom-nav__item--active' : ''}`}
+            to="/home"
+          >
+            <House size={24} weight={isHomeActive ? 'fill' : 'regular'} aria-hidden="true" />
+            <span>홈</span>
           </Link>
           <button className="bottom-nav__item" type="button">
             <CalendarBlank size={24} aria-hidden="true" /><span>일정</span>
@@ -136,9 +143,13 @@ export default function Footer() {
           <button className="bottom-nav__item" type="button">
             <Compass size={24} aria-hidden="true" /><span>캠퍼스</span>
           </button>
-          <button className="bottom-nav__item" type="button">
-            <UserCircle size={24} aria-hidden="true" /><span>MY</span>
-          </button>
+          <Link
+            className={`bottom-nav__item ${isMyPageActive ? 'bottom-nav__item--active' : ''}`}
+            to="/mypage"
+          >
+            <UserCircle size={24} weight={isMyPageActive ? 'fill' : 'regular'} aria-hidden="true" />
+            <span>MY</span>
+          </Link>
         </nav>
       </footer>
       <AssistantSheet open={assistantOpen} onClose={() => setAssistantOpen(false)} />
