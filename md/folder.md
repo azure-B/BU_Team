@@ -19,12 +19,14 @@ asdasd/
 │
 ├── Front/                       — React + Vite 클라이언트
 │   ├── designs/                 — 원본 HTML 보관소 (JSX 변환 참고용)
-│   │   ├── dashboard.html
-│   │   ├── myPage.html
-│   │   ├── sample.html
-│   │   ├── sample2.html
-│   │   ├── setting.html
-│   │   └── README.md
+│   │   ├── dashboard.html       — 메인 대시보드 원본
+│   │   ├── mypage.html          — 마이페이지 원본
+│   │   ├── README.md            — 디자인 원본 안내
+│   │   ├── sample.html          — 참고용 샘플
+│   │   ├── sample2.html         — 참고용 샘플 2
+│   │   ├── schedule-monthly.html — 월간 일정 원본
+│   │   ├── schedule-weekly.html  — 주간 시간표 원본
+│   │   └── setting.html         — 설정 페이지 원본
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
@@ -36,6 +38,7 @@ asdasd/
 │   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
 │   │   │   ├── dashboard/       — DashboardSections.jsx, DashboardSections.css
 │   │   │   ├── mypage/          — MyPageSections.jsx, MyPageSections.css
+│   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js
 │   │   │   ├── setting/         — SettingSections.jsx, SettingSections.css
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js
@@ -48,6 +51,10 @@ asdasd/
 │   │   │   ├── LoginPage.jsx
 │   │   │   ├── MyPage.jsx
 │   │   │   ├── MyPage.css
+│   │   │   ├── SchedulePage.jsx  — 일정 진입·보기 전환·일정 추가
+│   │   │   ├── SchedulePage.css  — 메인 디자인 토큰 기반 일정 공통 스타일
+│   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
+│   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 연계 일정
 │   │   │   ├── SettingPage.jsx
 │   │   │   ├── SettingPage.css
 │   │   │   └── NotFoundPage.jsx

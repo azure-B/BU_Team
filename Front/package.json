@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:schedule": "node --test src/components/schedule/scheduleModel.test.js"
   },
   "devDependencies": {
     "typescript": "~6.0.2",

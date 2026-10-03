@@ -15,6 +15,7 @@ import {
 } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { useSchedule } from '../../schedule/ScheduleContext'
 import './Footer.css'
 
 const QUICK_QUESTIONS = [
@@ -114,23 +115,31 @@ export default function Footer() {
   const [assistantOpen, setAssistantOpen] = useState(false)
   const location = useLocation()
   const path = (location.pathname || '').toLowerCase()
-  const isHomeActive = path === '/home' || path === '/dashboard'
-  const isMyPageActive = path === '/mypage'
+  const { state } = useSchedule()
+  const isHome = path === '/' || path === '/home' || path === '/dashboard'
+  const isSchedule = path === '/schedule' || path.startsWith('/schedule')
+  const isMyPage = path === '/mypage'
 
   return (
     <>
       <footer className="app-footer">
         <nav className="bottom-nav" aria-label="주요 메뉴">
           <Link
-            className={`bottom-nav__item ${isHomeActive ? 'bottom-nav__item--active' : ''}`}
-            to="/home"
+            className={`bottom-nav__item ${isHome ? 'bottom-nav__item--active' : ''}`}
+            to="/"
+            aria-current={isHome ? 'page' : undefined}
           >
-            <House size={24} weight={isHomeActive ? 'fill' : 'regular'} aria-hidden="true" />
+            <House size={24} weight={isHome ? 'fill' : 'regular'} aria-hidden="true" />
             <span>홈</span>
           </Link>
-          <button className="bottom-nav__item" type="button">
-            <CalendarBlank size={24} aria-hidden="true" /><span>일정</span>
-          </button>
+          <Link
+            className={`bottom-nav__item ${isSchedule ? 'bottom-nav__item--active' : ''}`}
+            to={`/schedule/${state?.view || 'weekly'}`}
+            aria-current={isSchedule ? 'page' : undefined}
+          >
+            <CalendarBlank size={24} weight={isSchedule ? 'fill' : 'regular'} aria-hidden="true" />
+            <span>일정</span>
+          </Link>
           <button
             className="bottom-nav__assistant"
             type="button"
@@ -145,10 +154,11 @@ export default function Footer() {
             <Compass size={24} aria-hidden="true" /><span>캠퍼스</span>
           </button>
           <Link
-            className={`bottom-nav__item ${isMyPageActive ? 'bottom-nav__item--active' : ''}`}
+            className={`bottom-nav__item ${isMyPage ? 'bottom-nav__item--active' : ''}`}
             to="/mypage"
+            aria-current={isMyPage ? 'page' : undefined}
           >
-            <UserCircle size={24} weight={isMyPageActive ? 'fill' : 'regular'} aria-hidden="true" />
+            <UserCircle size={24} weight={isMyPage ? 'fill' : 'regular'} aria-hidden="true" />
             <span>MY</span>
           </Link>
         </nav>

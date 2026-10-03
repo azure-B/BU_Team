@@ -1,0 +1,349 @@
+<!DOCTYPE html><html class="antialiased" lang="ko" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>백석 AI 비서 일정 (월간 캘린더 - 390px 모바일)</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+            display: ['Outfit', 'Pretendard', 'sans-serif'],
+          },
+          colors: {
+            baekseok: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#00236f',
+              950: '#0a1028',
+            },
+            canvas: '#f8fafc',
+            surface: {
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+              slate: '#0f172a',
+            }
+          },
+          boxShadow: {
+            'bezel': '0 0 0 1px rgba(15, 23, 42, 0.05), 0 2px 8px -2px rgba(15, 23, 42, 0.04)',
+            'float': '0 12px 36px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+            'glow-blue': '0 0 24px -4px rgba(37, 99, 235, 0.45)',
+            'inner-subtle': 'inset 0 1px 1px rgba(255, 255, 255, 0.9)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      overscroll-behavior-y: none;
+    }
+    .supanova-transition {
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .safe-top {
+      padding-top: max(env(safe-area-inset-top, 0px), 12px);
+    }
+    .safe-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-[100dvh] w-full flex flex-col relative overflow-x-hidden selection:bg-baekseok-600 selection:text-white">
+<!-- Atmospheric Background Aura -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden w-full">
+<div class="absolute -top-24 -left-20 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl"></div>
+<div class="absolute top-1/3 -right-24 w-72 h-72 rounded-full bg-indigo-300/10 blur-3xl"></div>
+</div>
+<!-- Header Section -->
+<header class="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200/70 safe-top supanova-transition">
+<div class="w-full px-4 h-12 flex items-center justify-between">
+<!-- 좌측 로고 및 학기 정보 -->
+<div class="flex items-center gap-2">
+<img alt="BU 로고" class="w-8 h-8 rounded-full shadow-sm object-cover shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl7zmFVcnDxJF-e_2L7laUQa0_7-TADw8fDEqMy5ncoOcGSbQZECxEsRdCWFkDdYogK6tUvYPxc6i6CMRR-S2vF0cHOcFIxeKXJdDzdhERo_zRDFBNvxqUGz6VtVxWQuckAeIyka0zte5TFarXvU0TiNWpMDrlT14rp4psP4kx-iKvbi3OJrVlAkPHmV74GVlLCjCmUPO1cypGYKtzp_tgMCrKkl7hgR5zrlbWyPXfZ_IZk0MzN9ZanLS7IwfCPJyVNhQ">
+<div class="flex flex-col">
+<span class="font-display font-extrabold text-[17px] text-slate-900 tracking-tight leading-tight">백석 AI 캘린더</span>
+<span class="text-[10px] text-baekseok-700 font-semibold">2026학년도 2학기</span>
+</div>
+</div>
+<!-- 우측 상단: [주간 시간표로 보기] 전환 토글 + [+] 등록 버튼 -->
+
+</div>
+</header>
+<!-- Main Scrollable Body -->
+<main class="flex-1 w-full px-3.5 pt-3 pb-28 z-10 flex flex-col gap-3">
+<!-- 월 선택 헤더 및 학기 요약 바 -->
+<div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center supanova-transition"><iconify-icon icon="solar:alt-arrow-left-linear"></iconify-icon></button>
+<div class="flex items-baseline gap-1">
+<span class="font-display font-extrabold text-base text-slate-900 tracking-tight">2026.09</span>
+
+</div>
+<button class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center supanova-transition"><iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon></button>
+</div>
+<div class="flex items-center gap-2"><button aria-label="일정 추가" class="w-7 h-7 rounded-lg bg-baekseok-600 text-white flex items-center justify-center active:scale-95 supanova-transition shadow-sm" type="button"><iconify-icon class="text-[17px] text-white" icon="solar:add-circle-bold"></iconify-icon></button><button aria-label="주간 시간표로 보기" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center active:scale-95 supanova-transition" type="button"><iconify-icon class="text-[17px]" icon="solar:clock-circle-bold"></iconify-icon></button></div>
+</div>
+<!-- 월간 캘린더 메인 컨테이너 (에타식 시간표 및 일반 일정 통합) -->
+<article class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col p-3">
+<!-- 요일 헤더 (일 ~ 토) -->
+<div class="grid grid-cols-7 text-center font-display text-[11px] font-bold text-slate-400 pb-2 border-b border-slate-100">
+<span class="text-rose-500">SUN</span>
+<span class="">MON</span>
+<span class="">TUE</span>
+<span class="">WED</span>
+<span class="">THU</span>
+<span class="">FRI</span>
+<span class="text-baekseok-600">SAT</span>
+</div>
+<!-- 7x5 월간 날짜 그리드 -->
+<div class="grid grid-cols-7 divide-y divide-slate-100 border-b border-slate-100">
+<!-- Week 1 (8/30 ~ 9/5) -->
+<div class="min-h-[58px] p-1 flex flex-col items-center opacity-40"><span class="text-[11px] font-display text-slate-400">30</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center opacity-40"><span class="text-[11px] font-display text-slate-400">31</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">1</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1" title="개강일"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">2</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">3</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">4</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">5</span>
+</div>
+<!-- Week 2 (9/6 ~ 9/12) -->
+<div class="min-h-[58px] p-1 flex flex-col items-center"><span class="text-[11px] font-display font-medium text-rose-500">6</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">7</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">8</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">9</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">10</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">11</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center"><span class="text-[11px] font-display font-medium text-slate-700">12</span></div>
+<!-- Week 3 (9/13 ~ 9/19: 현재 주간) -->
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-rose-500">13</span>
+<div class="flex gap-0.5 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span></div>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">14</span>
+<span class="w-full h-1 rounded-full bg-baekseok-300 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">15</span>
+<span class="w-full h-1 rounded-full bg-baekseok-300 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">16</span>
+<span class="w-full h-1 rounded-full bg-baekseok-300 mt-1"></span>
+</div>
+<!-- TODAY: 17일 목요일 (선택 및 하이라이트) -->
+<div class="min-h-[58px] p-1 flex flex-col items-center bg-baekseok-50 rounded-xl ring-2 ring-baekseok-600/30">
+<span class="w-5 h-5 rounded-full bg-baekseok-600 text-white font-display font-bold text-[11px] flex items-center justify-center shadow-sm">17</span>
+<span class="w-full h-1 rounded-full bg-baekseok-600 mt-0.5"></span>
+<div class="flex gap-0.5 mt-1">
+<span class="w-1 h-1 rounded-full bg-rose-500"></span>
+<span class="w-1 h-1 rounded-full bg-purple-500"></span>
+</div>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">18</span>
+<span class="w-full h-1 rounded-full bg-baekseok-300 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center"><span class="text-[11px] font-display font-medium text-baekseok-600">19</span></div>
+<!-- Week 4 (9/20 ~ 9/26: 미래 일정 등록 주간) -->
+<div class="min-h-[58px] p-1 flex flex-col items-center"><span class="text-[11px] font-display font-medium text-rose-500">20</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">21</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">22</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+<!-- D-5 백석드림 장학금 신청 마감 도트 -->
+<div class="flex gap-0.5 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span></div>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">23</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">24</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+<!-- D-7 중간고사 대비 스터디 도트 -->
+<div class="flex gap-0.5 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span></div>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">25</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center"><span class="text-[11px] font-display font-medium text-baekseok-600">26</span></div>
+<!-- Week 5 (9/27 ~ 10/3) -->
+<div class="min-h-[58px] p-1 flex flex-col items-center"><span class="text-[11px] font-display font-medium text-rose-500">27</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">28</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">29</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center">
+<span class="text-[11px] font-display font-medium text-slate-700">30</span>
+<span class="w-full h-1 rounded-full bg-baekseok-200 mt-1"></span>
+</div>
+<div class="min-h-[58px] p-1 flex flex-col items-center opacity-40"><span class="text-[11px] font-display text-slate-400">1</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center opacity-40"><span class="text-[11px] font-display text-slate-400">2</span></div>
+<div class="min-h-[58px] p-1 flex flex-col items-center opacity-40"><span class="text-[11px] font-display text-slate-400">3</span></div>
+</div>
+<!-- 캘린더 범례 (Legend) -->
+<div class="flex items-center justify-between pt-2.5 px-1 text-[10px] text-slate-500">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-1 rounded-full bg-baekseok-500"></span><span class="">정규 수업(학기)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span class="">과제/마감</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span><span class="">학사 공지</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span><span class="">AI 추천/시험</span>
+</div>
+</div>
+</article>
+<!-- 선택 날짜(9.17 목) 상세 타임라인 카드 (주간/월간 실시간 동기화 영역) -->
+<article class="bg-white border border-slate-200/80 rounded-2xl shadow-sm p-3.5 flex flex-col gap-2.5">
+<div class="flex items-center justify-between pb-2 border-b border-slate-100">
+<div class="flex items-center gap-1.5">
+<div class="w-5 h-5 rounded-md bg-baekseok-50 text-baekseok-700 flex items-center justify-center">
+<iconify-icon class="text-[14px]" icon="solar:calendar-bold"></iconify-icon>
+</div>
+<h3 class="font-bold text-xs text-slate-900 tracking-tight">9월 17일 목요일 상세 일정</h3>
+</div>
+<span class="text-[10px] font-bold text-baekseok-700 bg-baekseok-50 px-2 py-0.5 rounded-full border border-baekseok-200/60">3주차</span>
+</div>
+<!-- 리스트 아이템 1: 에타식 정규 수업 1 -->
+<div class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100">
+<span class="text-[10px] font-bold font-display text-slate-400 mt-0.5 w-12 shrink-0">10:00-11:30</span>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<p class="text-xs font-bold text-slate-800 truncate">자료구조</p>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-600 font-semibold">종료</span>
+</div>
+<span class="text-[10px] text-slate-400 truncate">본부동 201호 · 주간 반복</span>
+</div>
+</div>
+<!-- 리스트 아이템 2: 에타식 정규 수업 2 (NEXT CLASS) -->
+<div class="flex items-start gap-2.5 p-2.5 rounded-xl bg-baekseok-50/70 border border-baekseok-100 shadow-sm">
+<span class="text-[10px] font-bold font-display text-baekseok-700 mt-0.5 w-12 shrink-0">15:00-16:30</span>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-baekseok-600 animate-pulse"></span>
+<p class="text-xs font-extrabold text-slate-900 truncate">인공지능</p>
+</div>
+<span class="text-[9px] px-1.5 py-0.2 rounded-full bg-baekseok-600 text-white font-extrabold">NEXT</span>
+</div>
+<span class="text-[10px] font-medium text-baekseok-700 truncate">본부동 302호 · 시작 42분 전</span>
+</div>
+</div>
+<!-- 리스트 아이템 3: 일반 과제 마감 일정 -->
+<div class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 border border-slate-100">
+<span class="text-[10px] font-bold font-display text-rose-500 mt-0.5 w-12 shrink-0">23:59 마감</span>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<p class="text-xs font-bold text-slate-800 truncate">인공지능 과제 초안 작성</p>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-50 text-rose-600 font-extrabold border border-rose-200/60 font-display">D-2</span>
+</div>
+<span class="text-[10px] text-slate-400 truncate">컴퓨터공학부 포털 과제방 제출</span>
+</div>
+</div>
+</article>
+</main>
+<!-- Floating Glass Bottom Navigation -->
+<aside class="fixed bottom-3 inset-x-0 z-40 px-3 pointer-events-none safe-bottom w-full">
+<div class="w-full pointer-events-auto">
+<nav class="bg-white/90 backdrop-blur-xl ring-1 ring-black/10 shadow-float rounded-full px-2 py-1.5 flex items-center justify-between" style="white-space: nowrap;">
+<!-- 1. 홈 -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:home-2-linear"></iconify-icon>
+<span class="text-[10px]">홈</span>
+</a>
+<!-- 2. 캠퍼스 -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:compass-linear"></iconify-icon>
+<span class="text-[10px]">캠퍼스</span>
+</a>
+<!-- 3. AI 비서 (중앙 플로팅 블루 뱃지) -->
+<button aria-label="AI 비서 실행" class="flex-1 min-h-[44px] flex flex-col items-center justify-center -mt-3.5 group supanova-transition relative focus:outline-none" type="button">
+<div class="relative w-12 h-12 rounded-full bg-gradient-to-tr from-baekseok-800 via-baekseok-700 to-baekseok-500 text-white flex items-center justify-center shadow-glow-blue ring-4 ring-white group-hover:scale-105 active:scale-95 transition-transform duration-200">
+<iconify-icon class="text-[23px]" icon="solar:stars-minimalistic-bold"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold text-baekseok-700 mt-0.5 tracking-tight group-hover:text-baekseok-800">AI 비서</span>
+</button>
+<!-- 4. 일정 (Active) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-900 font-bold group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:calendar-bold"></iconify-icon>
+<span class="text-[10px]">일정</span>
+</a>
+<!-- 5. MY -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:user-linear"></iconify-icon>
+<span class="text-[10px]">MY</span>
+</a>
+</nav>
+</div>
+</aside>
+
+
+
+
+</body></html>

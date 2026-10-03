@@ -1,10 +1,12 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import HomePage from './pages/HomePage'
-import MyPage from './pages/MyPage'
-import SettingPage from './pages/SettingPage'
 import NotFoundPage from './pages/NotFoundPage'
 import LoginPage from './pages/LoginPage'
+import MyPage from './pages/MyPage'
+import SettingPage from './pages/SettingPage'
+import SchedulePage from './pages/SchedulePage'
+import { ScheduleProvider } from './components/schedule/ScheduleContext'
 import './styles/global.css'
 
 /**
@@ -17,18 +19,20 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/"          element={<SettingPage />} />
-        <Route path="/setting"   element={<SettingPage />} />
-        <Route path="/settings"  element={<SettingPage />} />
-        <Route path="/Setting"   element={<SettingPage />} />
-        <Route path="/Settings"  element={<SettingPage />} />
-        <Route path="/mypage"    element={<MyPage />} />
-        <Route path="/myPage"    element={<MyPage />} />
-        <Route path="/home"      element={<HomePage />} />
-        <Route path="/Home"      element={<HomePage />} />
+        <Route path="/"        element={<HomePage />} />
+        <Route path="/home"    element={<HomePage />} />
+        <Route path="/Home"    element={<HomePage />} />
         <Route path="/dashboard" element={<HomePage />} />
-        <Route path="/login"     element={<LoginPage />} />
-        <Route path="*"          element={<NotFoundPage />} />
+        <Route path="/login"   element={<LoginPage />} />
+        <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/schedule/:view" element={<SchedulePage />} />
+        <Route path="/mypage"  element={<MyPage />} />
+        <Route path="/myPage"  element={<MyPage />} />
+        <Route path="/setting" element={<SettingPage />} />
+        <Route path="/Setting" element={<SettingPage />} />
+        <Route path="/settings" element={<SettingPage />} />
+        <Route path="/Settings" element={<SettingPage />} />
+        <Route path="*"        element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
   )
@@ -37,7 +41,9 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AnimatedRoutes />
+      <ScheduleProvider>
+        <AnimatedRoutes />
+      </ScheduleProvider>
     </BrowserRouter>
   )
 }

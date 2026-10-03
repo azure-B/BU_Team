@@ -1,0 +1,470 @@
+<!DOCTYPE html><html class="antialiased" lang="ko" style="width: 390px; min-height: 100dvh; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<title>백석대학교 학생 맞춤 AI 비서 - 일정</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+            display: ['Outfit', 'Pretendard', 'sans-serif'],
+          },
+          colors: {
+            baekseok: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#00236f',
+              950: '#0a1028',
+            },
+            canvas: '#f8fafc',
+            surface: {
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+              slate: '#0f172a',
+            }
+          },
+          boxShadow: {
+            'bezel': '0 0 0 1px rgba(15, 23, 42, 0.05), 0 2px 8px -2px rgba(15, 23, 42, 0.04)',
+            'float': '0 12px 36px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.06)',
+            'glow-blue': '0 0 24px -4px rgba(37, 99, 235, 0.45)',
+            'inner-subtle': 'inset 0 1px 1px rgba(255, 255, 255, 0.9)',
+            'drawer': '0 -16px 40px -12px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.06)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      overscroll-behavior-y: none;
+      word-break: keep-all;
+    }
+    .supanova-transition {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .safe-top {
+      padding-top: max(env(safe-area-inset-top, 0px), 12px);
+    }
+    .safe-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* 시간표 1시간당 높이 규격 (1시간 = 52px) */
+    .timetable-hour-row {
+      height: 52px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-[100dvh] flex flex-col relative overflow-x-hidden selection:bg-baekseok-600 selection:text-white pb-24 w-full mx-auto" style="width: 390px; max-width: 390px; margin: 0px auto; min-height: 100dvh; position: relative;">
+<!-- Atmospheric Background Aura (메인 대시보드와 동일 앰비언트) -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-24 -left-20 w-96 h-96 rounded-full bg-blue-400/10 blur-3xl"></div>
+<div class="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-indigo-300/10 blur-3xl"></div>
+</div>
+<!-- Header Section (백석 AI 공식 헤더 규격 + 우측 월간 미니 캘린더 토글 & 일정 추가) -->
+<header class="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200/70 safe-top supanova-transition">
+<div class="max-w-[440px] mx-auto px-4 h-14 flex items-center justify-between" style="max-width: 390px;">
+<!-- 좌측: BU 공식 로고 + 타이틀 -->
+<div class="flex items-center gap-2">
+<img alt="백석대학교 BU 로고" class="w-8 h-8 rounded-full shadow-sm object-cover shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEdD0IZ4olz_9sDyuYoM4E2uHjGRsrW_dr6kACmdACF7BjkWURzYiVI7_dsbSLNPEiMQGYgFWaUuaEWlMMLivRBEA29p41QimTP18aF9Iw2kX9GHWiHLProc1VTGHstmHmUO_MqY1ScFO-RWS5frltWOkvz7aZM_ylNplK9b921Mcdrr-Y7C8i_d6z2Bw4xCvKdlV2huN-R_q-SOZ53PI6LauYsOxX2WU9s34Ohe_Am4NXgSK3Su-fNeYiJOL23GONBRg">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-bold text-[17px] text-slate-900 tracking-tight leading-tight whitespace-nowrap">백석 AI</span>
+<span class="text-[12px] font-bold text-baekseok-700 bg-baekseok-50 px-1.5 py-0.5 rounded-md border border-baekseok-200/60">일정</span>
+</div>
+<span class="text-[10px] text-slate-500 font-medium">2026-2학기 · 3주차</span>
+</div>
+</div>
+<!-- 우측 액션: [월간 캘린더 미니 뷰 토글] + [+] 일정/시간표 추가 -->
+
+</div>
+<!-- 우측 상단 토글형 [월단위 미니 캘린더 패널] -->
+<div class="max-w-[440px] mx-auto px-4 pb-3 pt-2 bg-white/95 border-b border-slate-200/80 hidden transition-all duration-300" id="monthly-calendar-drawer" style="max-width: 390px;">
+<div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 shadow-inner">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200/60">
+<div class="flex items-center gap-1.5">
+<span class="text-xs font-bold text-slate-800">2026년 9월 (학기 중)</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 font-bold border border-emerald-200/60">수업+일정 통합</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-6 h-6 rounded-md hover:bg-slate-200 flex items-center justify-center text-slate-600"><iconify-icon icon="solar:alt-arrow-left-linear"></iconify-icon></button>
+<button class="w-6 h-6 rounded-md hover:bg-slate-200 flex items-center justify-center text-slate-600"><iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon></button>
+</div>
+</div>
+<!-- 미니 월간 그리드 (일 ~ 토) -->
+<div class="grid grid-cols-7 gap-1 text-center font-display text-[10px] text-slate-400 font-semibold mb-1">
+<span class="text-rose-500">일</span><span class="">월</span><span class="">화</span><span class="">수</span><span class="">목</span><span class="">금</span><span class="text-baekseok-600">토</span>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-xs">
+<!-- 8월 말일 / 9월 초 간략 배치 -->
+<span class="py-1 text-slate-300">30</span><span class="py-1 text-slate-300">31</span>
+<span class="py-1 text-slate-700">1</span><span class="py-1 text-slate-700">2</span><span class="py-1 text-slate-700">3</span><span class="py-1 text-slate-700">4</span><span class="py-1 text-slate-700">5</span>
+<span class="py-1 text-rose-500">6</span><span class="py-1 text-slate-700">7</span><span class="py-1 text-slate-700">8</span><span class="py-1 text-slate-700">9</span><span class="py-1 text-slate-700">10</span><span class="py-1 text-slate-700">11</span><span class="py-1 text-slate-700">12</span>
+<!-- 현재 선택된 주간 (13일 ~ 19일) 강조 -->
+<div class="col-span-7 grid grid-cols-7 bg-baekseok-50/80 rounded-xl p-0.5 border border-baekseok-200/80 font-bold"><!-- 가로 시간 분할 선 (절대 위치 백그라운드) -->
+<div class="absolute inset-0 flex flex-col pointer-events-none divide-y divide-slate-100">
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+<div class="timetable-hour-row" style="height: 40px;"></div>
+</div>
+<!-- 컬럼 1: 일요일 -->
+<div class="relative h-full"></div>
+<!-- 컬럼 2: 월요일 (09:00~10:30 생명과학, 11:00~12:30 일반물리학, 14:00~15:30 NCS기초) -->
+<div class="relative h-full"><!-- 09:00~11:00 생명과학및실험 (2시간 통합 블록) -->
+<div style="top: 0px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-rose-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">생명과학</span>
+      <span class="text-[7px] opacity-80 font-display">09-11</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">본302</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">09:00-10:50</span>
+  </div>
+</div>
+
+<!-- 11:00~13:00 일반물리학 (2시간 통합 블록) -->
+<div style="top: 80px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-amber-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">일반물리</span>
+      <span class="text-[7px] opacity-80 font-display">11-13</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">진204</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">11:00-12:50</span>
+  </div>
+</div>
+
+<!-- 14:00~16:00 NCS기초 (2시간 통합 블록) -->
+<div style="top: 200px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-blue-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">NCS기초</span>
+      <span class="text-[7px] opacity-80 font-display">14-16</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">본101</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">14:00-15:50</span>
+  </div>
+</div></div>
+<!-- 컬럼 3: 화요일 (09:00~10:30 설계및제작, 10:30~12:30 문학과젠더, 13:00~14:30 캘리그라피) -->
+<div class="relative h-full"><!-- 09:00~11:00 설계및제작 (2시간 통합 블록) -->
+<div style="top: 0px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-orange-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">설계실습</span>
+      <span class="text-[7px] opacity-80 font-display">09-11</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">공학관</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">09:00-10:50</span>
+  </div>
+</div>
+
+<!-- 11:00~13:00 문학과젠더 (2시간 통합 블록) -->
+<div style="top: 80px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-indigo-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">문학젠더</span>
+      <span class="text-[7px] opacity-80 font-display">11-13</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">자유관</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">11:00-12:50</span>
+  </div>
+</div>
+
+<!-- 13:00~15:00 캘리그라피 (2시간 통합 블록) -->
+<div style="top: 160px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-emerald-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">캘리그라피</span>
+      <span class="text-[7px] opacity-80 font-display">13-15</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">예술관</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">13:00-14:50</span>
+  </div>
+</div></div>
+<!-- 컬럼 4: 수요일 (11:00~12:30 한국민속학, 13:00~14:30 대학영문법) -->
+<div class="relative h-full"><!-- 11:00~13:00 한국민속학 (2시간 통합 블록) -->
+<div style="top: 80px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-teal-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">한국민속</span>
+      <span class="text-[7px] opacity-80 font-display">11-13</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">본401</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">11:00-12:50</span>
+  </div>
+</div>
+
+<!-- 13:00~15:00 대학영문법 (2시간 통합 블록) -->
+<div style="top: 160px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-sky-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">대학영어</span>
+      <span class="text-[7px] opacity-80 font-display">13-15</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">자유관</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">13:00-14:50</span>
+  </div>
+</div></div>
+<!-- 컬럼 5: 목요일 (TODAY: 10:00~11:30 자료구조, 15:00~16:30 인공지능, 17:00~18:00 AI 복습) -->
+<div class="relative h-full bg-baekseok-50/40"><!-- 10:00~12:00 자료구조 (2시간 통합 블록) -->
+<div style="top: 40px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-emerald-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">자료구조</span>
+      <span class="text-[7px] font-semibold px-1 py-0.5 rounded bg-black/15 font-display">종료</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">본부 201</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80">
+    <span class="">10:00-11:50</span>
+    <span class="font-display">2학점</span>
+  </div>
+</div>
+
+<!-- 15:00~17:00 인공지능 (2시간 통합 블록) -->
+<div style="top: 240px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-gradient-to-br from-baekseok-600 to-indigo-600 text-white shadow-md ring-2 ring-baekseok-400/50 flex flex-col justify-between overflow-hidden cursor-pointer hover:scale-[1.02] supanova-transition z-20">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <div class="flex items-center gap-1 min-w-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+        <span class="text-[9px] font-extrabold break-keep-all truncate">인공지능</span>
+      </div>
+      <span class="text-[7px] font-bold px-1 py-0.5 rounded bg-white/20 font-display text-white shrink-0">NEXT</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">본부 302</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-90 font-medium">
+    <span class="">15:00-16:50</span>
+    <span class="font-display">2학점</span>
+  </div>
+</div>
+
+<!-- 17:00~18:00 AI 복습 (1시간) -->
+<div style="top: 320px; height: 38px;" class="absolute inset-x-0.5 rounded-md p-1 bg-purple-50 border border-purple-200 text-purple-800 shadow-sm flex flex-col justify-between overflow-hidden z-10">
+  <div class="flex items-center justify-between leading-tight">
+    <span class="text-[8px] font-bold text-purple-700 truncate">AI 복습</span>
+    <span class="text-[7px] text-purple-500 font-display">17시</span>
+  </div>
+  <span class="text-[7px] text-purple-500 font-display truncate">학술정보관</span>
+</div></div>
+<!-- 컬럼 6: 금요일 (09:00~11:00 현대인과성서, 12:00~14:00 물리학실험) -->
+<div class="relative h-full"><!-- 09:00~11:00 현대인과성서 (2시간 통합 블록) -->
+<div style="top: 0px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-teal-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">현대인과성서</span>
+      <span class="text-[7px] opacity-80 font-display">09-11</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">채플관</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">09:00-10:50</span>
+    <span class="">채플</span>
+  </div>
+</div>
+
+<!-- 12:00~14:00 물리학실험 (2시간 통합 블록) -->
+<div style="top: 120px; height: 78px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-rose-400 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10">
+  <div>
+    <div class="flex items-center justify-between leading-tight">
+      <span class="text-[9px] font-bold break-keep-all">물리학실험</span>
+      <span class="text-[7px] opacity-80 font-display">12-14</span>
+    </div>
+    <span class="block text-[8px] opacity-90 mt-0.5">실습실</span>
+  </div>
+  <div class="border-t border-white/20 pt-0.5 flex items-center justify-between text-[7px] opacity-80 font-display">
+    <span class="">12:00-13:50</span>
+    <span class="">실습</span>
+  </div>
+</div></div>
+<!-- 컬럼 7: 토요일 -->
+<div class="relative h-full"></div></div>
+<span class="py-1 text-rose-500 relative cursor-pointer hover:bg-slate-200 rounded">20<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-rose-500"></span></span>
+<span class="py-1 text-slate-700 relative cursor-pointer hover:bg-slate-200 rounded">21<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-baekseok-600"></span></span>
+<span class="py-1 text-slate-700 relative cursor-pointer hover:bg-slate-200 rounded">22<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-baekseok-600"></span></span>
+<span class="py-1 text-slate-700 relative cursor-pointer hover:bg-slate-200 rounded">23<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber-500"></span></span>
+<span class="py-1 text-slate-700 relative cursor-pointer hover:bg-slate-200 rounded">24<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-baekseok-600"></span></span>
+<span class="py-1 text-slate-700 relative cursor-pointer hover:bg-slate-200 rounded">25<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-purple-500"></span></span>
+<span class="py-1 text-baekseok-700 cursor-pointer hover:bg-slate-200 rounded">26</span>
+</div>
+<p class="text-[10px] text-slate-400 text-center mt-2">※ 미래 일정을 추가해도 월간 달력에 도트로 유지되며 해당 주간 진입 시 자동 렌더링됩니다.</p>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Schedule Body -->
+<main class="flex-1 w-full max-w-[440px] mx-auto px-3.5 pt-3 pb-24 z-10 flex flex-col gap-3" style="max-width: 390px; width: 100%;">
+<!-- 주차 컨트롤러 카드 (Double-Bezel Card) -->
+<div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center supanova-transition active:scale-95"><iconify-icon icon="solar:alt-arrow-left-linear"></iconify-icon></button>
+<span class="font-display font-extrabold text-sm text-slate-900 tracking-tight">9월 3주차 </span>
+<button class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center supanova-transition active:scale-95"><iconify-icon icon="solar:alt-arrow-right-linear"></iconify-icon></button>
+</div>
+<div class="flex items-center gap-1.5 shrink-0"><button aria-label="새 일정 추가" class="w-7 h-7 rounded-lg bg-baekseok-600 hover:bg-baekseok-700 text-white flex items-center justify-center shadow-sm supanova-transition active:scale-95" id="add-schedule-btn" type="button"><iconify-icon class="text-[18px]" icon="solar:add-circle-bold"></iconify-icon></button><button aria-label="월간 달력 전환" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center supanova-transition active:scale-95" id="toggle-monthly-btn" type="button"><iconify-icon class="text-[18px]" icon="solar:calendar-bold"></iconify-icon></button></div>
+</div>
+<!-- 에타식 시간표 프레임 (일 ~ 토 7일 컬럼 타임테이블) -->
+<div class="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden flex flex-col whitespace-nowrap">
+<!-- 7일 요일 헤더 (일 ~ 토) -->
+<div class="grid grid-cols-[34px_repeat(5,1fr)] border-b border-slate-200/80 bg-slate-50/80 text-center text-xs py-1.5"><div class="text-[10px] font-bold text-slate-400 flex items-center justify-center font-display">TIME</div><div class="flex flex-col py-0.5"><span class="text-[11px] font-bold text-slate-700">월</span><span class="text-[10px] text-slate-400 font-display">14</span></div><div class="flex flex-col py-0.5"><span class="text-[11px] font-bold text-slate-700">화</span><span class="text-[10px] text-slate-400 font-display">15</span></div><div class="flex flex-col py-0.5"><span class="text-[11px] font-bold text-slate-700">수</span><span class="text-[10px] text-slate-400 font-display">16</span></div><div class="flex flex-col bg-baekseok-100/50 rounded-lg py-0.5 ring-1 ring-baekseok-200/80"><span class="text-[11px] font-extrabold text-baekseok-700">목</span><span class="text-[10px] font-bold text-baekseok-700 font-display">17</span></div><div class="flex flex-col py-0.5"><span class="text-[11px] font-bold text-slate-700">금</span><span class="text-[10px] text-slate-400 font-display">18</span></div></div>
+<!-- 타임 그리드 영역 (09:00 ~ 17:00, 1시간당 52px) -->
+<div class="relative grid grid-cols-[34px_repeat(5,1fr)] select-none bg-white"><div class="flex flex-col text-[10px] font-display font-medium text-slate-400 text-center divide-y divide-slate-100 border-r border-slate-100 bg-slate-50/40"><div class="flex items-start justify-center pt-1.5" style="height: 48px;">09</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">10</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">11</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">12</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">13</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">14</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">15</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">16</div><div class="flex items-start justify-center pt-1.5" style="height: 48px;">17</div></div><div class="col-span-5 grid grid-cols-5 divide-x divide-slate-100 relative"><div class="absolute inset-0 flex flex-col pointer-events-none divide-y divide-slate-100"><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div><div style="height: 48px;"></div></div><!-- 월요일 --><div class="relative h-full"><div style="top: 2px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-rose-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">생명과학</span><span class="text-[9px] text-rose-100 font-medium mt-0.5">지리 304</span></div><div class="flex items-center justify-between text-[9px] text-rose-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div><div style="top: 98px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-amber-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">일반물리학</span><span class="text-[9px] text-amber-100 font-medium mt-0.5">진리 204</span></div><div class="flex items-center justify-between text-[9px] text-amber-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div><div style="top: 242px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-blue-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">NCS직무<br>기초</span><span class="text-[9px] text-blue-100 font-medium mt-0.5">본부 207</span></div><div class="flex items-center justify-between text-[9px] text-blue-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div></div><!-- 화요일 --><div class="relative h-full"><div style="top: 2px; height: 140px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-gradient-to-b from-orange-500 to-amber-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">설계제작<br>실습</span><span class="text-[9px] text-orange-100 font-medium mt-0.5">본부 203</span></div><div class="flex items-center justify-between text-[9px] text-orange-100 pt-1 border-t border-white/20 font-display"><span class="">3학점</span></div></div><div style="top: 194px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-emerald-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">캘리그라피</span><span class="text-[9px] text-emerald-100 font-medium mt-0.5">예술 105</span></div><div class="flex items-center justify-between text-[9px] text-emerald-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div></div><!-- 수요일 --><div class="relative h-full"><div style="top: 98px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-indigo-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">문학과젠더</span><span class="text-[9px] text-indigo-100 font-medium mt-0.5">지혜 202</span></div><div class="flex items-center justify-between text-[9px] text-indigo-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div><div style="top: 194px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-teal-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">한국민속학</span><span class="text-[9px] text-teal-100 font-medium mt-0.5">본부 401</span></div><div class="flex items-center justify-between text-[9px] text-teal-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div></div><!-- 목요일 (선택일) --><div class="relative h-full bg-baekseok-50/40"><div style="top: 50px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-emerald-600 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">자료구조</span><span class="text-[9px] text-emerald-100 font-medium mt-0.5">본부 201</span></div><div class="flex items-center justify-between text-[9px] text-emerald-100 pt-1 border-t border-white/20 font-display"><span class="">2학점</span></div></div><div style="top: 242px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-gradient-to-br from-baekseok-600 to-indigo-600 text-white shadow-md ring-2 ring-baekseok-400/50 flex flex-col justify-between overflow-hidden cursor-pointer hover:scale-[1.02] supanova-transition z-20"><div class="flex flex-col min-w-0"><span class="text-[10px] font-extrabold leading-tight break-keep-all tracking-tight">인공지능</span><span class="text-[9px] text-blue-100 font-medium mt-0.5">본부 302</span></div><div class="flex items-center justify-between text-[9px] text-blue-100 pt-1 border-t border-white/20 font-display"><span class="font-bold text-white">NOW</span></div></div><div style="top: 338px; height: 44px;" class="absolute inset-x-0.5 rounded-lg p-1 bg-purple-50 border border-purple-200 text-purple-800 shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:bg-purple-100/60 supanova-transition z-10"><div class="flex items-center justify-between min-w-0 leading-tight"><span class="text-[9px] font-bold text-purple-700 break-keep-all tracking-tight">AI 복습</span><span class="text-[8px] text-purple-500 font-display shrink-0">16시</span></div><span class="text-[8px] text-purple-600">학술정보관</span></div></div><!-- 금요일 --><div class="relative h-full"><div style="top: 2px; height: 92px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-teal-600 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[9px] font-bold leading-tight break-keep-all tracking-tight">현대인과<br>성서</span><span class="text-[9px] text-teal-100 font-medium mt-0.5">본부 203</span></div><div class="flex items-center justify-between text-[9px] text-teal-100 pt-1 border-t border-white/20 font-display"><span class="">채플</span></div></div><div style="top: 146px; height: 140px;" class="absolute inset-x-0.5 rounded-lg p-1.5 bg-rose-500 text-white shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer hover:brightness-95 supanova-transition z-10"><div class="flex flex-col min-w-0"><span class="text-[10px] font-bold leading-tight break-keep-all tracking-tight">물리학실험</span><span class="text-[9px] text-rose-100 font-medium mt-0.5">진리 403</span></div><div class="flex items-center justify-between text-[9px] text-rose-100 pt-1 border-t border-white/20 font-display"><span class="">3학점</span></div></div></div></div></div>
+<!-- 하단 채플 & 정규 학기 이수 정보 바 (에타 특유의 하단 바) -->
+<div class="p-2.5 bg-slate-50 border-t border-slate-200/70 flex items-center justify-between text-xs">
+<div class="flex items-center gap-1.5">
+
+<span class="text-[11px] text-slate-500">총 18학점 이수 중</span>
+</div>
+<span class="text-[10px] text-baekseok-700 font-semibold">종강: 2026.12.21까지 자동 반복</span>
+</div>
+</div>
+<!-- 오늘 등록된 주요 일정 & 과제 카드 (대시보드와 동기화) -->
+<article class="bg-white border border-slate-200/70 rounded-2xl shadow-sm p-4 flex flex-col gap-2.5">
+<div class="flex items-center justify-between border-b border-slate-100 pb-2">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-md bg-baekseok-50 text-baekseok-700 flex items-center justify-center">
+<iconify-icon class="text-[16px]" icon="solar:bell-bing-bold"></iconify-icon>
+</div>
+<h3 class="font-bold text-sm text-slate-900 tracking-tight">선택된 날짜 연계 일정 (9.17 목)</h3>
+</div>
+<span class="text-[11px] font-bold text-baekseok-600">수업 2건 · 과제 1건</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100/60 supanova-transition cursor-pointer">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<p class="text-xs font-bold text-slate-900 truncate">인공지능 과제 초안 작성</p>
+<span class="text-[10px] text-slate-400">컴퓨터공학부 · LMS 온라인 접수</span>
+</div>
+</div>
+<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200/60 font-display shrink-0">D-2 (23:59)</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100/60 supanova-transition cursor-pointer">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="w-2.5 h-2.5 rounded-full bg-baekseok-600 shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<p class="text-xs font-bold text-slate-900 truncate">자료구조 중간고사 대비 요약</p>
+<span class="text-[10px] text-slate-400">3~5주차 트리/그래프 알고리즘 복습</span>
+</div>
+</div>
+<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 text-baekseok-600 border border-blue-200/60 font-display shrink-0">D-7</span>
+</div>
+</article>
+</main>
+<!-- 하단 5탭 내비게이션 바 (공식 가이드라인 및 최근 스위치 탭 순서 동기화: [홈] → [캠퍼스] → [AI 비서] → [일정:ACTIVE] → [MY]) -->
+<aside class="fixed bottom-3 inset-x-0 z-40 px-4 pointer-events-none safe-bottom" style="width: 390px; max-width: 390px; left: 50%; transform: translateX(-50%);">
+<div class="max-w-[420px] mx-auto pointer-events-auto" style="max-width: 366px; width: 100%;">
+<nav class="bg-white/95 backdrop-blur-xl ring-1 ring-black/10 shadow-float rounded-full px-2 py-1.5 flex items-center justify-between" style="white-space: nowrap;">
+<!-- 1. 홈 (비활성) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:home-2-linear"></iconify-icon>
+<span class="text-[10px]">홈</span>
+</a>
+<!-- 2. 캠퍼스 (비활성: 빌딩 라인 아이콘) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:buildings-3-linear"></iconify-icon>
+<span class="text-[10px]">캠퍼스</span>
+</a>
+<!-- 3. AI 비서 (중앙 플로팅 블루 뱃지) -->
+<button aria-label="AI 비서 실행" class="flex-1 min-h-[44px] flex flex-col items-center justify-center -mt-3.5 group supanova-transition relative focus:outline-none" type="button">
+<div class="relative w-12 h-12 rounded-full bg-gradient-to-tr from-baekseok-800 via-baekseok-700 to-baekseok-500 text-white flex items-center justify-center shadow-glow-blue ring-4 ring-white group-hover:scale-105 active:scale-95 transition-transform duration-200">
+<iconify-icon class="text-[23px]" icon="solar:stars-minimalistic-bold"></iconify-icon>
+</div>
+<span class="text-[10px] font-bold text-baekseok-700 mt-0.5 tracking-tight group-hover:text-baekseok-800">AI 비서</span>
+</button>
+<!-- 4. 일정 (활성화: 4번째 위치, text-slate-900 font-bold) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-900 font-bold group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:calendar-bold"></iconify-icon>
+<span class="text-[10px]">일정</span>
+</a>
+<!-- 5. MY (비활성) -->
+<a class="flex-1 min-h-[44px] flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-slate-900 font-medium group supanova-transition" href="#">
+<iconify-icon class="text-[22px]" icon="solar:user-linear"></iconify-icon>
+<span class="text-[10px]">MY</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- 드롭다운 인터랙션 스크립트 -->
+<script>
+    const toggleMonthlyBtn = document.getElementById('toggle-monthly-btn');
+    const monthlyDrawer = document.getElementById('monthly-calendar-drawer');
+    const monthlyChevron = document.getElementById('monthly-chevron');
+    const addScheduleBtn = document.getElementById('add-schedule-btn');
+
+    toggleMonthlyBtn.addEventListener('click', () => {
+      const isHidden = monthlyDrawer.classList.contains('hidden');
+      if (isHidden) {
+        monthlyDrawer.classList.remove('hidden');
+        monthlyChevron.style.transform = 'rotate(180deg)';
+      } else {
+        monthlyDrawer.classList.add('hidden');
+        monthlyChevron.style.transform = 'rotate(0deg)';
+      }
+    });
+
+    if (addScheduleBtn) {
+      addScheduleBtn.addEventListener('click', () => {
+        alert("일정 등록: [정규 수업 추가 (학기 반복)] 또는 [개인 일정/과제 추가] 모달이 열립니다.");
+      });
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>
