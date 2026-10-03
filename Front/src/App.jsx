@@ -16,12 +16,14 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/"        element={<MyPage />} />
-        <Route path="/mypage"  element={<MyPage />} />
-        <Route path="/home"    element={<HomePage />} />
+        <Route path="/"          element={<MyPage />} />
+        <Route path="/mypage"    element={<MyPage />} />
+        <Route path="/myPage"    element={<MyPage />} />
+        <Route path="/home"      element={<HomePage />} />
+        <Route path="/Home"      element={<HomePage />} />
         <Route path="/dashboard" element={<HomePage />} />
-        <Route path="/login"   element={<LoginPage />} />
-        <Route path="*"        element={<NotFoundPage />} />
+        <Route path="/login"     element={<LoginPage />} />
+        <Route path="*"          element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
   )

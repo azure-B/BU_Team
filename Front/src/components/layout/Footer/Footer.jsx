@@ -113,8 +113,9 @@ function AssistantSheet({ open, onClose }) {
 export default function Footer() {
   const [assistantOpen, setAssistantOpen] = useState(false)
   const location = useLocation()
-  const isHomeActive = location.pathname === '/home' || location.pathname === '/dashboard'
-  const isMyPageActive = location.pathname === '/' || location.pathname === '/mypage'
+  const path = (location.pathname || '').toLowerCase()
+  const isHomeActive = path === '/home' || path === '/dashboard'
+  const isMyPageActive = path === '/' || path === '/mypage'
 
   return (
     <>
