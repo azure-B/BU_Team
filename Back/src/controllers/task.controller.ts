@@ -19,6 +19,24 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
   } catch (error) { next(error); }
 };
 
+export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    const task = await taskService.updateTask(userId, id, req.body);
+    res.json({ success: true, data: task });
+  } catch (error) { next(error); }
+};
+
+export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = getUserId(req);
+    const { id } = req.params;
+    await taskService.deleteTask(userId, id);
+    res.json({ success: true, message: 'Task deleted' });
+  } catch (error) { next(error); }
+};
+
 export const getPrioritizedTasks = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
