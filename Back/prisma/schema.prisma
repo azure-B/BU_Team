@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String           @id @default(uuid())
+  email          String           @unique
+  passwordHash   String
+  name           String
+  department     String
+  grade          Int
+  schedules      Schedule[]
+  tasks          Task[]
+  studyMaterials StudyMaterial[]
+  summaries      Summary[]
+  bookmarks      NoticeBookmark[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model Schedule {
+  id         String   @id @default(uuid())
+  userId     String
+  type       String
+  title      String
+  startAt    DateTime
+  endAt      DateTime
+  buildingId String?
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Task {
+  id         String   @id @default(uuid())
+  userId     String
+  title      String
+  dueAt      DateTime
+  importance Int
+  status     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Notice {
+  id         String           @id @default(uuid())
+  title      String
+  content    String
+  category   String
+  tags       String
+  deadlineAt DateTime?
+  bookmarks  NoticeBookmark[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+model NoticeBookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  noticeId  String
+  user      User     @relation(fields: [userId], references: [id])
+  notice    Notice   @relation(fields: [noticeId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, noticeId])
+}
+
+model StudyMaterial {
+  id               String    @id @default(uuid())
+  userId           String
+  courseName       String
+  rawText          String?
+  filePath         String?
+  processingStatus String    // PENDING, PROCESSING, COMPLETED, FAILED
+  user             User      @relation(fields: [userId], references: [id])
+  summaries        Summary[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Summary {
+  id           String        @id @default(uuid())
+  materialId   String
+  userId       String
+  content      String
+  keywords     String        // JSON string
+  reviewStatus String
+  user         User          @relation(fields: [userId], references: [id])
+  material     StudyMaterial @relation(fields: [materialId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Building {
+  id   String @id @default(uuid())
+  name String
+  code String
+  x    Float
+  y    Float
+}
+
+model Classroom {
+  id         String @id @default(uuid())
+  buildingId String
+  roomNumber String
+  floor      Int
+}
+
+model Facility {
+  id         String @id @default(uuid())
+  buildingId String
+  name       String
+  type       String
+  openTime   String
+  closeTime  String
+}
+
+model CafeteriaMenu {
+  id         String   @id @default(uuid())
+  facilityId String
+  menuDate   DateTime
+  name       String
+  price      Int
+}
+
+model CampusEdge {
+  id             String @id @default(uuid())
+  fromBuildingId String
+  toBuildingId   String
+  walkingMinutes Int
+}
