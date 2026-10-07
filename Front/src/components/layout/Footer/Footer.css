@@ -250,6 +250,18 @@
   outline: 0;
 }
 
+.assistant-input input:focus,
+.assistant-input input:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-color: transparent !important;
+}
+
 .assistant-input input::placeholder {
   color: color-mix(in srgb, var(--color-muted) 92%, transparent);
 }

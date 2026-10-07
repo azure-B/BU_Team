@@ -161,6 +161,7 @@ function AssistantSheet({ open, onClose, triggerRef }) {
         <form className="assistant-input" onSubmit={submitQuery}>
           <input
             ref={inputRef}
+            type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={sending ? '질문을 분석하고 있어요' : '무엇이든 물어보세요'}
