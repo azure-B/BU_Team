@@ -1,7 +1,7 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-10-03
+> 마지막 갱신: 2026-10-07
 
 ```
 asdasd/
@@ -93,7 +93,7 @@ asdasd/
     ├── folder.md                — 이 파일
     ├── jobs/
     │   ├── back/                — Back 작업 내역
-    │   └── front/               — Front 작업 내역 (2026-10-03.md 일별 로그 포함)
+    │   └── front/               — Front 작업 내역 (2026-10-03.md, 2026-10-07.md 일별 로그 포함)
     ├── back-workflow.mdc
     ├── front-workflow.mdc
     ├── git-workflow.mdc
