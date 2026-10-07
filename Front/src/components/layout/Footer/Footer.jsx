@@ -1,7 +1,6 @@
 import {
   BookBookmark,
   CalendarBlank,
-  ChatCircleDots,
   Clock,
   Compass,
   House,
@@ -144,7 +143,7 @@ function AssistantSheet({ open, onClose, triggerRef }) {
         <div className="assistant-sheet__handle" aria-hidden="true" />
         <div className="assistant-sheet__header">
           <div className="assistant-sheet__title">
-            <span><ChatCircleDots size={19} weight="fill" aria-hidden="true" /></span>
+            <span><Sparkle size={19} weight="fill" aria-hidden="true" /></span>
             <div>
               <div className="assistant-sheet__title-line">
                 <h2 id="assistant-title">AI 비서 실시간 질의</h2>

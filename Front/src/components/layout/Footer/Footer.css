@@ -174,9 +174,10 @@
   width: 34px;
   height: 34px;
   flex: 0 0 auto;
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
+  color: #ffffff;
+  background: linear-gradient(145deg, #00236f, #2563eb);
   border-radius: 10px;
+  box-shadow: 0 4px 12px rgb(37 99 235 / 0.25);
   place-items: center;
 }
 
