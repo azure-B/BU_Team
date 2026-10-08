@@ -60,7 +60,6 @@
   font-weight: var(--font-weight-bold-strong, 750);
 }
 .timetable-course small { font-size: var(--font-size-micro, 9px); opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.timetable-course > span { padding-top: 4px; margin-top: auto; font-size: var(--font-size-micro, 9px); border-top: 1px solid rgb(255 255 255 / 0.25); }
 .timetable-course--rose { background: #e11d48; }
 .timetable-course--amber { background: #b45309; }
 .timetable-course--blue { background: #1d4ed8; }

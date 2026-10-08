@@ -1,7 +1,5 @@
 import Layout from '../components/layout/Layout'
 import {
-  AssistantSettingCard,
-  GeneralAppSettingCard,
   NotificationSettingCard,
   ProfileSettingCard,
   SettingAccountActions,
@@ -17,9 +15,7 @@ export default function SettingPage() {
         </header>
 
         <ProfileSettingCard />
-        <AssistantSettingCard />
         <NotificationSettingCard />
-        <GeneralAppSettingCard />
         <SettingAccountActions />
       </div>
     </Layout>

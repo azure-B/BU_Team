@@ -1,6 +1,5 @@
 import Layout from '../components/layout/Layout'
 import {
-  AcademicPerformanceCard,
   ActivityArchiveCard,
   IntegrationUtilityCard,
   ProfileSummaryCard,
@@ -16,7 +15,6 @@ export default function MyPage() {
         </header>
 
         <ProfileSummaryCard />
-        <AcademicPerformanceCard />
         <ActivityArchiveCard />
         <IntegrationUtilityCard />
       </div>

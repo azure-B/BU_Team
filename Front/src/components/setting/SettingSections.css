@@ -274,36 +274,6 @@
   flex-shrink: 0;
 }
 
-.setting-row-action-label {
-  font-size: var(--font-size-subtext, 11px);
-  font-weight: var(--font-weight-bold, 700);
-  color: var(--color-primary);
-  white-space: nowrap;
-}
-
-.setting-row-badge-soft {
-  font-size: var(--font-size-badge, 10px);
-  font-weight: var(--font-weight-extrabold, 800);
-  color: var(--color-muted);
-  white-space: nowrap;
-}
-
-.setting-row-action-link {
-  font-size: var(--font-size-subtext, 11px);
-  font-weight: var(--font-weight-bold-strong, 750);
-  color: var(--color-primary);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.setting-version-label {
-  font-size: var(--font-size-subtext, 11px);
-  font-weight: var(--font-weight-semibold-strong, 650);
-  color: var(--color-muted);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 /* 토글 스위치 */
 .setting-toggle {
   position: relative;
@@ -336,37 +306,6 @@
 
 .setting-toggle--checked .setting-toggle__thumb {
   transform: translateX(20px);
-}
-
-/* 세그먼트 컨트롤 */
-.setting-segmented-control {
-  display: inline-flex;
-  padding: 3px;
-  background: var(--color-surface-subtle);
-  border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
-  border-radius: 10px;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-.setting-segment-btn {
-  padding: 3px 8px;
-  font-size: var(--font-size-subtext, 11px);
-  font-weight: var(--font-weight-semibold-strong, 650);
-  color: var(--color-muted);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  white-space: nowrap;
-  transition: color var(--transition), background var(--transition);
-}
-
-.setting-segment-btn--active {
-  font-weight: var(--font-weight-extrabold, 800);
-  color: var(--color-primary);
-  background: var(--color-surface);
-  box-shadow: 0 1px 3px rgb(15 23 42 / 0.08);
 }
 
 /* 계정 액션 */
@@ -421,8 +360,4 @@
 
 .setting-sub-link--danger:hover {
   color: var(--color-danger);
-}
-
-.setting-sub-divider {
-  color: var(--color-border);
 }
