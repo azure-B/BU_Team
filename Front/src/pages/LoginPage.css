@@ -1,0 +1,22 @@
+/* 로그인도 앱의 공통 타이포그래피를 사용한다. 아이콘 크기는 별도로 유지한다. */
+.login-page .login-text-title {
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.4;
+  letter-spacing: -0.035em;
+}
+
+.login-page .login-text-brand { font-size: var(--font-size-brand); }
+.login-page .login-text-body { font-size: var(--font-size-body); }
+.login-page .login-text-subtext { font-size: var(--font-size-subtext); }
+.login-page .login-weight-regular { font-weight: var(--font-weight-regular); }
+.login-page .login-weight-medium { font-weight: var(--font-weight-medium); }
+.login-page .login-weight-semibold { font-weight: var(--font-weight-semibold); }
+.login-page .login-weight-bold-strong { font-weight: var(--font-weight-bold-strong); }
+.login-page .login-weight-extrabold { font-weight: var(--font-weight-extrabold); }
+.login-page .login-weight-black { font-weight: var(--font-weight-black); }
+
+.login-page .login-text-badge {
+  font-size: var(--font-size-badge);
+  font-weight: var(--font-weight-extrabold);
+}

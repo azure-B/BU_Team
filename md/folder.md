@@ -1,7 +1,7 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-10-07
+> 마지막 갱신: 2026-10-08
 
 ```
 asdasd/
@@ -49,6 +49,7 @@ asdasd/
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── HomePage.css
 │   │   │   ├── LoginPage.jsx
+│   │   │   ├── LoginPage.css     — 로그인 화면 공통 타이포그래피 토큰 적용
 │   │   │   ├── MyPage.jsx
 │   │   │   ├── MyPage.css
 │   │   │   ├── SchedulePage.jsx  — 일정 진입·보기 전환·일정 추가
