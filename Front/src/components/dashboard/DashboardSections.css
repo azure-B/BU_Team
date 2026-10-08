@@ -16,8 +16,8 @@
 
 .section-heading__title h2 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--font-size-section-title, 14px);
+  font-weight: var(--font-weight-extrabold, 800);
   letter-spacing: -0.02em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,8 +46,8 @@
 .section-heading__badge {
   flex-shrink: 0;
   padding: 3px 7px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
@@ -59,8 +59,8 @@
   align-items: center;
   flex-shrink: 0;
   padding: 6px 0 6px 8px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-size-body, 12px);
+  font-weight: var(--font-weight-bold, 700);
   color: var(--color-primary);
   white-space: nowrap;
   cursor: pointer;
@@ -115,8 +115,8 @@
   display: flex;
   gap: 4px;
   overflow: hidden;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: var(--font-size-body, 12px);
+  font-weight: var(--font-weight-extrabold, 800);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -131,14 +131,14 @@
 .next-class__date p span,
 .next-class__date small {
   color: var(--color-muted);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium, 500);
 }
 
 .next-class__date small {
   display: block;
   margin-top: 2px;
   overflow: hidden;
-  font-size: 10px;
+  font-size: var(--font-size-subtext, 11px);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -146,8 +146,8 @@
 .status-chip {
   flex: 0 0 auto;
   padding: 3px 7px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   border: 1px solid;
   border-radius: 999px;
 }
@@ -180,15 +180,15 @@
 .next-class__label {
   display: block;
   margin-bottom: 2px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-primary);
   letter-spacing: 0.08em;
 }
 
 .next-class__title-row h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: var(--font-size-feature-title, 26px);
   line-height: 1.1;
   letter-spacing: -0.04em;
   overflow: hidden;
@@ -199,7 +199,7 @@
 .next-class__title-row > strong {
   flex-shrink: 0;
   padding-bottom: 2px;
-  font-size: 17px;
+  font-size: var(--font-size-page-title, 19px);
   color: var(--color-primary-strong);
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -210,7 +210,7 @@
   align-items: center;
   gap: 6px;
   margin: 0;
-  font-size: 12px;
+  font-size: var(--font-size-body, 12px);
   color: var(--color-muted);
   min-width: 0;
   overflow: hidden;
@@ -279,8 +279,8 @@
 }
 
 .class-tip__highlight {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-size-item-title, 12px);
+  font-weight: var(--font-weight-bold-strong, 750);
   color: var(--color-text);
 }
 
@@ -289,7 +289,7 @@
 }
 
 .class-tip__sub {
-  font-size: 11px;
+  font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
 }
 
@@ -308,8 +308,8 @@
   gap: 6px;
   padding: 0 10px;
   overflow: hidden;
-  font-size: 12px;
-  font-weight: 750;
+  font-size: var(--font-size-body, 12px);
+  font-weight: var(--font-weight-bold-strong, 750);
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
@@ -364,8 +364,8 @@
 }
 
 .schedule-row time {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-bold, 700);
   color: var(--color-muted);
   white-space: nowrap;
   flex-shrink: 0;
@@ -415,8 +415,8 @@
   align-items: center;
   justify-content: center;
   padding: 1.5px 5.5px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   line-height: 1.25;
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 13%, transparent);
@@ -438,8 +438,8 @@
 .schedule-row__title {
   display: block;
   overflow: hidden;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-size-item-title, 12px);
+  font-weight: var(--font-weight-bold-strong, 750);
   color: var(--color-text);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -451,7 +451,7 @@
 .schedule-row__location {
   display: block;
   overflow: hidden;
-  font-size: 10px;
+  font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -494,9 +494,9 @@
 .due-chip {
   flex: 0 0 auto;
   min-width: 44px;
-  padding: 5px 8px;
-  font-size: 11px;
-  font-weight: 850;
+  padding: 4px 7px;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   text-align: center;
   border: 1px solid;
   border-radius: 9px;
@@ -536,8 +536,8 @@
   display: block;
   max-width: 100%;
   overflow: hidden;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--font-size-item-title, 12px);
+  font-weight: var(--font-weight-bold-strong, 750);
   color: var(--color-text);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -549,7 +549,7 @@
   display: block;
   max-width: 100%;
   overflow: hidden;
-  font-size: 10px;
+  font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -565,7 +565,7 @@
   align-items: center;
   min-width: 0;
   gap: 5px;
-  font-size: 10px;
+  font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
 }
 
@@ -580,18 +580,20 @@
 .category-chip {
   flex-shrink: 0;
   padding: 2px 5px;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border-radius: 5px;
   white-space: nowrap;
+
+  font-size: var(--font-size-badge, 10px);
 }
 
 .notice-badge {
   flex-shrink: 0;
   padding: 1px 4px;
-  font-size: 9px;
-  font-weight: 850;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-danger);
   background: var(--color-danger-soft);
   border: 1px solid color-mix(in srgb, var(--color-danger) 20%, transparent);
@@ -620,12 +622,12 @@
 
 .dashboard-empty p {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--font-size-body, 12px);
 }
 
 @media (max-width: 380px) {
   .next-class__title-row > strong {
-    font-size: 15px;
+    font-size: var(--font-size-section-title, 14px);
   }
 
   .schedule-row {

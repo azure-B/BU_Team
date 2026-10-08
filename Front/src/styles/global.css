@@ -25,6 +25,37 @@
   --header-height: 64px;
   --content-width: 440px;
   --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* 타이포그래피 계층 토큰 (Antigravity 기준) */
+  --font-size-page-title: 19px;     /* 페이지 최상단 대제목 (h1) */
+  --font-size-section-title: 14px;  /* 섹션/카드 헤더 제목 (h2/h3) */
+  --font-size-item-title: 12px;     /* 목록/행 아이템 제목 */
+  --font-size-body: 12px;           /* 본문 기본 텍스트 */
+  --font-size-subtext: 11px;        /* 부가 설명, 날짜, 장소 등 메타 정보 */
+  --font-size-badge: 10px;          /* 뱃지, 태그, 칩 */
+  --font-size-micro: 9px;           /* 시간표 그리드 등 극소 캡션 */
+  --font-size-micro-tight: 8px;     /* 주간 시간표의 좁은 보조 셀 */
+  --font-size-profile-name: 16px;
+  --font-size-brand: 18px;
+  --font-size-stat: 20px;
+  --font-size-feature-title: 26px;
+
+  /* 규격 호환용 축약 별칭 */
+  --font-size-xs: var(--font-size-badge);
+  --font-size-sm: var(--font-size-subtext);
+  --font-size-md: var(--font-size-body);
+  --font-size-lg: var(--font-size-section-title);
+  --font-size-xl: var(--font-size-page-title);
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-semibold-strong: 650;
+  --font-weight-bold: 700;
+  --font-weight-bold-strong: 750;
+  --font-weight-extrabold: 800;
+  --font-weight-ultrabold: 850;
+  --font-weight-black: 900;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,6 +95,7 @@ body {
   min-height: 100dvh;
   color: var(--color-text);
   background: var(--color-bg);
+  font-size: var(--font-size-body);
   line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
 }

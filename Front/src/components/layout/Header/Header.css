@@ -24,8 +24,8 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  font-size: 18px;
-  font-weight: 800;
+  font-size: var(--font-size-brand, 18px);
+  font-weight: var(--font-weight-extrabold, 800);
   letter-spacing: -0.03em;
   white-space: nowrap;
 }
@@ -41,8 +41,8 @@
 .app-header__logo--fallback {
   display: grid;
   place-items: center;
-  font-size: 12px;
-  font-weight: 850;
+  font-size: var(--font-size-body, 12px);
+  font-weight: var(--font-weight-ultrabold, 850);
   color: #ffffff;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, #00236f, #2563eb);

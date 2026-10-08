@@ -12,8 +12,8 @@
 }
 
 .setting-group__label {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--font-size-section-title, 14px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-muted);
   letter-spacing: -0.01em;
 }
@@ -23,8 +23,8 @@
   align-items: center;
   gap: 3px;
   padding: 2px 7px;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border-radius: 999px;
@@ -103,8 +103,8 @@
 }
 
 .profile-setting__name {
-  font-size: 15px;
-  font-weight: 800;
+  font-size: var(--font-size-profile-name, 16px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -113,8 +113,8 @@
 
 .setting-role-badge {
   padding: 1.5px 6px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border-radius: 5px;
@@ -126,7 +126,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 11px;
+  font-size: var(--font-size-subtext, 11px);
 }
 
 .profile-setting__detail-item {
@@ -143,7 +143,7 @@
 
 .profile-setting__detail-value {
   color: var(--color-text);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold, 600);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -154,11 +154,11 @@
   align-items: center;
   gap: 6px;
   color: var(--color-muted);
-  font-size: 11px;
+  font-size: var(--font-size-subtext, 11px);
 }
 
 .profile-setting__meta-line strong {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold, 700);
   color: var(--color-text);
 }
 
@@ -168,8 +168,8 @@
   gap: 4px;
   flex-shrink: 0;
   padding: 5px 8px;
-  font-size: 11px;
-  font-weight: 750;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-bold-strong, 750);
   color: var(--color-primary);
   background: var(--color-surface-subtle);
   border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
@@ -239,8 +239,8 @@
 }
 
 .setting-row-title {
-  font-size: 12px;
-  font-weight: 750;
+  font-size: var(--font-size-item-title, 12px);
+  font-weight: var(--font-weight-bold-strong, 750);
   color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -248,7 +248,7 @@
 }
 
 .setting-row-subtext {
-  font-size: 10px;
+  font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -256,9 +256,9 @@
 }
 
 .setting-row-desc {
-  font-size: 10px;
+  font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
-  line-height: 1.35;
+  line-height: 1.4;
   word-break: keep-all;
 }
 
@@ -275,30 +275,30 @@
 }
 
 .setting-row-action-label {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-bold, 700);
   color: var(--color-primary);
   white-space: nowrap;
 }
 
 .setting-row-badge-soft {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-muted);
   white-space: nowrap;
 }
 
 .setting-row-action-link {
-  font-size: 11px;
-  font-weight: 750;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-bold-strong, 750);
   color: var(--color-primary);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .setting-version-label {
-  font-size: 11px;
-  font-weight: 650;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-semibold-strong, 650);
   color: var(--color-muted);
   white-space: nowrap;
   flex-shrink: 0;
@@ -351,8 +351,8 @@
 
 .setting-segment-btn {
   padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 650;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-semibold-strong, 650);
   color: var(--color-muted);
   cursor: pointer;
   background: transparent;
@@ -363,7 +363,7 @@
 }
 
 .setting-segment-btn--active {
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-primary);
   background: var(--color-surface);
   box-shadow: 0 1px 3px rgb(15 23 42 / 0.08);
@@ -380,8 +380,8 @@
 .setting-logout-btn {
   width: 100%;
   padding: 12px;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--font-size-item-title, 12px);
+  font-weight: var(--font-weight-extrabold, 800);
   color: var(--color-danger);
   cursor: pointer;
   background: var(--color-surface);
@@ -401,13 +401,13 @@
   justify-content: center;
   gap: 8px;
   padding-top: 4px;
-  font-size: 11px;
+  font-size: var(--font-size-subtext, 11px);
 }
 
 .setting-sub-link {
   padding: 0;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: var(--font-weight-semibold, 600);
   color: var(--color-muted);
   cursor: pointer;
   background: transparent;
