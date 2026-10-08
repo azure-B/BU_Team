@@ -1,10 +1,9 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import LoginPage from './pages/LoginPage'
 import MyPage from './pages/MyPage'
-import SettingPage from './pages/SettingPage'
 import SchedulePage from './pages/SchedulePage'
 import { ScheduleProvider } from './components/schedule/ScheduleContext'
 import './styles/global.css'
@@ -28,10 +27,10 @@ function AnimatedRoutes() {
         <Route path="/schedule/:view" element={<SchedulePage />} />
         <Route path="/mypage"  element={<MyPage />} />
         <Route path="/myPage"  element={<MyPage />} />
-        <Route path="/setting" element={<SettingPage />} />
-        <Route path="/Setting" element={<SettingPage />} />
-        <Route path="/settings" element={<SettingPage />} />
-        <Route path="/Settings" element={<SettingPage />} />
+        <Route path="/setting" element={<Navigate to="/mypage" replace />} />
+        <Route path="/Setting" element={<Navigate to="/mypage" replace />} />
+        <Route path="/settings" element={<Navigate to="/mypage" replace />} />
+        <Route path="/Settings" element={<Navigate to="/mypage" replace />} />
         <Route path="*"        element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>

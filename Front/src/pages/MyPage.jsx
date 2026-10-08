@@ -2,8 +2,12 @@ import Layout from '../components/layout/Layout'
 import {
   ActivityArchiveCard,
   IntegrationUtilityCard,
-  ProfileSummaryCard,
 } from '../components/mypage/MyPageSections'
+import {
+  NotificationSettingCard,
+  ProfileSettingCard,
+  SettingAccountActions,
+} from '../components/setting/SettingSections'
 import './MyPage.css'
 
 export default function MyPage() {
@@ -14,9 +18,11 @@ export default function MyPage() {
           <h1 className="mypage-title">마이페이지</h1>
         </header>
 
-        <ProfileSummaryCard />
+        <ProfileSettingCard />
         <ActivityArchiveCard />
         <IntegrationUtilityCard />
+        <NotificationSettingCard />
+        <SettingAccountActions />
       </div>
     </Layout>
   )

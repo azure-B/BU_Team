@@ -39,7 +39,7 @@ asdasd/
 │   │   │   ├── dashboard/       — DashboardSections.jsx, DashboardSections.css
 │   │   │   ├── mypage/          — MyPageSections.jsx, MyPageSections.css
 │   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js
-│   │   │   ├── setting/         — SettingSections.jsx, SettingSections.css
+│   │   │   ├── setting/         — 마이페이지에 통합된 프로필·알림·계정 컴포넌트 (SettingSections.jsx, SettingSections.css)
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js
 │   │   │       ├── Footer/      — Footer.jsx, Footer.css, index.js
@@ -56,8 +56,6 @@ asdasd/
 │   │   │   ├── SchedulePage.css  — 메인 디자인 토큰 기반 일정 공통 스타일
 │   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
 │   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 연계 일정
-│   │   │   ├── SettingPage.jsx
-│   │   │   ├── SettingPage.css
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)

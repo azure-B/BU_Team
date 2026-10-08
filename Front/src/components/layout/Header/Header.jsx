@@ -1,4 +1,4 @@
-import { Bell, GearSix } from '@phosphor-icons/react'
+import { Bell } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './Header.css'
@@ -31,9 +31,6 @@ export default function Header() {
           <button className="icon-button" type="button" aria-label="알림">
             <Bell size={21} weight="regular" aria-hidden="true" />
           </button>
-          <Link to="/setting" className="icon-button" aria-label="설정">
-            <GearSix size={22} weight="regular" aria-hidden="true" />
-          </Link>
         </div>
       </div>
     </header>

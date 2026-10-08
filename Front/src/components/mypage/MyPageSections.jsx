@@ -1,16 +1,12 @@
 import {
   CalendarPlus,
   CaretRight,
-  Note,
   Folder,
   ListChecks,
   PencilSimpleLine,
 } from '@phosphor-icons/react'
 import SectionCard from '../common/SectionCard'
 import './MyPageSections.css'
-
-const PROFILE_IMG_URL =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC7bq76F-IIQaZYUY_LwRfTT1W2ZGsFo7RTz-bWTsLD_dit8j15K9_GTK06hVhaBububojMzrdVnugQTlbeM7IWlmT2XrsFvyeA_H9N8LVaxMkjCcu0Jtcj2jazG3btt75lV4jg0a_QQK1_WPHexjTKohS6lwzk1jXKzTqUBjAUQr0OMincgu6kCv4K3mSxqVqAZzYDuUmaucu725bSz7Lva7DOZlmVA63jOqLnYIj7x7V9LYroa890mA'
 
 const ACTIVITIES = [
   {
@@ -25,49 +21,7 @@ const ACTIVITIES = [
     desc: '진행 중인 과제 3개 · 수동 체크리스트',
     badge: '14건',
   },
-  {
-    icon: Note,
-    title: '수업 자료 및 요약 보관함',
-    desc: '업로드한 수업 자료와 AI 요약 확인',
-    badge: '24개',
-  },
 ]
-
-export function ProfileSummaryCard() {
-  return (
-    <SectionCard className="mypage-card">
-      <div className="mypage-card__top">
-        <span className="mypage-card__student-id">컴퓨터공학부 3학년 · 학번 20221340</span>
-        <span className="mypage-badge mypage-badge--semester">2025-2학기</span>
-      </div>
-
-      <div className="mypage-profile">
-        <div className="mypage-profile__avatar-wrap">
-          <img
-            src={PROFILE_IMG_URL}
-            alt="홍길동 학우 프로필"
-            className="mypage-profile__avatar"
-          />
-        </div>
-
-        <div className="mypage-profile__info">
-          <div className="mypage-profile__name-row">
-            <h2 className="mypage-profile__name">홍길동 학우님</h2>
-            <span className="mypage-badge mypage-badge--role">학부생</span>
-          </div>
-          <p className="mypage-profile__dept">인공지능·소프트웨어 전공 트랙</p>
-        </div>
-      </div>
-
-      <div className="mypage-stats-ribbon">
-        <div className="mypage-stats-item">
-          <span className="mypage-stats-item__label">요약 노트</span>
-          <strong className="mypage-stats-item__value">24개</strong>
-        </div>
-      </div>
-    </SectionCard>
-  )
-}
 
 export function ActivityArchiveCard() {
   return (
