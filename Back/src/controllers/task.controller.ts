@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import * as taskService from '../services/task.service';
 
-const getUserId = (req: Request) => (req as any).user?.id || 'mocked_user_id';
+// 🔒 라우터 도어락을 통과했으므로 req.user.id는 100% 안전함
+const getUserId = (req: Request) => (req as any).user.id;
 
 export const getTasks = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -33,7 +34,7 @@ export const deleteTask = async (req: Request, res: Response, next: NextFunction
     const userId = getUserId(req);
     const { id } = req.params;
     await taskService.deleteTask(userId, id);
-    res.json({ success: true, message: 'Task deleted' });
+    res.json({ success: true, message: '과제가 성공적으로 삭제되었습니다.' });
   } catch (error) { next(error); }
 };
 
