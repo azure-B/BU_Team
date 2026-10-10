@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import * as scheduleService from '../services/schedule.service';
 
-const getUserId = (req: Request) => (req as any).user?.id || 'mocked_user_id';
+// 🔒 라우터 도어락을 통과했으므로 req.user.id는 100% 안전하고 확실함
+const getUserId = (req: Request) => (req as any).user.id;
 
 export const getSchedules = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { from, to } = req.query;
     const userId = getUserId(req);
+    const { from, to } = req.query;
     const schedules = await scheduleService.getSchedules(userId, from as string, to as string);
     res.json({ success: true, data: schedules });
   } catch (error) { next(error); }
@@ -34,6 +35,6 @@ export const deleteSchedule = async (req: Request, res: Response, next: NextFunc
     const userId = getUserId(req);
     const { id } = req.params;
     await scheduleService.deleteSchedule(userId, id);
-    res.json({ success: true, message: 'Schedule deleted' });
+    res.json({ success: true, message: '일정이 성공적으로 삭제되었습니다.' });
   } catch (error) { next(error); }
 };
