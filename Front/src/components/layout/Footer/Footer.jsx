@@ -25,9 +25,11 @@ const QUICK_QUESTIONS = [
 
 function AssistantSheet({ open, onClose, triggerRef }) {
   const [query, setQuery] = useState('')
-  const [sending, setSending] = useState(false)
+  const [messages, setMessages] = useState([])
+  const isExpanded = Boolean(query.trim()) || messages.length > 0
   const inputRef = useRef(null)
-  const timerRef = useRef(null)
+  const historyRef = useRef(null)
+  const historyContentRef = useRef(null)
   const contentRef = useRef(null)
   const sheetRef = useRef(null)
   const hasOpenedRef = useRef(false)
@@ -43,8 +45,10 @@ function AssistantSheet({ open, onClose, triggerRef }) {
       const width = Math.min((viewport?.width ?? window.innerWidth) - 20, 420)
       // Measure at the final width; never scale the text with the surface.
       contentRef.current.style.width = `${width - 12}px`
-      const height = contentRef.current.offsetHeight + 12
       const safeBottom = parseFloat(getComputedStyle(sheetRef.current).scrollMarginBottom) || 10
+      const viewportHeight = viewport?.height ?? window.innerHeight
+      contentRef.current.style.maxHeight = `${Math.max(0, viewportHeight - safeBottom - 22)}px`
+      const height = contentRef.current.offsetHeight + 12
       setGeometry({
         button: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
         panel: {
@@ -58,6 +62,7 @@ function AssistantSheet({ open, onClose, triggerRef }) {
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(contentRef.current)
+    observer.observe(historyContentRef.current)
     observer.observe(triggerRef.current)
     window.addEventListener('resize', measure)
     window.visualViewport?.addEventListener('resize', measure)
@@ -78,7 +83,7 @@ function AssistantSheet({ open, onClose, triggerRef }) {
     const onKeyDown = (event) => {
       if (event.key === 'Escape') onClose()
       if (event.key === 'Tab') {
-        const focusable = [...sheetRef.current.querySelectorAll('button:not(:disabled), input:not(:disabled)')]
+        const focusable = [...sheetRef.current.querySelectorAll('button:not(:disabled), input:not(:disabled), [tabindex="0"]')]
         const first = focusable[0]
         const last = focusable.at(-1)
         if (event.shiftKey && (document.activeElement === first || !sheetRef.current.contains(document.activeElement))) {
@@ -97,17 +102,17 @@ function AssistantSheet({ open, onClose, triggerRef }) {
     }
   }, [open, onClose])
 
-  useEffect(() => () => window.clearTimeout(timerRef.current), [])
+  useLayoutEffect(() => {
+    if (historyRef.current) historyRef.current.scrollTop = historyRef.current.scrollHeight
+  }, [messages])
 
   const submitQuery = (event) => {
     event.preventDefault()
-    if (!query.trim() || sending) return
-    setSending(true)
-    timerRef.current = window.setTimeout(() => {
-      setQuery('')
-      setSending(false)
-      onClose()
-    }, 650)
+    const text = query.trim()
+    if (!text) return
+    setMessages((previous) => [...previous, { id: previous.length + 1, text }])
+    setQuery('')
+    inputRef.current?.focus({ preventScroll: true })
   }
 
   return (
@@ -116,6 +121,7 @@ function AssistantSheet({ open, onClose, triggerRef }) {
         tabIndex={-1} aria-hidden={!open} initial={false}
         animate={{ opacity: open ? 1 : 0 }} transition={{ duration: reducedMotion ? 0 : 0.25 }} />
       <motion.section ref={sheetRef} id="assistant-dialog" className="assistant-sheet"
+        data-state={isExpanded ? 'expanded' : 'collapsed'}
         role={open ? 'dialog' : undefined} aria-modal={open ? true : undefined}
         aria-labelledby={open ? 'assistant-title' : undefined} aria-hidden={!open}
         initial={false}
@@ -157,20 +163,29 @@ function AssistantSheet({ open, onClose, triggerRef }) {
           </button>
         </div>
 
+        <div ref={historyRef} className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''}`}
+          role="log" aria-label="AI 비서 대화 내역" aria-live="polite" tabIndex={isExpanded ? 0 : -1}>
+          <div ref={historyContentRef} className="assistant-history__messages">
+            {messages.map((message) => (
+              <p key={message.id} className="assistant-history__message"><span className="assistant-history__speaker">나</span>{message.text}</p>
+            ))}
+            {isExpanded && messages.length === 0 && <p className="assistant-history__hint">질문을 입력하고 전송해 주세요.</p>}
+          </div>
+        </div>
+
         <form className="assistant-input" onSubmit={submitQuery}>
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={sending ? '질문을 분석하고 있어요' : '무엇이든 물어보세요'}
+            placeholder="무엇이든 물어보세요"
             aria-label="AI 비서 질문"
-            disabled={sending}
           />
           <button className="assistant-input__voice" type="button" aria-label="음성 명령">
             <Microphone size={19} weight="fill" aria-hidden="true" />
           </button>
-          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={!query.trim() || sending}>
+          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={!query.trim()}>
             <PaperPlaneTilt size={17} weight="fill" aria-hidden="true" />
           </button>
         </form>
