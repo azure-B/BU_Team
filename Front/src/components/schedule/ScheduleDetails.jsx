@@ -12,7 +12,7 @@ export default function ScheduleDetails({ selectedDate, events, weekly = false }
     <SectionCard className="schedule-details">
       <div className="schedule-details__heading">
         <span><Icon size={16} weight="fill" aria-hidden="true" /></span>
-        <h2>{heading} {weekly ? '연계 일정' : '상세 일정'}</h2>
+        <h2>{heading} {weekly ? '일정' : '상세 일정'}</h2>
         <small>수업 {courses.length}건 · 일정 {personal.length}건</small>
       </div>
       {!weekly && courses.map((course) => (
