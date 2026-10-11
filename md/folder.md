@@ -29,7 +29,9 @@ asdasd/
 │   │   └── setting.html         — 설정 페이지 원본
 │   ├── src/
 │   │   ├── api/
-│   │   │   └── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
+│   │   │   ├── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
+│   │   │   ├── authApi.js       — 로그인/회원가입 인증 API 클라이언트
+│   │   │   └── dashboardApi.js  — 일정/과제(Top 3)/캠퍼스 동선 API 클라이언트
 │   │   ├── assets/              — 이미지, 폰트
 │   │   ├── components/
 │   │   │   ├── common/

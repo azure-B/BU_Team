@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
   BookOpenText,
   CaretRight,
@@ -13,22 +14,11 @@ import {
   Warning,
 } from '@phosphor-icons/react'
 import SectionCard from '../common/SectionCard'
+import { getSchedules, getPrioritizedTasks } from '../../api/dashboardApi'
 import './DashboardSections.css'
 
-const SCHEDULES = [
-  { time: '10:00 - 11:30', status: '종료', title: '자료구조', location: '본부동 201호', icon: CheckCircle, tone: 'muted' },
-  { time: '12:00 - 13:00', status: '점심', title: '점심 식사', location: '학생식당 (학식)', icon: ForkKnife, tone: 'lunch' },
-  { time: '15:00 - 16:30', status: '다음 일정', title: '인공지능', location: '본부동 302호', icon: Clock, tone: 'primary' },
-  { time: '17:00 - 18:00', status: 'AI 추천', title: '자료구조 복습', location: '학술정보관 2열람실', icon: Sparkle, tone: 'recommend' },
-]
-
-const DEADLINES = [
-  { due: 'D-2', tone: 'danger', title: '인공지능 과제 초안 작성', meta: '컴퓨터공학부 · 예상 소요 90분' },
-  { due: 'D-5', tone: 'primary', title: '2025-2학기 백석드림 성적장학금 신청', meta: '장학복지팀 · 온라인 접수' },
-  { due: 'D-7', tone: 'muted', title: '자료구조 중간고사 대비', meta: '3~5주차 트리/그래프 알고리즘' },
-]
-
-const NOTICES = [
+// 기본 공지사항 (A파트 연동 전 더미)
+const DEFAULT_NOTICES = [
   { category: '학사/장학', badge: 'D-5', source: '백석대 · 컴퓨터공학부', title: '2025학년도 2학기 백석드림 장학금 신청 요강 안내', meta: '오늘 09:20 · 온라인 접수' },
   { category: '학사', badge: 'NEW', source: '학사지원팀', title: '2025-2학기 수강철회 및 성적포기 신청 기간 안내', meta: '어제 · 포털 종합정보시스템' },
   { category: '취업/비교과', source: '인재개발원', title: '백석 글로벌 IT 인재 해외 인턴십 프로그램 2기 모집', meta: '9.15 · 글로벌 역량강화 지원' },
@@ -48,40 +38,83 @@ function SectionHeading({ icon: Icon, title, badge, action }) {
   )
 }
 
+/**
+ * 다음 수업 안내 카드 (실제 DB 일정 기반)
+ */
 export function NextClassCard() {
+  const [nextClass, setNextClass] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchNextClass = async () => {
+      try {
+        const todayStart = new Date()
+        todayStart.setHours(0, 0, 0, 0)
+        const todayEnd = new Date()
+        todayEnd.setHours(23, 59, 59, 999)
+
+        const schedules = await getSchedules(todayStart.toISOString(), todayEnd.toISOString())
+        if (Array.isArray(schedules) && schedules.length > 0) {
+          // 시작 시간 기준 오름차순 정렬
+          const sorted = [...schedules].sort((a, b) => new Date(a.startAt) - new Date(b.startAt))
+          // 아직 종료되지 않은 가장 가까운 수업 찾기
+          const now = new Date()
+          const upcoming = sorted.find((s) => new Date(s.endAt) > now) || sorted[0]
+          setNextClass(upcoming)
+        }
+      } catch (err) {
+        console.warn('다음 수업 정보 로드 실패 (기본값 사용):', err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNextClass()
+  }, [])
+
+  const formatTimeRange = (start, end) => {
+    if (!start || !end) return '10:00 - 12:00'
+    const s = new Date(start)
+    const e = new Date(end)
+    const pad = (n) => String(n).padStart(2, '0')
+    return `${pad(s.getHours())}:${pad(s.getMinutes())} - ${pad(e.getHours())}:${pad(e.getMinutes())}`
+  }
+
+  const title = nextClass?.title || '인공지능 개론'
+  const timeStr = formatTimeRange(nextClass?.startAt, nextClass?.endAt)
+
   return (
     <SectionCard className="next-class">
       <div className="next-class__top">
         <div className="next-class__date">
           <span className="next-class__spark"><Sparkle size={18} weight="fill" aria-hidden="true" /></span>
           <div>
-            <p>9월 17일 목요일 <span>· 2학기 3주차</span></p>
-            <small>실시간 캠퍼스 이동 &amp; 강의 안내</small>
+            <p>오늘의 캠퍼스 이동 &amp; 강의 안내</p>
+            <small>실시간 백석대 동선 계산 모듈 연동</small>
           </div>
         </div>
-        <span className="status-chip status-chip--danger">시작 42분 전</span>
+        <span className="status-chip status-chip--danger">오늘 수업</span>
       </div>
 
       <div className="next-class__body">
         <div className="next-class__title-row">
           <div>
             <span className="next-class__label">NEXT CLASS</span>
-            <h2>인공지능</h2>
+            <h2>{title}</h2>
           </div>
-          <strong>15:00 - 16:30</strong>
+          <strong>{timeStr}</strong>
         </div>
 
         <p className="location-line">
           <MapPin size={16} weight="fill" aria-hidden="true" />
-          <strong>본부동 302호</strong>
-          <span>현재 위치(자유관 203호)에서 도보 11분</span>
+          <strong>백석대학교 진리관</strong>
+          <span>현재 위치에서 도보 약 5분 소요</span>
         </p>
 
         <div className="class-tip">
           <span className="class-tip__icon"><Lightbulb size={16} weight="fill" aria-hidden="true" /></span>
           <div className="class-tip__content">
-            <p className="class-tip__highlight"><strong>14:35까지 출발</strong>을 권장해요.</p>
-            <p className="class-tip__sub">예상 이동 시간은 도보 11분입니다.</p>
+            <p className="class-tip__highlight"><strong>수업 시작 10분 전 출발</strong>을 권장해요.</p>
+            <p className="class-tip__sub">지각 위험도가 안전(SAFE) 상태입니다.</p>
           </div>
         </div>
 
@@ -98,60 +131,181 @@ export function NextClassCard() {
   )
 }
 
+/**
+ * 오늘 일정 목록 컴포넌트 (실제 DB Schedule 연동)
+ */
 export function TodaySchedule() {
+  const [schedules, setSchedules] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const todayStart = new Date()
+        todayStart.setHours(0, 0, 0, 0)
+        const todayEnd = new Date()
+        todayEnd.setHours(23, 59, 59, 999)
+
+        const data = await getSchedules(todayStart.toISOString(), todayEnd.toISOString())
+        if (Array.isArray(data) && data.length > 0) {
+          setSchedules(data)
+        }
+      } catch (err) {
+        console.warn('오늘 일정 조회 실패:', err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchSchedules()
+  }, [])
+
+  const formatTime = (dateStr) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    const pad = (n) => String(n).padStart(2, '0')
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`
+  }
+
+  const getStatusInfo = (startAt, endAt) => {
+    const now = new Date()
+    const start = new Date(startAt)
+    const end = new Date(endAt)
+    if (now > end) return { status: '종료', icon: CheckCircle, tone: 'muted' }
+    if (now >= start && now <= end) return { status: '진행중', icon: Clock, tone: 'primary' }
+    return { status: '예정', icon: Clock, tone: 'primary' }
+  }
+
   return (
     <SectionCard className="dashboard-section">
       <SectionHeading icon={Clock} title="오늘 일정" action="전체보기" />
       <div className="schedule-list">
-        {SCHEDULES.map(({ time, status, title, location, icon: Icon, tone }) => (
-          <div className={`schedule-row schedule-row--${tone}`} key={`${time}-${title}`}>
-            <time>{time}</time>
-            <span className="schedule-row__icon"><Icon size={16} weight="fill" aria-hidden="true" /></span>
-            <div className="schedule-row__content">
-              <div className="schedule-row__header">
-                <span className="schedule-row__status">{status}</span>
-                <strong className="schedule-row__title">{title}</strong>
+        {schedules.length > 0 ? (
+          schedules.map((item) => {
+            const { status, icon: Icon, tone } = getStatusInfo(item.startAt, item.endAt)
+            const timeRange = `${formatTime(item.startAt)} - ${formatTime(item.endAt)}`
+            return (
+              <div className={`schedule-row schedule-row--${tone}`} key={item.id || item.title}>
+                <time>{timeRange}</time>
+                <span className="schedule-row__icon"><Icon size={16} weight="fill" aria-hidden="true" /></span>
+                <div className="schedule-row__content">
+                  <div className="schedule-row__header">
+                    <span className="schedule-row__status">{status}</span>
+                    <strong className="schedule-row__title">{item.title}</strong>
+                  </div>
+                  <small className="schedule-row__location">
+                    {item.buildingId ? '백석대 강의실' : '캠퍼스 내 강의'}
+                  </small>
+                </div>
               </div>
-              <small className="schedule-row__location">{location}</small>
+            )
+          })
+        ) : (
+          <div className="schedule-row schedule-row--muted">
+            <time>오늘</time>
+            <span className="schedule-row__icon"><CheckCircle size={16} weight="fill" aria-hidden="true" /></span>
+            <div className="schedule-row__content">
+              <strong className="schedule-row__title">오늘 등록된 일정이 없습니다.</strong>
+              <small className="schedule-row__location">새로운 시간표나 일정을 추가해보세요.</small>
             </div>
           </div>
-        ))}
+        )}
       </div>
     </SectionCard>
   )
 }
 
+/**
+ * 우선순위 Top 3 과제 목록 컴포넌트 (조장님 계산 모듈 연동)
+ */
 export function DeadlineList() {
+  const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchTopTasks = async () => {
+      try {
+        const data = await getPrioritizedTasks()
+        if (Array.isArray(data) && data.length > 0) {
+          setTasks(data)
+        }
+      } catch (err) {
+        console.warn('우선순위 과제 조회 실패:', err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTopTasks()
+  }, [])
+
+  const calculateDDay = (dueAt) => {
+    if (!dueAt) return { dDay: 'D-day', tone: 'primary' }
+    const now = new Date().getTime()
+    const due = new Date(dueAt).getTime()
+    const diffHours = (due - now) / (1000 * 60 * 60)
+
+    if (diffHours < 0) return { dDay: '마감', tone: 'danger' }
+    if (diffHours <= 24) return { dDay: 'D-Day', tone: 'danger' }
+    const diffDays = Math.ceil(diffHours / 24)
+    if (diffDays <= 3) return { dDay: `D-${diffDays}`, tone: 'primary' }
+    return { dDay: `D-${diffDays}`, tone: 'muted' }
+  }
+
   return (
     <SectionCard className="dashboard-section">
-      <SectionHeading icon={Warning} title="놓치면 안 돼요" badge="3건 마감 임박" />
+      <SectionHeading 
+        icon={Warning} 
+        title="놓치면 안 돼요" 
+        badge={`${tasks.length}건 마감 임박 (우선순위 Top 3)`} 
+      />
       <div className="deadline-list">
-        {DEADLINES.map((item) => (
-          <button className="deadline-row" type="button" key={item.title}>
-            <span className={`due-chip due-chip--${item.tone}`}>{item.due}</span>
+        {tasks.length > 0 ? (
+          tasks.map((task) => {
+            const { dDay, tone } = calculateDDay(task.dueAt)
+            return (
+              <button className="deadline-row" type="button" key={task.id || task.title}>
+                <span className={`due-chip due-chip--${tone}`}>{dDay}</span>
+                <span className="deadline-row__content">
+                  <strong>{task.title}</strong>
+                  <small>
+                    중요도 {task.importance}점 · 우선순위 점수: {task.priorityScore ?? 0}점
+                  </small>
+                </span>
+                <CaretRight size={17} aria-hidden="true" />
+              </button>
+            )
+          })
+        ) : (
+          <div className="deadline-row" style={{ cursor: 'default' }}>
+            <span className="due-chip due-chip--primary">완료</span>
             <span className="deadline-row__content">
-              <strong>{item.title}</strong>
-              <small>{item.meta}</small>
+              <strong>마감 임박 과제가 없습니다!</strong>
+              <small>모든 과제를 제시간에 완료했습니다.</small>
             </span>
-            <CaretRight size={17} aria-hidden="true" />
-          </button>
-        ))}
+          </div>
+        )}
       </div>
     </SectionCard>
   )
 }
 
+/**
+ * 주요 공지사항 컴포넌트
+ */
 export function NoticeList() {
   return (
     <SectionCard className="dashboard-section">
       <SectionHeading icon={Megaphone} title="주요 공지사항" badge="4건 새글" action="전체보기" />
       <div className="notice-list">
-        {NOTICES.map((notice) => (
+        {DEFAULT_NOTICES.map((notice) => (
           <button className="notice-row" type="button" key={notice.title}>
             <span className="notice-row__content">
               <span className="notice-row__meta">
                 <span className="category-chip">{notice.category}</span>
-                {notice.badge && <span className={`notice-badge ${notice.badge === 'NEW' ? 'notice-badge--new' : ''}`}>{notice.badge}</span>}
+                {notice.badge && (
+                  <span className={`notice-badge ${notice.badge === 'NEW' ? 'notice-badge--new' : ''}`}>
+                    {notice.badge}
+                  </span>
+                )}
                 <span>{notice.source}</span>
               </span>
               <strong>{notice.title}</strong>

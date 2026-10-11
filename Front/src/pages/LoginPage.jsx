@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { login } from '../api/authApi';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -11,7 +12,7 @@ export default function LoginPage() {
 
   const showPasswordDrawer = studentId.length >= 4;
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!studentId.trim()) {
       alert("학번 또는 교번을 입력해주세요.");
@@ -26,10 +27,15 @@ export default function LoginPage() {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      await login(studentId.trim(), password.trim());
       alert("인증에 성공했습니다! 백석 AI 비서 맞춤 대시보드로 이동합니다.");
+      window.location.href = '/';
+    } catch (err) {
+      alert(err.message || '로그인에 실패했습니다. 학번과 비밀번호를 확인해주세요.');
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const handleSignupSubmit = (e) => {
