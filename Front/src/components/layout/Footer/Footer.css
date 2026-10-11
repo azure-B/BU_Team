@@ -149,10 +149,12 @@
   overflow-y: hidden;
   overscroll-behavior: contain;
   scrollbar-width: thin;
+  visibility: hidden;
 }
 
 .assistant-history--active {
   overflow-y: auto;
+  visibility: visible;
 }
 
 .assistant-history__messages {
