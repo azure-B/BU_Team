@@ -42,10 +42,6 @@ export const getClassrooms = async (req: Request, res: Response, next: NextFunct
 export const getRouteAndLateness = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { currentBuildingId, nextClassBuildingId, nextClassStartAt } = req.body;
-    if (!currentBuildingId || !nextClassBuildingId || !nextClassStartAt) {
-      res.status(400).json({ success: false, message: 'currentBuildingId, nextClassBuildingId, nextClassStartAt 는 필수 값입니다.' });
-      return;
-    }
     const data = await calculateRouteAndLateness(currentBuildingId, nextClassBuildingId, nextClassStartAt);
     res.json({ success: true, data });
   } catch (error) { next(error); }

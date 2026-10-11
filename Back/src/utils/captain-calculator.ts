@@ -1,6 +1,27 @@
-// 조장님 계산 모듈 (Mock)
-// 실제로는 조장님이 만드신 외부 API나 모듈을 호출하게 됩니다.
-// TODO: 나중에 조장님 모듈 여기다 연동할 것!
-export const calculatePriorityScore = (task: any) => {
-  return 0; // 임시(Mock) 수식 삭제 완료, 빈 껍데기 반환
+// 조장님 우선순위 계산 모듈 (Captain Calculator)
+// 과제 마감일(D-Day)과 중요도(1~5)를 종합하여 우선순위 점수를 산출합니다.
+// TODO: 조장님 외부 AI/연산 모듈이 확정되면 엔드포인트 또는 모듈 교체 예정
+export const calculatePriorityScore = (task: { dueAt: string | Date; importance: number }): number => {
+  const now = new Date().getTime();
+  const due = new Date(task.dueAt).getTime();
+  const diffHours = (due - now) / (1000 * 60 * 60);
+
+  // 긴급도 점수: 24시간 이내 마감이면 50점, 3일 이내면 30점, 7일 이내면 10점, 이미 지난 경우 60점
+  let urgencyScore = 0;
+  if (diffHours < 0) {
+    urgencyScore = 60; // 마감 지남 (최우선 처리 필요)
+  } else if (diffHours <= 24) {
+    urgencyScore = 50; // 24시간 이내 (D-1)
+  } else if (diffHours <= 72) {
+    urgencyScore = 35; // 3일 이내
+  } else if (diffHours <= 168) {
+    urgencyScore = 20; // 7일 이내
+  } else {
+    urgencyScore = 10;
+  }
+
+  // 중요도 점수: 1~5점을 10점 단위로 변환 (최대 50점)
+  const importanceScore = Math.min(5, Math.max(1, task.importance || 1)) * 10;
+
+  return urgencyScore + importanceScore;
 };

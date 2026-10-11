@@ -68,22 +68,26 @@ asdasd/
 │   ├── package.json
 │   └── .env.example
 │
-├── Back/                        — Express MVC 서버
+├── Back/                        — Express MVC 서버 (TypeScript + Prisma)
+│   ├── prisma/
+│   │   ├── schema.prisma        — 데이터베이스 스키마
+│   │   └── seed.ts              — 백석대 데모용 시드 데이터
 │   ├── src/
 │   │   ├── config/
 │   │   │   └── supabase.js      — Supabase(PostgreSQL) 클라이언트 설정
-│   │   ├── controllers/
-│   │   │   └── userController.js
-│   │   ├── routes/
-│   │   │   └── userRoutes.js
+│   │   ├── controllers/         — auth, schedule, task, campus, dashboard
 │   │   ├── middlewares/
-│   │   │   ├── errorHandler.js
-│   │   │   └── notFound.js
-│   │   ├── utils/
-│   │   │   └── response.js      — sendSuccess / sendError 헬퍼
-│   │   └── server.js            — 앱 진입점
+│   │   │   ├── auth.middleware.ts     — JWT 인증 미들웨어
+│   │   │   ├── validate.middleware.ts — Zod 요청 유효성 검증 미들웨어
+│   │   │   └── error.middleware.ts    — 전역 에러 핸들러
+│   │   ├── routes/              — auth, schedules, tasks, campus, dashboard
+│   │   ├── services/            — auth, schedule, task, campus, dashboard
+│   │   ├── validations/         — schedule, task, campus Zod 스키마
+│   │   ├── utils/               — prisma, app-error, captain-calculator
+│   │   ├── app.ts               — Express 앱 구성
+│   │   └── server.ts            — 서버 진입점
 │   ├── package.json
-│   └── .env.example
+│   └── tsconfig.json
 │
 └── md/                          — 문서 (SSOT)
     ├── AGENTS.md                — 원본 규율 (조별과제 기반)
