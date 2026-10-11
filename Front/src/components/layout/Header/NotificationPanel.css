@@ -1,0 +1,306 @@
+﻿/* ========================================
+   NotificationPanel.css
+   alarm.html 디자인을 바탕으로 한 알림 패널 스타일
+   ======================================== */
+
+/* ── 딤 백드롭 ── */
+.notif-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(0 0 0 / 0.48);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.notif-backdrop--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── 패널 본체 ── */
+.notif-panel {
+  position: fixed;
+  top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 6px);
+  right: 12px;
+  left: 12px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - var(--header-height) - env(safe-area-inset-top, 0px) - 80px);
+  background: var(--notif-bg, #161d2d);
+  border: 1px solid var(--notif-border, rgb(71 85 105 / 0.7));
+  border-radius: 18px;
+  box-shadow:
+    0 20px 35px -5px rgb(0 0 0 / 0.55),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+  overflow: hidden;
+  /* 등장 애니메이션 초기 상태 */
+  opacity: 0;
+  transform: scale(0.96) translateY(-6px);
+  pointer-events: none;
+  transition:
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 데스크톱/태블릿: 우측 고정 너비 */
+@media (min-width: 480px) {
+  .notif-panel {
+    left: auto;
+    width: 380px;
+  }
+}
+
+.notif-panel--open {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+/* dark mode 지원 */
+@media (prefers-color-scheme: dark) {
+  .notif-panel {
+    --notif-bg: #161d2d;
+    --notif-border: rgb(71 85 105 / 0.7);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .notif-panel {
+    --notif-bg: #ffffff;
+    --notif-border: rgb(226 232 240 / 1);
+  }
+}
+
+/* ── 삼각 포인터 ── */
+.notif-panel__arrow {
+  position: absolute;
+  top: -7px;
+  right: 52px;
+  width: 13px;
+  height: 13px;
+  background: inherit;
+  border-left: 1px solid var(--notif-border, rgb(71 85 105 / 0.7));
+  border-top: 1px solid var(--notif-border, rgb(71 85 105 / 0.7));
+  transform: rotate(45deg);
+  border-radius: 2px 0 0 0;
+}
+
+/* ── 패널 헤더 ── */
+.notif-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 13px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 95%, transparent);
+  flex-shrink: 0;
+}
+
+.notif-panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-panel__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.notif-panel__count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-danger, #e11d48);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.notif-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notif-panel__read-all-btn {
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.notif-panel__read-all-btn:hover {
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.notif-panel__close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition);
+}
+.notif-panel__close-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.notif-panel__close-btn:hover {
+  color: var(--color-text);
+  background: var(--color-surface-subtle);
+}
+
+/* ── 알림 목록 스크롤 영역 ── */
+.notif-panel__list {
+  overflow-y: auto;
+  flex: 1;
+  /* 커스텀 스크롤바 */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.15) transparent;
+}
+.notif-panel__list::-webkit-scrollbar {
+  width: 4px;
+}
+.notif-panel__list::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.15);
+  border-radius: 999px;
+}
+
+/* ── 빈 상태 ── */
+.notif-panel__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 20px;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+.notif-panel__empty span {
+  font-size: 28px;
+  opacity: 0.5;
+}
+
+/* ── 개별 알림 항목 ── */
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+  cursor: pointer;
+  transition: background var(--transition);
+  outline: none;
+}
+.notif-item:last-child {
+  border-bottom: none;
+}
+.notif-item:hover,
+.notif-item:focus-visible {
+  background: color-mix(in srgb, var(--color-surface-subtle) 70%, transparent);
+}
+
+/* 읽지 않음 항목: 좌측 강조 선 */
+.notif-item--unread {
+  background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+}
+.notif-item--unread .notif-item__message {
+  color: var(--color-text);
+  font-weight: 600;
+}
+.notif-item--unread .notif-item__time {
+  color: var(--color-muted);
+}
+
+/* ── 아이콘 ── */
+.notif-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  margin-top: 1px;
+}
+.notif-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.notif-icon--star {
+  background: rgb(245 158 11 / 0.15);
+  border: 1px solid rgb(245 158 11 / 0.3);
+  color: #f59e0b;
+}
+.notif-icon--deadline {
+  background: rgb(244 63 94 / 0.15);
+  border: 1px solid rgb(244 63 94 / 0.3);
+  color: #f43f5e;
+}
+.notif-icon--class {
+  background: rgb(96 165 250 / 0.15);
+  border: 1px solid rgb(96 165 250 / 0.3);
+  color: #60a5fa;
+}
+.notif-icon--notice {
+  background: color-mix(in srgb, var(--color-surface-subtle) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  color: var(--color-muted);
+}
+
+/* ── 알림 텍스트 영역 ── */
+.notif-item__body {
+  flex: 1;
+  min-width: 0;
+}
+.notif-item__message {
+  margin: 0 0 3px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-muted);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.notif-item__time {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-muted) 70%, transparent);
+}
+
+/* ── 읽지 않음 빨간 점 ── */
+.notif-item__dot {
+  flex-shrink: 0;
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger, #e11d48);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-surface) 90%, transparent);
+  animation: notif-dot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes notif-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
