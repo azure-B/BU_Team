@@ -51,7 +51,7 @@
 .weekly-timetable__header .is-selected small { color: var(--color-primary); }
 .weekly-timetable__hours { display: flex; flex-direction: column; background: var(--color-surface-subtle); }
 .weekly-timetable__hours span { height: 48px; padding-top: 5px; color: var(--color-muted); font-size: var(--font-size-badge, 10px); text-align: center; border-bottom: 1px solid var(--color-border); }
-.timetable-column { position: relative; height: 432px; border-left: 1px solid var(--color-border); background: repeating-linear-gradient(to bottom, transparent 0, transparent 47px, var(--color-border) 47px, var(--color-border) 48px); }
+.timetable-column { position: relative; height: var(--timetable-height, 432px); border-left: 1px solid var(--color-border); background: repeating-linear-gradient(to bottom, transparent 0, transparent 47px, var(--color-border) 47px, var(--color-border) 48px); }
 .timetable-column--selected { background-color: color-mix(in srgb, var(--color-primary-soft) 45%, transparent); }
 .timetable-course { position: absolute; inset-inline: 2px; display: flex; min-width: 0; align-items: stretch; flex-direction: column; gap: 3px; padding: 5px 4px; color: #fff; text-align: left; border: 0; border-radius: 7px; overflow: hidden; cursor: pointer; transition: filter var(--transition); }
 .timetable-course:hover { filter: brightness(0.94); }
@@ -66,6 +66,8 @@
 .timetable-course--emerald { background: #047857; }
 .timetable-course--indigo { background: #4338ca; }
 .timetable-course--teal { background: #0f766e; }
+.timetable-course--major { background: #1d4ed8; }
+.timetable-course--general { background: #047857; }
 .timetable-recommendation { position: absolute; inset-inline: 2px; display: flex; flex-direction: column; gap: 2px; padding: 4px; color: var(--color-primary); background: var(--color-primary-soft); border: 1px solid var(--color-primary); border-radius: 7px; overflow: hidden; text-align: left; cursor: pointer; }
 .timetable-recommendation strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-size-micro, 9px); }
 .timetable-recommendation small { font-size: var(--font-size-micro-tight, 8px); }
@@ -87,9 +89,11 @@
 .schedule-kind--class, .schedule-kind--notice { color: var(--color-primary); background: var(--color-primary-soft); }
 .schedule-kind--task { color: var(--color-danger); background: var(--color-danger-soft); }
 .schedule-kind--recommend { color: var(--color-success); background: var(--color-success-soft); }
+.schedule-kind--major { color: var(--color-primary); background: var(--color-primary-soft); }
+.schedule-kind--general { color: var(--color-success); background: var(--color-success-soft); }
 .schedule-empty { margin: 20px 0; color: var(--color-muted); font-size: var(--font-size-body, 12px); text-align: center; }
 
-.schedule-dialog { width: min(380px, calc(100% - 28px)); padding: 20px; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card); box-shadow: var(--shadow-float); }
+.schedule-dialog { width: min(380px, calc(100% - 28px)); max-height: calc(100dvh - 28px); overflow-y: auto; padding: 20px; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card); box-shadow: var(--shadow-float); }
 .schedule-dialog::backdrop { background: rgb(15 23 42 / 0.4); backdrop-filter: blur(4px); }
 .schedule-dialog form { display: flex; flex-direction: column; gap: 16px; }
 .schedule-dialog__heading { display: flex; justify-content: space-between; align-items: center; }
@@ -99,6 +103,11 @@
 .schedule-dialog label { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 6px; font-size: var(--font-size-body, 12px); font-weight: var(--font-weight-bold, 700); }
 .schedule-dialog input, .schedule-dialog select { width: 100%; min-width: 0; padding: 10px; color: var(--color-text); background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 9px; font: inherit; }
 .schedule-dialog__dates { display: flex; gap: 10px; }
+.schedule-dialog__modes { display: flex; gap: 4px; padding: 4px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 12px; }
+.schedule-dialog__modes button { flex: 1; padding: 9px 4px; color: var(--color-muted); background: transparent; border: 0; border-radius: 8px; font: inherit; font-weight: var(--font-weight-bold, 700); cursor: pointer; }
+.schedule-dialog__modes button[aria-pressed="true"] { color: #fff; background: #1d4ed8; }
+.schedule-dialog__hint { margin: 0; color: var(--color-muted); font-size: var(--font-size-subtext, 11px); line-height: 1.6; }
+.schedule-dialog__error { margin: 0; color: var(--color-danger); font-size: var(--font-size-body, 12px); line-height: 1.6; }
 .schedule-save-button { padding: 12px; color: #fff; background: #1d4ed8; border: 0; border-radius: var(--radius-control); font-weight: var(--font-weight-bold, 700); cursor: pointer; }
 .schedule-save-button:disabled { opacity: 0.5; cursor: default; }
 @media (min-width: 720px) { .schedule-page { padding-top: 22px; padding-bottom: 128px; } }

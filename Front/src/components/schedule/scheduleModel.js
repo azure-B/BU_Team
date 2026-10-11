@@ -1,5 +1,5 @@
 export const SCHEDULE_STORAGE_KEY = 'baekseok.schedule.v1'
-export const DEFAULT_SCHEDULE = { view: 'weekly', selectedDate: '2026-09-17', events: [] }
+export const DEFAULT_SCHEDULE = { view: 'weekly', selectedDate: '2026-09-17', events: [], courses: [], removedCourseIds: [] }
 
 export function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -50,9 +50,11 @@ export function readSchedule(storage) {
       view: saved?.view === 'monthly' ? 'monthly' : 'weekly',
       selectedDate: parseDate(saved?.selectedDate) ? saved.selectedDate : DEFAULT_SCHEDULE.selectedDate,
       events: Array.isArray(saved?.events) ? saved.events.filter((event) => event && typeof event.id === 'string' && typeof event.title === 'string' && event.title.trim() && parseDate(event.date) && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) && ['task', 'notice', 'recommend'].includes(event.kind)) : [],
+      courses: Array.isArray(saved?.courses) ? saved.courses.map(normalizeCourse).filter(Boolean) : [],
+      removedCourseIds: Array.isArray(saved?.removedCourseIds) ? saved.removedCourseIds.filter((id) => COURSES.some((course) => course.id === id)) : [],
     }
   } catch {
-    return { ...DEFAULT_SCHEDULE, events: [] }
+    return { ...DEFAULT_SCHEDULE, events: [], courses: [], removedCourseIds: [] }
   }
 }
 
@@ -82,9 +84,28 @@ const SAMPLE_EVENTS = [
   { id: 'study', date: '2026-09-24', time: '17:00', title: '중간고사 대비 스터디', location: '학술정보관', kind: 'recommend' },
 ]
 
-export function coursesForDate(value) {
-  if (value < '2026-09-01' || value > '2026-12-21') return []
-  return COURSES.filter((course) => course.day === parseDate(value).getDay())
+function normalizeCourse(course) {
+  if (!course || typeof course.id !== 'string' || !course.id || typeof course.title !== 'string' || !course.title.trim() || course.title.trim().length > 100 || !Number.isInteger(course.day) || course.day < 1 || course.day > 5 || !Number.isFinite(course.start) || course.start < 0 || course.start > 23 || !['major', 'general'].includes(course.kind)) return null
+  return { id: course.id, title: course.title.trim(), day: course.day, start: course.start, end: course.start + 1, kind: course.kind, color: course.kind, location: '매주 반복' }
+}
+
+export function createCourse({ id, title, day, time, kind }) {
+  if (typeof time !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return null
+  const [hour, minute] = time.split(':').map(Number)
+  return normalizeCourse({ id, title, day: Number(day), start: hour + minute / 60, kind })
+}
+
+export function activeCourses(courses = [], removedCourseIds = []) {
+  return [...COURSES, ...courses].filter((course) => !removedCourseIds.includes(course.id))
+}
+
+export function coursesForDate(value, courses = [], removedCourseIds = []) {
+  const date = parseDate(value)
+  return date ? activeCourses(courses, removedCourseIds).filter((course) => course.day === date.getDay()).sort((a, b) => a.start - b.start) : []
+}
+
+export function removeCourse(state, id) {
+  return { ...state, courses: state.courses.filter((course) => course.id !== id), removedCourseIds: COURSES.some((course) => course.id === id) ? [...new Set([...state.removedCourseIds, id])] : state.removedCourseIds }
 }
 
 export function eventsForDate(value, events = []) {
@@ -92,5 +113,6 @@ export function eventsForDate(value, events = []) {
 }
 
 export function hourLabel(hour) {
-  return `${String(Math.floor(hour)).padStart(2, '0')}:${hour % 1 ? '30' : '00'}`
+  const minutes = Math.round(hour * 60)
+  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
 }

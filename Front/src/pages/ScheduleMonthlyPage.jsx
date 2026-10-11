@@ -4,7 +4,7 @@ import { coursesForDate, eventsForDate, monthDates, parseDate } from '../compone
 
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
-export default function ScheduleMonthlyPage({ selectedDate, events, onSelect }) {
+export default function ScheduleMonthlyPage({ selectedDate, events, courses: customCourses, removedCourseIds, onSelect, onRemoveCourse }) {
   const selectedMonth = selectedDate.slice(0, 7)
   return (
     <>
@@ -13,7 +13,7 @@ export default function ScheduleMonthlyPage({ selectedDate, events, onSelect }) 
         <div className="monthly-calendar__grid">
           {monthDates(selectedDate).map((value) => {
             const date = parseDate(value)
-            const courses = coursesForDate(value)
+            const courses = coursesForDate(value, customCourses, removedCourseIds)
             const personal = eventsForDate(value, events)
             const selected = value === selectedDate
             return (
@@ -26,13 +26,13 @@ export default function ScheduleMonthlyPage({ selectedDate, events, onSelect }) 
           })}
         </div>
         <div className="calendar-legend">
-          <span><i className="calendar-day__classes" />정규 수업(학기)</span>
+          <span><i className="calendar-day__classes" />매주 반복 수업</span>
           <span><i className="schedule-dot schedule-dot--task" />과제/마감</span>
           <span><i className="schedule-dot schedule-dot--notice" />학사 공지</span>
           <span><i className="schedule-dot schedule-dot--recommend" />AI 추천/시험</span>
         </div>
       </SectionCard>
-      <ScheduleDetails selectedDate={selectedDate} events={events} />
+      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={customCourses} removedCourseIds={removedCourseIds} onRemoveCourse={onRemoveCourse} />
     </>
   )
 }

@@ -38,7 +38,7 @@ asdasd/
 │   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
 │   │   │   ├── dashboard/       — DashboardSections.jsx, DashboardSections.css
 │   │   │   ├── mypage/          — MyPageSections.jsx, MyPageSections.css
-│   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js
+│   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js (일정·반복 수업·로컬 저장)
 │   │   │   ├── setting/         — 마이페이지에 통합된 프로필·알림·계정 컴포넌트 (SettingSections.jsx, SettingSections.css)
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js
@@ -52,10 +52,10 @@ asdasd/
 │   │   │   ├── LoginPage.css     — 로그인 화면 공통 타이포그래피 토큰 적용
 │   │   │   ├── MyPage.jsx
 │   │   │   ├── MyPage.css
-│   │   │   ├── SchedulePage.jsx  — 일정 진입·보기 전환·일정 추가
+│   │   │   ├── SchedulePage.jsx  — 일정 진입·보기 전환·일정/수업 추가 모달
 │   │   │   ├── SchedulePage.css  — 메인 디자인 토큰 기반 일정 공통 스타일
 │   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
-│   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 연계 일정
+│   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 영구 반복 수업
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)

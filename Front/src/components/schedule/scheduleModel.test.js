@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  DEFAULT_SCHEDULE, SCHEDULE_STORAGE_KEY, coursesForDate, eventsForDate,
+  DEFAULT_SCHEDULE, SCHEDULE_STORAGE_KEY, coursesForDate, createCourse, eventsForDate, hourLabel, removeCourse,
   monthDates, monthWeek, parseDate, readSchedule, saveSchedule, shiftDate, weekDates,
 } from './scheduleModel.js'
 
@@ -16,7 +16,7 @@ test('첫 진입은 원본의 주간 화면과 선택일로 시작한다', () =>
 
 test('홈으로 나갔다가 다시 진입하거나 새로고침해도 마지막 보기와 날짜를 복원한다', () => {
   const storage = memoryStorage()
-  const monthly = { view: 'monthly', selectedDate: '2026-10-22', events: [] }
+  const monthly = { ...DEFAULT_SCHEDULE, view: 'monthly', selectedDate: '2026-10-22' }
   saveSchedule(storage, monthly)
   assert.deepEqual(readSchedule(storage), monthly)
   const weekly = { ...readSchedule(storage), view: 'weekly' }
@@ -75,13 +75,53 @@ test('주간 보기는 같은 주의 날짜를 선택해도 동일한 범위와 
   assert.deepEqual(weekDates('2026-09-20'), expected)
 })
 
-test('월간 상세와 주간 시간표는 같은 수업 데이터를 쓰며 학기 밖에는 반복하지 않는다', () => {
+test('수업은 같은 요일에 학기 제한 없이 반복하고 주말에는 표시하지 않는다', () => {
   assert.deepEqual(coursesForDate('2026-09-17').map(({ title, start, end }) => ({ title, start, end })), [
     { title: '자료구조', start: 10, end: 11.5 },
     { title: '인공지능', start: 15, end: 16.5 },
   ])
   assert.deepEqual(coursesForDate('2026-09-17'), coursesForDate('2026-09-24'))
   assert.deepEqual(coursesForDate('2026-09-19'), [])
-  assert.deepEqual(coursesForDate('2026-08-31'), [])
-  assert.deepEqual(coursesForDate('2026-12-22'), [])
+  assert.deepEqual(coursesForDate('2026-09-17'), coursesForDate('2027-01-07'))
+  assert.ok(coursesForDate('2026-08-31').length > 0)
+  assert.ok(coursesForDate('2026-12-22').length > 0)
+})
+
+test('기존 저장값은 일정을 보존하면서 새 수업 필드의 기본값을 적용한다', () => {
+  const storage = memoryStorage()
+  const event = { id: 'legacy', title: '기존 일정', date: '2026-10-05', time: '18:00', kind: 'task' }
+  storage.setItem(SCHEDULE_STORAGE_KEY, JSON.stringify({ view: 'monthly', selectedDate: event.date, events: [event] }))
+  const restored = readSchedule(storage)
+  assert.deepEqual(restored.events, [event])
+  assert.deepEqual(restored.courses, [])
+  assert.deepEqual(restored.removedCourseIds, [])
+})
+
+test('수업의 분 단위 시간과 종류를 저장하며 연도를 넘겨 반복하고 삭제를 복원한다', () => {
+  const storage = memoryStorage()
+  const course = createCourse({ id: 'custom-class', title: '  새로운 전공  ', day: 4, time: '07:15', kind: 'major' })
+  assert.equal(course.title, '새로운 전공')
+  assert.equal(hourLabel(course.start), '07:15')
+  assert.equal(hourLabel(course.end), '08:15')
+  assert.equal(course.color, 'major')
+  saveSchedule(storage, { ...DEFAULT_SCHEDULE, courses: [course] })
+  let restored = readSchedule(storage)
+  assert.ok(coursesForDate('2027-01-07', restored.courses).some(({ id }) => id === course.id))
+  assert.ok(!coursesForDate('2027-01-08', restored.courses).some(({ id }) => id === course.id))
+  restored = removeCourse(removeCourse(restored, course.id), 'data')
+  saveSchedule(storage, restored)
+  restored = readSchedule(storage)
+  assert.ok(!coursesForDate('2027-01-07', restored.courses, restored.removedCourseIds).some(({ id }) => id === course.id || id === 'data'))
+})
+
+test('잘못된 수업 데이터는 제외하고 유효한 교양 수업은 복원한다', () => {
+  const storage = memoryStorage()
+  const course = createCourse({ id: 'general', title: '교양', day: 5, time: '23:00', kind: 'general' })
+  assert.equal(course.color, 'general')
+  assert.equal(hourLabel(course.end), '24:00')
+  for (const invalid of [{ day: 0 }, { day: 6 }, { time: '23:30' }, { time: '25:00' }, { kind: 'unknown' }, { title: '  ' }]) {
+    assert.equal(createCourse({ id: 'bad', title: '수업', day: 1, time: '09:00', kind: 'major', ...invalid }), null)
+  }
+  saveSchedule(storage, { ...DEFAULT_SCHEDULE, courses: [null, { ...course, start: -1 }, { ...course, day: 8 }, course] })
+  assert.deepEqual(readSchedule(storage).courses, [course])
 })
