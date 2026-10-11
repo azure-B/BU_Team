@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import SectionCard from '../components/common/SectionCard'
 import { useSchedule } from '../components/schedule/ScheduleContext'
-import { monthWeek, parseDate, shiftDate, weekDates } from '../components/schedule/scheduleModel'
+import { monthWeek, parseDate, shiftDate } from '../components/schedule/scheduleModel'
 import ScheduleMonthlyPage from './ScheduleMonthlyPage'
 import ScheduleWeeklyPage from './ScheduleWeeklyPage'
 import './SchedulePage.css'
@@ -51,7 +51,6 @@ export default function SchedulePage() {
 
   const monthly = view === 'monthly'
   const date = parseDate(state.selectedDate)
-  const week = weekDates(state.selectedDate)
   const onSelect = (selectedDate) => setState((previous) => ({ ...previous, selectedDate }))
   const shift = (amount) => onSelect(shiftDate(state.selectedDate, monthly ? amount : amount * 7, monthly ? 'month' : 'day'))
   const ViewIcon = monthly ? Clock : CalendarBlank
@@ -71,7 +70,6 @@ export default function SchedulePage() {
             <Link className="schedule-icon-button" to={`/schedule/${monthly ? 'weekly' : 'monthly'}`} aria-label={monthly ? '주간 시간표로 보기' : '월간 달력으로 보기'}><ViewIcon size={18} weight="fill" /></Link>
           </div>
         </SectionCard>
-        {!monthly && <p className="schedule-week-range">{week[0].replaceAll('-', '.')} – {week[4].replaceAll('-', '.')}</p>}
         <View selectedDate={state.selectedDate} events={state.events} onSelect={onSelect} />
         {adding && <AddScheduleDialog selectedDate={state.selectedDate} onClose={() => setAdding(false)} onAdd={(event) => setState((previous) => ({ ...previous, selectedDate: event.date, events: [...previous.events, event] }))} />}
       </div>

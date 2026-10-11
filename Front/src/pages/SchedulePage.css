@@ -19,7 +19,6 @@
 .schedule-icon-button:active { transform: scale(0.96); }
 .schedule-icon-button--primary { color: #fff; background: #1d4ed8; border-color: #1d4ed8; }
 .schedule-icon-button--primary:hover { color: #fff; background: #1e40af; }
-.schedule-week-range { margin: -7px 2px -5px; color: var(--color-muted); font-size: var(--font-size-subtext, 11px); }
 
 .monthly-calendar { padding: 12px; }
 .monthly-calendar__weekdays, .monthly-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
