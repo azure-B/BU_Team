@@ -131,6 +131,7 @@
   flex-direction: column;
   position: absolute;
   top: 0;
+  bottom: 0;
   left: 0;
   box-sizing: border-box;
   padding: 10px 14px 14px;
@@ -150,6 +151,7 @@
 
 .assistant-history--active {
   display: block;
+  flex: 1;
   margin-top: 14px;
 }
 
@@ -202,11 +204,28 @@
 }
 
 .assistant-sheet__handle {
+  display: grid;
+  width: 80px;
+  height: 24px;
+  margin: -6px auto 0;
+  padding: 0;
+  place-items: center;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+}
+
+.assistant-sheet__handle span {
   width: 40px;
   height: 4px;
-  margin: 0 auto 10px;
   background: var(--color-border);
   border-radius: 999px;
+}
+
+.assistant-sheet__handle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
 }
 
 .assistant-sheet__header,
@@ -406,5 +425,11 @@
   .assistant-sheet,
   .assistant-backdrop {
     transition: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .assistant-input input {
+    font-size: 16px;
   }
 }
