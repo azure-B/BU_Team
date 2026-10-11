@@ -28,6 +28,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   const isExpanded = mode === 'expanded'
   const [query, setQuery] = useState('')
   const [messages, setMessages] = useState([])
+  const [historyVisible, setHistoryVisible] = useState(() => mode === 'expanded')
   const inputRef = useRef(null)
   const handleRef = useRef(null)
   const historyRef = useRef(null)
@@ -117,10 +118,20 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
     if (isExpanded && historyRef.current) historyRef.current.scrollTop = historyRef.current.scrollHeight
   }, [messages, isExpanded, geometry?.panel.height])
 
+  useLayoutEffect(() => {
+    if (open && isExpanded) setHistoryVisible(true)
+  }, [open, isExpanded])
+
+  const toggleExpanded = () => {
+    if (!isExpanded) setHistoryVisible(true)
+    onToggle()
+  }
+
   const submitQuery = (event) => {
     event.preventDefault()
     const text = query.trim()
     if (!text) return
+    setHistoryVisible(true)
     onExpand()
     setMessages((previous) => [...previous, { id: previous.length + 1, text }])
     setQuery('')
@@ -152,6 +163,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
         } : {}}
         transition={reducedMotion || (!open && !hasOpenedRef.current) ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 36, mass: 1 }}
         onAnimationComplete={() => {
+          setHistoryVisible(open && isExpanded)
           if (open && !sheetRef.current.contains(document.activeElement)) handleRef.current?.focus({ preventScroll: true })
         }}>
         <motion.span className="assistant-sheet__button-icon" aria-hidden="true" initial={false}
@@ -164,7 +176,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           transition={{ duration: reducedMotion ? 0 : open ? 0.2 : 0.09, delay: open && !reducedMotion ? 0.18 : 0 }}>
         <button ref={handleRef} className="assistant-sheet__handle" type="button"
           aria-label={isExpanded ? 'AI 비서 접기' : 'AI 비서 펼치기'}
-          aria-expanded={isExpanded} aria-controls="assistant-history" onClick={onToggle}>
+          aria-expanded={isExpanded} aria-controls="assistant-history" onClick={toggleExpanded}>
           <span aria-hidden="true" />
         </button>
         <div className="assistant-sheet__header">
@@ -182,7 +194,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           </button>
         </div>
 
-        <div ref={historyRef} id="assistant-history" className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''}`}
+        <div ref={historyRef} id="assistant-history" className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''} ${historyVisible ? 'assistant-history--visible' : ''}`}
           role="log" aria-label="AI 비서 대화 내역" aria-live="polite" aria-hidden={!isExpanded}
           inert={!isExpanded} tabIndex={isExpanded ? 0 : -1}>
           <div ref={historyContentRef} className="assistant-history__messages">
