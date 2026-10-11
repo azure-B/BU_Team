@@ -124,7 +124,11 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
     onExpand()
     setMessages((previous) => [...previous, { id: previous.length + 1, text }])
     setQuery('')
-    inputRef.current?.focus({ preventScroll: true })
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      inputRef.current?.blur()
+    } else {
+      inputRef.current?.focus({ preventScroll: true })
+    }
   }
 
   return (
@@ -168,8 +172,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
             <span><Sparkle size={19} weight="fill" aria-hidden="true" /></span>
             <div>
               <div className="assistant-sheet__title-line">
-                <h2 id="assistant-title">AI 비서 실시간 질의</h2>
-                <span className="connected-badge">연동됨</span>
+                <h2 id="assistant-title">백석AI 비서</h2>
               </div>
               <p>캠퍼스 일정, 학사 공지, 과제 질의가 가능해요</p>
             </div>

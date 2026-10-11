@@ -182,7 +182,7 @@ export function ProfileSettingCard() {
 
           <div className="profile-edit-photo">
             <img src={draft.avatar} alt="변경할 프로필 미리보기" />
-            <div><strong>프로필 사진</strong><span>정사각형으로 잘라 저장합니다.</span></div>
+            <div><strong>프로필 사진</strong></div>
             <label className="profile-edit-photo__button" htmlFor="profile-photo-input">사진 선택</label>
             <input id="profile-photo-input" className="profile-edit-photo__input" type="file" accept="image/*" onChange={choosePhoto} />
           </div>

@@ -98,7 +98,7 @@ asdasd/
     ├── folder.md                — 이 파일
     ├── jobs/
     │   ├── back/                — Back 작업 내역
-    │   └── front/               — Front 작업 내역 (2026-10-03.md, 2026-10-07.md 일별 로그 포함)
+    │   └── front/               — Front 작업 내역 (2026-10-03.md, 2026-10-07.md, 2026-10-11.md 일별 로그 포함)
     ├── back-workflow.mdc
     ├── front-workflow.mdc
     ├── git-workflow.mdc
