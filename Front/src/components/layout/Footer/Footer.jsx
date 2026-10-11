@@ -15,6 +15,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { motion, useReducedMotion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { useSchedule } from '../../schedule/ScheduleContext'
+import { useAssistantPreferences } from './AssistantPreferences'
 import './Footer.css'
 
 const QUICK_QUESTIONS = [
@@ -23,8 +24,7 @@ const QUICK_QUESTIONS = [
   { label: '중간고사 공부 계획', icon: BookBookmark },
 ]
 
-function AssistantSheet({ mode, onClose, onToggle, onExpand, triggerRef }) {
-  const open = mode !== 'off'
+function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef }) {
   const isExpanded = mode === 'expanded'
   const [query, setQuery] = useState('')
   const [messages, setMessages] = useState([])
@@ -56,7 +56,7 @@ function AssistantSheet({ mode, onClose, onToggle, onExpand, triggerRef }) {
         .reduce((total, child) => {
           const style = getComputedStyle(child)
           return total + child.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom)
-        }, parseFloat(contentStyle.paddingTop) + parseFloat(contentStyle.paddingBottom) + 12)
+        }, parseFloat(contentStyle.paddingTop) + parseFloat(contentStyle.paddingBottom) + 12 + 14)
       // Expanded height depends only on the viewport, never the message count.
       const height = Math.min(isExpanded ? 600 : compactHeight, availableHeight)
       setGeometry({
@@ -114,7 +114,7 @@ function AssistantSheet({ mode, onClose, onToggle, onExpand, triggerRef }) {
   }, [open, onClose])
 
   useLayoutEffect(() => {
-    if (historyRef.current) historyRef.current.scrollTop = historyRef.current.scrollHeight
+    if (isExpanded && historyRef.current) historyRef.current.scrollTop = historyRef.current.scrollHeight
   }, [messages, isExpanded, geometry?.panel.height])
 
   const submitQuery = (event) => {
@@ -133,7 +133,7 @@ function AssistantSheet({ mode, onClose, onToggle, onExpand, triggerRef }) {
         tabIndex={-1} aria-hidden={!open} initial={false}
         animate={{ opacity: open ? 1 : 0 }} transition={{ duration: reducedMotion ? 0 : 0.25 }} />
       <motion.section ref={sheetRef} id="assistant-dialog" className="assistant-sheet"
-        data-state={mode}
+        data-state={open ? mode : 'off'}
         role={open ? 'dialog' : undefined} aria-modal={open ? true : undefined}
         aria-labelledby={open ? 'assistant-title' : undefined} aria-hidden={!open}
         initial={false}
@@ -180,12 +180,13 @@ function AssistantSheet({ mode, onClose, onToggle, onExpand, triggerRef }) {
         </div>
 
         <div ref={historyRef} id="assistant-history" className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''}`}
-          role="log" aria-label="AI 비서 대화 내역" aria-live="polite" tabIndex={isExpanded ? 0 : -1}>
+          role="log" aria-label="AI 비서 대화 내역" aria-live="polite" aria-hidden={!isExpanded}
+          inert={!isExpanded} tabIndex={isExpanded ? 0 : -1}>
           <div ref={historyContentRef} className="assistant-history__messages">
             {messages.map((message) => (
               <p key={message.id} className="assistant-history__message"><span className="assistant-history__speaker">나</span>{message.text}</p>
             ))}
-            {isExpanded && messages.length === 0 && <p className="assistant-history__hint">질문을 입력하고 전송해 주세요.</p>}
+            {messages.length === 0 && <p className="assistant-history__hint">질문을 입력하고 전송해 주세요.</p>}
           </div>
         </div>
 
@@ -223,11 +224,11 @@ function AssistantSheet({ mode, onClose, onToggle, onExpand, triggerRef }) {
 }
 
 export default function Footer() {
-  const [assistantMode, setAssistantMode] = useState('off')
-  const assistantOpen = assistantMode !== 'off'
+  const { mode: assistantMode, setMode: setAssistantMode } = useAssistantPreferences()
+  const [assistantOpen, setAssistantOpen] = useState(false)
   const triggerRef = useRef(null)
   const closeAssistant = useCallback(() => {
-    setAssistantMode('off')
+    setAssistantOpen(false)
     triggerRef.current?.focus({ preventScroll: true })
   }, [])
   const location = useLocation()
@@ -264,7 +265,7 @@ export default function Footer() {
             aria-label="AI 비서 실행"
             aria-expanded={assistantOpen}
             aria-controls="assistant-dialog"
-            onClick={() => setAssistantMode('collapsed')}
+            onClick={() => setAssistantOpen(true)}
           >
             <span aria-hidden="true" />
             <strong>AI 비서</strong>
@@ -282,7 +283,7 @@ export default function Footer() {
           </Link>
         </nav>
       </footer>
-      <AssistantSheet mode={assistantMode} onClose={closeAssistant}
+      <AssistantSheet open={assistantOpen} mode={assistantMode} onClose={closeAssistant}
         onToggle={() => setAssistantMode((current) => current === 'expanded' ? 'collapsed' : 'expanded')}
         onExpand={() => setAssistantMode('expanded')} triggerRef={triggerRef} />
     </>

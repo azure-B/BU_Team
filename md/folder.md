@@ -42,7 +42,7 @@ asdasd/
 │   │   │   ├── setting/         — 마이페이지에 통합된 프로필·알림·계정 컴포넌트 (SettingSections.jsx, SettingSections.css)
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js
-│   │   │       ├── Footer/      — Footer.jsx, Footer.css, index.js
+│   │   │       ├── Footer/      — Footer.jsx, Footer.css, AssistantPreferences.jsx (앱 실행 중 모달 크기 기억), index.js
 │   │   │       └── Layout/      — Layout.jsx, Layout.css, index.js
 │   │   ├── hooks/               — 커스텀 훅
 │   │   ├── pages/

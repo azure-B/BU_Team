@@ -142,17 +142,17 @@
 }
 
 .assistant-history {
-  display: none;
+  display: block;
+  flex: 1;
+  margin-top: 14px;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: hidden;
   overscroll-behavior: contain;
   scrollbar-width: thin;
 }
 
 .assistant-history--active {
-  display: block;
-  flex: 1;
-  margin-top: 14px;
+  overflow-y: auto;
 }
 
 .assistant-history__messages {

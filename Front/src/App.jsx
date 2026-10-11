@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage'
 import MyPage from './pages/MyPage'
 import SchedulePage from './pages/SchedulePage'
 import { ScheduleProvider } from './components/schedule/ScheduleContext'
+import { AssistantPreferencesProvider } from './components/layout/Footer/AssistantPreferences'
 import './styles/global.css'
 
 /**
@@ -41,7 +42,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScheduleProvider>
-        <AnimatedRoutes />
+        <AssistantPreferencesProvider>
+          <AnimatedRoutes />
+        </AssistantPreferencesProvider>
       </ScheduleProvider>
     </BrowserRouter>
   )
