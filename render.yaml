@@ -3,7 +3,7 @@ services:
     name: back-end-api
     env: node
     rootDir: Back
-    buildCommand: npm install
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV

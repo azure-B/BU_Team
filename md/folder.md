@@ -70,13 +70,13 @@ asdasd/
 │   ├── package.json
 │   └── .env.example
 │
-├── Back/                        — Express MVC 서버 (TypeScript + Prisma)
-│   ├── prisma/
-│   │   ├── schema.prisma        — 데이터베이스 스키마
-│   │   └── seed.ts              — 백석대 데모용 시드 데이터
+├── Back/                        — Express MVC 서버 (TypeScript + Supabase)
+│   ├── supabase/
+│   │   └── schema.sql           — Supabase 테이블 생성 및 더미 데이터
 │   ├── src/
 │   │   ├── config/
-│   │   │   └── supabase.js      — Supabase(PostgreSQL) 클라이언트 설정
+│   │   │   ├── supabase.js      — 기존 JS Supabase 클라이언트
+│   │   │   └── supabase.ts      — TypeScript Supabase 클라이언트
 │   │   ├── controllers/         — auth, schedule, task, campus, dashboard
 │   │   ├── middlewares/
 │   │   │   ├── auth.middleware.ts     — JWT 인증 미들웨어
@@ -85,7 +85,7 @@ asdasd/
 │   │   ├── routes/              — auth, schedules, tasks, campus, dashboard
 │   │   ├── services/            — auth, schedule, task, campus, dashboard
 │   │   ├── validations/         — schedule, task, campus Zod 스키마
-│   │   ├── utils/               — prisma, app-error, captain-calculator
+│   │   ├── utils/               — app-error, captain-calculator
 │   │   ├── app.ts               — Express 앱 구성
 │   │   └── server.ts            — 서버 진입점
 │   ├── package.json

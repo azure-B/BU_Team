@@ -23,7 +23,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
 export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const { id } = req.params;
+    const id = req.params.id as string;
     const task = await taskService.updateTask(userId, id, req.body);
     res.json({ success: true, data: task });
   } catch (error) { next(error); }
@@ -32,7 +32,7 @@ export const updateTask = async (req: Request, res: Response, next: NextFunction
 export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const { id } = req.params;
+    const id = req.params.id as string;
     await taskService.deleteTask(userId, id);
     res.json({ success: true, message: '과제가 성공적으로 삭제되었습니다.' });
   } catch (error) { next(error); }
