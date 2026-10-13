@@ -7,6 +7,7 @@ import scheduleRoutes from './routes/schedules.routes';
 import taskRoutes from './routes/tasks.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import campusRoutes from './routes/campus.routes';
+import noticeRoutes from './routes/notices.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app = express();
@@ -25,6 +26,8 @@ app.use('/api/v1/schedules', scheduleRoutes);
 app.use('/api/v1/tasks', taskRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/campus', campusRoutes);
+app.use('/api/v1/notices', noticeRoutes);
+app.use('/api/notices', noticeRoutes);
 
 app.use(errorHandler as any);
 

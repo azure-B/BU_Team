@@ -151,7 +151,17 @@ Base URL: `http://localhost:5001/api/v1`
 
 ---
 
-## 5. 캠퍼스 데이터 (Campus) - B파트
+## 5. 공지 (Notice)
+
+### GET /api/v1/notices
+
+- 설명: 백석대 전체공지 2026년 목록. 최신순.
+- Query: `limit` (기본 8, 최대 300)
+- 응답: `{ success, total, notices: [{ id, title, category, tags, source, link, createdAt }] }`
+- 관련 파일: `Back/src/routes/notices.routes.ts`, `Back/src/services/notice.service.ts`
+- 같은 핸들러를 `/api/notices`에도 연결한다. 배포 프론트의 `VITE_API_URL`이 `/api`로 끝나기 때문이다.
+
+## 6. 캠퍼스 데이터 (Campus) - B파트
 
 ### GET /api/v1/campus/buildings
 - **설명**: 백석대 건물 목록 조회

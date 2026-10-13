@@ -14,16 +14,20 @@ import {
   Warning,
 } from '@phosphor-icons/react'
 import SectionCard from '../common/SectionCard'
-import { getSchedules, getPrioritizedTasks } from '../../api/dashboardApi'
+import { getSchedules, getPrioritizedTasks, getNotices } from '../../api/dashboardApi'
 import './DashboardSections.css'
 
-// 기본 공지사항 (A파트 연동 전 더미)
-const DEFAULT_NOTICES = [
-  { category: '학사/장학', badge: 'D-5', source: '백석대 · 컴퓨터공학부', title: '2025학년도 2학기 백석드림 장학금 신청 요강 안내', meta: '오늘 09:20 · 온라인 접수' },
-  { category: '학사', badge: 'NEW', source: '학사지원팀', title: '2025-2학기 수강철회 및 성적포기 신청 기간 안내', meta: '어제 · 포털 종합정보시스템' },
-  { category: '취업/비교과', source: '인재개발원', title: '백석 글로벌 IT 인재 해외 인턴십 프로그램 2기 모집', meta: '9.15 · 글로벌 역량강화 지원' },
-  { category: '도서관', source: '학술정보관', title: '학술정보관 2학기 중간고사 24시간 특별 개방 및 좌석 배정 안내', meta: '9.14 · 모바일 열람증 필수' },
-]
+function noticeMeta(createdAt) {
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) return '전체공지'
+  return `${date.getMonth() + 1}.${date.getDate()} · 전체공지`
+}
+
+function isRecentNotice(createdAt) {
+  const date = new Date(createdAt)
+  if (Number.isNaN(date.getTime())) return false
+  return Date.now() - date.getTime() < 14 * 24 * 60 * 60 * 1000
+}
 
 function SectionHeading({ icon: Icon, title, badge, action }) {
   return (
@@ -292,28 +296,61 @@ export function DeadlineList() {
  * 주요 공지사항 컴포넌트
  */
 export function NoticeList() {
+  const [notices, setNotices] = useState([])
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    let ignore = false
+    getNotices(8)
+      .then((data) => {
+        if (ignore) return
+        setNotices(Array.isArray(data?.notices) ? data.notices : [])
+        setTotal(data?.total || 0)
+      })
+      .catch(() => {
+        if (!ignore) setNotices([])
+      })
+    return () => { ignore = true }
+  }, [])
+
+  const recentCount = notices.filter((notice) => isRecentNotice(notice.createdAt)).length
+
   return (
     <SectionCard className="dashboard-section">
-      <SectionHeading icon={Megaphone} title="주요 공지사항" badge="4건 새글" action="전체보기" />
+      <SectionHeading
+        icon={Megaphone}
+        title="주요 공지사항"
+        badge={total ? `${total}건` : recentCount ? `${recentCount}건 새글` : undefined}
+        action="전체보기"
+      />
       <div className="notice-list">
-        {DEFAULT_NOTICES.map((notice) => (
-          <button className="notice-row" type="button" key={notice.title}>
+        {notices.length ? notices.map((notice) => (
+          <a
+            className="notice-row"
+            key={notice.id}
+            href={notice.link || 'https://www.bu.ac.kr/web/3483/subview.do'}
+            target="_blank"
+            rel="noreferrer"
+          >
             <span className="notice-row__content">
               <span className="notice-row__meta">
                 <span className="category-chip">{notice.category}</span>
-                {notice.badge && (
-                  <span className={`notice-badge ${notice.badge === 'NEW' ? 'notice-badge--new' : ''}`}>
-                    {notice.badge}
-                  </span>
-                )}
-                <span>{notice.source}</span>
+                {isRecentNotice(notice.createdAt) && <span className="notice-badge notice-badge--new">NEW</span>}
+                <span>{notice.source || notice.tags}</span>
               </span>
               <strong>{notice.title}</strong>
-              <small>{notice.meta}</small>
+              <small>{noticeMeta(notice.createdAt)}</small>
             </span>
             <CaretRight size={17} aria-hidden="true" />
-          </button>
-        ))}
+          </a>
+        )) : (
+          <div className="deadline-row" style={{ cursor: 'default' }}>
+            <span className="deadline-row__content">
+              <strong>표시할 공지가 없습니다.</strong>
+              <small>Supabase에 2026년 전체공지를 넣은 뒤 다시 열어 주세요.</small>
+            </span>
+          </div>
+        )}
       </div>
     </SectionCard>
   )

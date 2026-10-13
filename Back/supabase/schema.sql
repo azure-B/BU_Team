@@ -68,6 +68,8 @@ CREATE TABLE "Notice" (
   "content" TEXT NOT NULL,
   "category" TEXT NOT NULL,
   "tags" TEXT NOT NULL,
+  "source" TEXT,
+  "link" TEXT,
   "deadlineAt" TIMESTAMP(3),
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -275,26 +277,7 @@ INSERT INTO "Schedule" ("id", "userId", "type", "title", "startAt", "endAt", "bu
     'bldg-lib'
   );
 
-INSERT INTO "Notice" ("id", "title", "content", "category", "tags", "deadlineAt") VALUES
-  (
-    'notice-capstone',
-    '캡스톤 디자인 1차 제안서 제출 안내',
-    '제안서는 학과 사무실로 제출하거나 LMS에 업로드합니다.',
-    '학사',
-    '캡스톤,제안서',
-    now() + interval '12 hours'
-  ),
-  (
-    'notice-library',
-    '학술정보관 야간 연장 운영',
-    '시험 기간 동안 학술정보관을 22시까지 연장 운영합니다.',
-    '시설',
-    '도서관,운영시간',
-    NULL
-  );
-
-INSERT INTO "NoticeBookmark" ("id", "userId", "noticeId") VALUES
-  ('bookmark-capstone', 'mocked_user_id', 'notice-capstone');
+-- 2026년 전체공지 283건은 Back/supabase/notices-2026.sql 에서 넣는다.
 
 INSERT INTO "StudyMaterial" ("id", "userId", "courseName", "rawText", "processingStatus") VALUES
   (
