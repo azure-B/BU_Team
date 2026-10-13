@@ -71,17 +71,11 @@ asdasd/
 │   └── .env.example
 │
 ├── Back/                        — Express MVC 서버 (TypeScript + Supabase)
-│   ├── supabase/
-│   │   ├── schema.sql           — Supabase 테이블 생성 및 더미 데이터
-│   │   ├── notices-2026.sql     — 2026년 전체공지 283건
-│   │   └── notices-2026.json    — 공지 목록 원본
-│   ├── scripts/
-│   │   └── crawl-bu-notices.mjs — bu.ac.kr 전체공지 목록 수집
 │   ├── src/
 │   │   ├── config/
 │   │   │   ├── supabase.js      — 기존 JS Supabase 클라이언트
 │   │   │   └── supabase.ts      — TypeScript Supabase 클라이언트
-│   │   ├── controllers/         — auth, schedule, task, campus, dashboard, notice
+│   │   ├── controllers/         — auth, schedule, task, campus, dashboard, notice, course
 │   │   ├── middlewares/
 │   │   │   ├── auth.middleware.ts     — JWT 인증 미들웨어
 │   │   │   ├── validate.middleware.ts — Zod 요청 유효성 검증 미들웨어

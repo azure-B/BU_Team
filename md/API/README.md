@@ -161,7 +161,17 @@ Base URL: `http://localhost:5001/api/v1`
 - 관련 파일: `Back/src/routes/notices.routes.ts`, `Back/src/services/notice.service.ts`
 - 같은 핸들러를 `/api/notices`에도 연결한다. 배포 프론트의 `VITE_API_URL`이 `/api`로 끝나기 때문이다.
 
-## 6. 캠퍼스 데이터 (Campus) - B파트
+## 6. 개설 과목 (Course)
+
+### GET /api/v1/courses
+
+- 설명: 2026-2 수강 책자에서 추출한 개설 과목
+- Query: `department`, `major`, `kind` (`major` | `general` | `teaching`), `q` (과목명), `limit` (기본 50, 최대 300)
+- 응답: `{ success, total, courses }`
+- 관련 파일: `Back/src/routes/courses.routes.ts`, `Back/src/services/course.service.ts`
+- 같은 핸들러를 `/api/courses`에도 연결한다.
+
+## 7. 캠퍼스 데이터 (Campus) - B파트
 
 ### GET /api/v1/campus/buildings
 - **설명**: 백석대 건물 목록 조회
