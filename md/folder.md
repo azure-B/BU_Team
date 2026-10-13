@@ -1,14 +1,14 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-10-11
+> 마지막 갱신: 2026-10-13
 
 ```
 asdasd/
 ├── AGENTS.md                    — 에이전트 가이드 (진입점)
 ├── netlify.toml                 — Netlify Front 배포 설정
 ├── render.yaml                  — Render Back 배포 설정
-├── .env                         — 전역 환경 변수 (Supabase, Render 등)
+├── .env                         — 환경 변수. 프로젝트 루트에만 둔다 (Back/.env, Front/.env 아님)
 ├── .agents/
 │   └── rules/                   — Antigravity 에이전트 규율
 │       ├── project-overview.md
@@ -104,4 +104,16 @@ asdasd/
     ├── git-workflow.mdc
     ├── md-documentation.mdc
     └── project-overview.mdc
+```
+
+## 환경 변수
+
+`.env`는 저장소 최상위, 즉 프로젝트 루트에 있다. `Back/`이나 `Front/` 안에 두지 않는다.
+
+백엔드는 `Back/src/config/supabase.ts`에서 이 루트 `.env`를 읽는다. 로컬 실행 전에 아래 값이 들어 있는지 확인한다.
+
+```
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+VITE_API_URL=
 ```
