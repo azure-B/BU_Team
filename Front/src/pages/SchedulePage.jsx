@@ -40,6 +40,7 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
   const contentRef = useRef(null)
   const formRef = useRef(null)
   const titleRef = useRef(null)
+  const closeButtonRef = useRef(null)
   const reducedMotion = useReducedMotion()
   const [geometry, setGeometry] = useState(null)
   const [mode, setMode] = useState('event')
@@ -56,8 +57,13 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
   }
   useLayoutEffect(() => {
     const dialog = dialogRef.current
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     dialog.showModal()
-    return () => dialog.close()
+    return () => {
+      dialog.close()
+      document.body.style.overflow = previousOverflow
+    }
   }, [])
   useLayoutEffect(() => {
     const dialog = dialogRef.current
@@ -68,9 +74,11 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
       const verticalSpace = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth)
       const scrollbarWidth = Math.max(0, dialog.offsetWidth - dialog.clientWidth - parseFloat(style.borderLeftWidth) - parseFloat(style.borderRightWidth))
       const width = Math.min(isCourse ? 760 : 380, document.documentElement.clientWidth - 28)
+      const maxHeight = parseFloat(style.maxHeight)
+      dialog.style.setProperty('--schedule-dialog-content-max-height', `${Math.max(0, maxHeight - verticalSpace)}px`)
       // 최종 너비에서 내용을 측정해 텍스트를 늘리거나 줄이지 않고 표면만 움직인다.
       formRef.current.style.width = `${Math.max(0, width - horizontalSpace - scrollbarWidth)}px`
-      const height = Math.min(content.offsetHeight + verticalSpace, window.innerHeight - 28)
+      const height = Math.min(content.offsetHeight + verticalSpace, maxHeight)
       setGeometry((previous) => previous?.width === width && previous?.height === height ? previous : { width, height })
     }
     dialog.scrollTop = 0
@@ -83,7 +91,11 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
       window.removeEventListener('resize', measure)
     }
   }, [isCourse])
-  useEffect(() => { titleRef.current?.focus() }, [mode])
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 600px), (pointer: coarse)').matches
+    const target = mobile ? closeButtonRef.current : titleRef.current
+    target?.focus({ preventScroll: true })
+  }, [mode])
   const submit = (event) => {
     event.preventDefault()
     if (isCourse) return
@@ -97,7 +109,7 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
     <motion.dialog ref={dialogRef} className={`schedule-dialog${isCourse ? ' schedule-dialog--course' : ''}`} aria-labelledby="add-schedule-title" onCancel={onClose} onClick={(event) => { if (event.target === dialogRef.current) onClose() }}
       initial={false} animate={geometry ?? {}} transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 36, mass: 1 }}>
       <div ref={contentRef} className="schedule-dialog__content">
-        <div className="schedule-dialog__heading"><h2 id="add-schedule-title">{isCourse ? '새 수업 추가' : '새 일정 추가'}</h2><button type="button" className="schedule-icon-button" onClick={onClose} aria-label="추가 창 닫기"><X size={18} /></button></div>
+        <div className="schedule-dialog__heading"><h2 id="add-schedule-title">{isCourse ? '새 수업 추가' : '새 일정 추가'}</h2><button ref={closeButtonRef} type="button" className="schedule-icon-button" onClick={onClose} aria-label="추가 창 닫기"><X size={18} /></button></div>
         <div className="schedule-dialog__modes" role="group" aria-label="추가 모드">
           <button type="button" aria-pressed={!isCourse} onClick={() => { setMode('event'); setError('') }}>일정 추가</button>
           <button type="button" aria-pressed={isCourse} onClick={() => { setMode('course'); setError('') }}>수업 추가</button>

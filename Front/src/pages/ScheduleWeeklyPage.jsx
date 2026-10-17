@@ -35,7 +35,7 @@ export default function ScheduleWeeklyPage({ selectedDate, events, courses, remo
                 const start = hour + minute / 60
                 if (!event.repeatWeekly && coursesForDate(value, courses, removedCourseIds).some((course) => start < course.end && Math.min(start + 1, 24) > course.start)) return null
                 const duration = Math.min(1, 24 - start)
-                return <button type="button" key={event.id} onClick={() => onSelect(value)} className={`timetable-event timetable-event--${event.kind} ${event.repeatWeekly ? 'timetable-event--recurring' : ''}`} style={{ top: (start - firstHour) * 48 + 2, height: Math.max(8, duration * 48 - 4) }} title={`${event.title} · ${event.time}${event.repeatWeekly ? ' · 매주 반복' : ''}`}><strong>{event.id === 'review' ? 'AI 복습' : event.title}</strong><small>{event.time}{event.repeatWeekly ? ' · 매주' : ''}</small></button>
+                return <button type="button" key={event.id} onClick={() => onSelect(value)} className={`timetable-event timetable-event--${event.kind} ${event.repeatWeekly ? 'timetable-event--recurring' : ''}`} style={{ top: (start - firstHour) * 48 + 2, height: Math.max(8, duration * 48 - 4) }} title={`${event.title} · ${event.time}${event.repeatWeekly ? ' · 매주 반복' : ''}`}><strong>{event.title}</strong><small>{event.time}{event.repeatWeekly ? ' · 매주' : ''}</small></button>
               })}
             </div>
           ))}

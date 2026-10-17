@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { catalogAreas, catalogMeetings, createCatalogCourses, filterCatalog } from './courseCatalog.js'
-import { COURSES, coursesForDate, DEFAULT_SCHEDULE, readSchedule, registerCourses, removeCourse, saveSchedule } from './scheduleModel.js'
+import { coursesForDate, DEFAULT_SCHEDULE, readSchedule, registerCourses, removeCourse, saveSchedule } from './scheduleModel.js'
 
 const course = {
   id: 'db-course-1', title: '컴퓨터구조', code: 'CS101', kind: 'major',
@@ -54,7 +54,6 @@ test('전공 선택지는 학부 단위로 제공하고 같은 학부의 세부 
 })
 
 test('정상 조회 후에는 빈 결과를 포함해 DB에 있는 영역만 제공한다', () => {
-  assert.equal(catalogAreas([], { includeDefaults: true }).length, 3)
   assert.deepEqual(catalogAreas([]), [])
   const areas = catalogAreas([{ ...course, department: '실제학부' }])
   assert.deepEqual(areas.map((area) => area.label), ['실제학부'])
@@ -66,16 +65,22 @@ const deployedCourse = {
   meetings: [{ day: 2, periods: [5], start: '13:00', end: '13:50' }],
 }
 
+const occupiedSchedule = () => ({
+  ...DEFAULT_SCHEDULE, selectedDate: '2026-09-17',
+  courses: createCatalogCourses({ ...deployedCourse, id: 'existing-course', meetings: [{ day: 2, start: 13, end: 15 }] }),
+})
+
 test('실서버 형식의 강의가 기존 시간표와 겹치면 등록을 거부하고 상태를 보존한다', () => {
-  const state = { ...DEFAULT_SCHEDULE, courses: [], removedCourseIds: [] }
+  const state = occupiedSchedule()
   const result = registerCourses(state, createCatalogCourses(deployedCourse))
   assert.match(result.error, /겹쳐/)
   assert.strictEqual(result.state, state)
-  assert.equal(result.state.courses.length, 0)
+  assert.equal(result.state.courses.length, 1)
 })
 
 test('충돌 수업을 삭제하면 강의를 등록하고 새로고침 후에도 실제 시간을 복원한다', () => {
-  const state = removeCourse({ ...DEFAULT_SCHEDULE, courses: [], removedCourseIds: [] }, 'calligraphy')
+  const occupied = occupiedSchedule()
+  const state = removeCourse(occupied, occupied.courses[0].id)
   const meetings = createCatalogCourses(deployedCourse)
   const result = registerCourses(state, meetings)
   assert.equal(result.error, null)
@@ -95,7 +100,7 @@ test('충돌 수업을 삭제하면 강의를 등록하고 새로고침 후에�
 
 test('부분 겹침·포함 관계는 거부하고 맞닿은 시간이나 다른 요일은 허용한다', () => {
   const existing = createCatalogCourses({ ...deployedCourse, id: 'existing', meetings: [{ day: 2, start: 13, end: 14 }] })
-  const state = { ...DEFAULT_SCHEDULE, courses: existing, removedCourseIds: COURSES.map(({ id }) => id) }
+  const state = { ...DEFAULT_SCHEDULE, courses: existing }
   for (const [start, end] of [[12.5, 13.1], [13.1, 13.5], [12, 15], [13, 14], [13.5, 14.5]]) {
     const candidate = createCatalogCourses({ ...deployedCourse, meetings: [{ day: 2, start, end }] })
     const result = registerCourses(state, candidate)
@@ -111,10 +116,10 @@ test('부분 겹침·포함 관계는 거부하고 맞닿은 시간이나 다른
 })
 
 test('여러 시간 중 하나만 충돌해도 강의 전체를 거부한다', () => {
-  const state = { ...DEFAULT_SCHEDULE, courses: [], removedCourseIds: [] }
+  const state = occupiedSchedule()
   const candidate = createCatalogCourses({ ...deployedCourse, meetings: [{ day: 1, start: 18, end: 19 }, ...deployedCourse.meetings] })
   const result = registerCourses(state, candidate)
   assert.match(result.error, /겹쳐/)
   assert.strictEqual(result.state, state)
-  assert.deepEqual(result.state.courses, [])
+  assert.deepEqual(result.state.courses, state.courses)
 })

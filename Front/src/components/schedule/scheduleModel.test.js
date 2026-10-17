@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  DEFAULT_SCHEDULE, SCHEDULE_STORAGE_KEY, coursesForDate, createCourse, eventsForDate, hourLabel, removeCourse,
+  DEFAULT_SCHEDULE, SCHEDULE_STORAGE_KEY, coursesForDate, createCourse, dateKey, eventsForDate, hourLabel, removeCourse,
   monthDates, monthWeek, parseDate, readSchedule, saveSchedule, shiftDate, weekDates,
 } from './scheduleModel.js'
 
@@ -10,8 +10,13 @@ function memoryStorage() {
   return { getItem: (key) => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) }
 }
 
-test('첫 진입은 원본의 주간 화면과 선택일로 시작한다', () => {
+test('첫 진입은 오늘의 빈 시간표로 시작하고 예시 수업과 일정이 표시되지 않는다', () => {
   assert.deepEqual(readSchedule(memoryStorage()), DEFAULT_SCHEDULE)
+  assert.equal(DEFAULT_SCHEDULE.selectedDate, dateKey(new Date()))
+  for (const date of ['2026-09-14', '2026-09-15', '2026-09-16', '2026-09-17', '2026-09-18', '2026-09-22', '2026-09-24']) {
+    assert.deepEqual(coursesForDate(date), [])
+    assert.deepEqual(eventsForDate(date), [])
+  }
 })
 
 test('홈으로 나갔다가 다시 진입하거나 새로고침해도 마지막 보기와 날짜를 복원한다', () => {
@@ -76,15 +81,11 @@ test('주간 보기는 같은 주의 날짜를 선택해도 동일한 범위와 
 })
 
 test('수업은 같은 요일에 학기 제한 없이 반복하고 주말에는 표시하지 않는다', () => {
-  assert.deepEqual(coursesForDate('2026-09-17').map(({ title, start, end }) => ({ title, start, end })), [
-    { title: '자료구조', start: 10, end: 11.5 },
-    { title: '인공지능', start: 15, end: 16.5 },
-  ])
-  assert.deepEqual(coursesForDate('2026-09-17'), coursesForDate('2026-09-24'))
-  assert.deepEqual(coursesForDate('2026-09-19'), [])
-  assert.deepEqual(coursesForDate('2026-09-17'), coursesForDate('2027-01-07'))
-  assert.ok(coursesForDate('2026-08-31').length > 0)
-  assert.ok(coursesForDate('2026-12-22').length > 0)
+  const courses = [createCourse({ id: 'registered', title: '등록한 수업', day: 4, time: '10:30', kind: 'major' })]
+  assert.deepEqual(coursesForDate('2026-09-17', courses), courses)
+  assert.deepEqual(coursesForDate('2026-09-17', courses), coursesForDate('2026-09-24', courses))
+  assert.deepEqual(coursesForDate('2026-09-19', courses), [])
+  assert.deepEqual(coursesForDate('2026-09-17', courses), coursesForDate('2027-01-07', courses))
 })
 
 test('기존 저장값은 일정을 보존하면서 새 수업 필드의 기본값을 적용한다', () => {

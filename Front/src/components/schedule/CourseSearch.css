@@ -1,5 +1,10 @@
 .schedule-dialog.schedule-dialog--course { width: min(760px, calc(100% - 28px)); }
-.course-search { display: flex; min-width: 0; flex-direction: column; gap: 12px; }
+.schedule-dialog.schedule-dialog--course { overflow: hidden; overscroll-behavior: none; }
+.schedule-dialog--course .schedule-dialog__content { max-height: var(--schedule-dialog-content-max-height); }
+.schedule-dialog--course .schedule-dialog__heading, .schedule-dialog--course .schedule-dialog__modes { flex-shrink: 0; }
+.schedule-dialog--course form { min-height: 0; }
+.course-search { display: flex; min-width: 0; min-height: 0; flex-direction: column; gap: 12px; }
+.course-search > * { flex-shrink: 0; }
 .course-search__filters { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 10px; align-items: start; }
 .course-search__time-field { display: flex; min-width: 0; flex-direction: column; gap: 6px; font-size: var(--font-size-body, 12px); font-weight: var(--font-weight-bold, 700); }
 .course-search__time { position: relative; }
@@ -8,7 +13,8 @@
 .course-search__time-options small { grid-column: 1 / -1; color: var(--color-muted); line-height: 1.5; }
 .course-search__time-options button { grid-column: 1 / -1; padding: 8px; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-surface-subtle); color: var(--color-text); cursor: pointer; }
 .course-search__count { font-size: var(--font-size-body, 12px); color: var(--color-muted); }
-.course-search__results { display: flex; flex-direction: column; gap: 8px; max-height: min(46dvh, 420px); overflow-y: auto; overscroll-behavior: contain; padding: 3px; }
+.course-search__results { display: flex; min-height: 0; flex-shrink: 1; flex-direction: column; gap: 8px; max-height: min(46dvh, 420px); overflow-y: auto; overscroll-behavior: contain; padding: 3px; }
+.course-search__results > * { flex-shrink: 0; }
 .course-search__result { display: flex; width: 100%; flex-direction: column; gap: 5px; padding: 14px; text-align: left; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 9px; font: inherit; font-size: var(--font-size-body, 12px); cursor: pointer; }
 .course-search__result:hover { background: var(--color-surface-subtle); }
 .course-search__result.is-selected { border-color: var(--color-primary); background: var(--color-primary-soft); }

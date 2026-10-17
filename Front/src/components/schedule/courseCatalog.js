@@ -57,18 +57,16 @@ export function createCatalogCourses(course) {
   }))
 }
 
-const DEFAULT_DEPARTMENTS = ['컴퓨터공학부', '첨단 아이티 학부', '경상학부']
 const areaKey = (value) => value.replace(/\s+/g, '')
 const courseArea = (course) => course.kind === 'major' ? course.department || course.major || '' : course.major || course.department || ''
 
-export function catalogAreas(courses, { includeDefaults = false } = {}) {
+export function catalogAreas(courses) {
   const areas = new Map()
   const addArea = (kind, label) => {
     if (!label) return
     const value = JSON.stringify([kind, areaKey(label)])
     if (!areas.has(value)) areas.set(value, { value, kind, label })
   }
-  if (includeDefaults) DEFAULT_DEPARTMENTS.forEach((department) => addArea('major', department))
   for (const course of courses) {
     addArea(course.kind, courseArea(course))
   }

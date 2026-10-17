@@ -29,8 +29,7 @@ export default function CourseSearch({ onAdd, onClose, existingCourses }) {
     }).finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [attempt])
-  const showDefaultAreas = !courses.length && (loading || !!loadError)
-  const areas = useMemo(() => catalogAreas(courses, { includeDefaults: showDefaultAreas }), [courses, showDefaultAreas])
+  const areas = useMemo(() => catalogAreas(courses), [courses])
   const results = useMemo(() => filterCatalog(courses, filters), [courses, filters])
   const selected = results.find((course) => String(course.id) === selectedId)
   const selectedMeetings = selected ? createCatalogCourses(selected) : []
