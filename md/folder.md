@@ -40,7 +40,7 @@ asdasd/
 │   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
 │   │   │   ├── dashboard/       — DashboardSections.jsx, DashboardSections.css
 │   │   │   ├── mypage/          — MyPageSections.jsx, MyPageSections.css
-│   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js (일정·반복 수업·로컬 저장)
+│   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js, CourseSearch.jsx, CourseSearch.css, courseCatalog.js, courseCatalog.test.js (일정·개설 강의 검색·반복 수업·로컬 저장)
 │   │   │   ├── setting/         — 마이페이지에 통합된 프로필·알림·계정 컴포넌트 (SettingSections.jsx, SettingSections.css)
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, index.js

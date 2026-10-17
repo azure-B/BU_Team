@@ -201,7 +201,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
             {messages.map((message) => (
               <p key={message.id} className="assistant-history__message"><span className="assistant-history__speaker">나</span>{message.text}</p>
             ))}
-            {messages.length === 0 && <p className="assistant-history__hint">질문을 입력하고 전송해 주세요.</p>}
+            {messages.length === 0 && <p className="assistant-history__hint">메세지를 입력하고 전송해 주세요.</p>}
           </div>
         </div>
 

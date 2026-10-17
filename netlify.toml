@@ -3,6 +3,9 @@
   publish = "publish"
   command = "npm run build"
 
+[build.environment]
+  VITE_API_URL = "https://bu-team.onrender.com/api"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

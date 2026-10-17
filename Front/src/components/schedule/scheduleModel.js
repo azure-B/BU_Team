@@ -31,10 +31,10 @@ export function monthDates(value) {
   return Array.from({ length }, (_, index) => shiftDate(dateKey(first), index - first.getDay()))
 }
 
-export function weekDates(value) {
+export function weekDates(value, length = 5) {
   const day = parseDate(value).getDay()
   const monday = shiftDate(value, -((day + 6) % 7))
-  return Array.from({ length: 5 }, (_, index) => shiftDate(monday, index))
+  return Array.from({ length }, (_, index) => shiftDate(monday, index))
 }
 
 export function monthWeek(value) {
@@ -85,11 +85,14 @@ const SAMPLE_EVENTS = [
 ]
 
 function normalizeCourse(course) {
-  if (!course || typeof course.id !== 'string' || !course.id || typeof course.title !== 'string' || !course.title.trim() || course.title.trim().length > 100 || !Number.isInteger(course.day) || course.day < 1 || course.day > 5 || !Number.isFinite(course.start) || course.start < 0 || course.start > 23 || !['major', 'general'].includes(course.kind)) return null
-  return { id: course.id, title: course.title.trim(), day: course.day, start: course.start, end: course.start + 1, kind: course.kind, color: course.kind, location: '매주 반복' }
+  if (!course || typeof course.id !== 'string' || !course.id || typeof course.title !== 'string' || !course.title.trim() || course.title.trim().length > 100 || !Number.isInteger(course.day) || course.day < 1 || course.day > 7 || !Number.isFinite(course.start) || course.start < 0 || course.start >= 24 || !['major', 'general', 'teaching'].includes(course.kind)) return null
+  const end = course.end ?? course.start + 1
+  if (!Number.isFinite(end) || end <= course.start || end > 24) return null
+  return { ...course, title: course.title.trim(), end, color: course.kind, location: course.location || '매주 반복' }
 }
 
 export function createCourse({ id, title, day, time, kind }) {
+  if (!Number.isInteger(Number(day)) || Number(day) < 1 || Number(day) > 5) return null
   if (typeof time !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return null
   const [hour, minute] = time.split(':').map(Number)
   return normalizeCourse({ id, title, day: Number(day), start: hour + minute / 60, kind })
@@ -101,15 +104,27 @@ export function activeCourses(courses = [], removedCourseIds = []) {
 
 export function coursesForDate(value, courses = [], removedCourseIds = []) {
   const date = parseDate(value)
-  return date ? activeCourses(courses, removedCourseIds).filter((course) => course.day === date.getDay()).sort((a, b) => a.start - b.start) : []
+  return date ? activeCourses(courses, removedCourseIds).filter((course) => course.day % 7 === date.getDay()).sort((a, b) => a.start - b.start) : []
 }
 
 export function removeCourse(state, id) {
-  return { ...state, courses: state.courses.filter((course) => course.id !== id), removedCourseIds: COURSES.some((course) => course.id === id) ? [...new Set([...state.removedCourseIds, id])] : state.removedCourseIds }
+  const catalogId = state.courses.find((course) => course.id === id)?.catalogId
+  return { ...state, courses: state.courses.filter((course) => course.id !== id && (!catalogId || course.catalogId !== catalogId)), removedCourseIds: COURSES.some((course) => course.id === id) ? [...new Set([...state.removedCourseIds, id])] : state.removedCourseIds }
+}
+
+export function removeEvent(state, id) {
+  return { ...state, events: state.events.filter((event) => event.id !== id) }
 }
 
 export function eventsForDate(value, events = []) {
-  return [...SAMPLE_EVENTS, ...events].filter((event) => event.date === value).sort((a, b) => a.time.localeCompare(b.time))
+  const date = parseDate(value)
+  if (!date) return []
+  return [...SAMPLE_EVENTS, ...events].filter((event) => {
+    if (event.date === value) return true
+    if (event.repeatWeekly !== true || event.date > value) return false
+    const startDate = parseDate(event.date)
+    return startDate?.getDay() === date.getDay()
+  }).sort((a, b) => a.time.localeCompare(b.time))
 }
 
 export function hourLabel(hour) {

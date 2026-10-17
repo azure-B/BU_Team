@@ -7,13 +7,17 @@ export const getCourses = async (query: {
   kind?: string;
   q?: string;
   limit?: number;
+  offset?: number;
 }) => {
   const size = Math.min(Math.max(Number(query.limit) || 50, 1), 300);
+  const parsedOffset = Number(query.offset);
+  const offset = Number.isSafeInteger(parsedOffset) && parsedOffset > 0 ? parsedOffset : 0;
   let request = supabase
     .from('Course')
     .select('id, department, major, kind, code, title, credit, hours, professor, schedule, room, online, day, startTime, endTime, meetings', { count: 'exact' })
     .order('title', { ascending: true })
-    .limit(size);
+    .order('id', { ascending: true })
+    .range(offset, offset + size - 1);
 
   if (query.department) request = request.eq('department', query.department);
   if (query.major) request = request.eq('major', query.major);

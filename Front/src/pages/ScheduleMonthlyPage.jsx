@@ -4,7 +4,7 @@ import { coursesForDate, eventsForDate, monthDates, parseDate } from '../compone
 
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
-export default function ScheduleMonthlyPage({ selectedDate, events, courses: customCourses, removedCourseIds, onSelect, onRemoveCourse }) {
+export default function ScheduleMonthlyPage({ selectedDate, events, courses: customCourses, removedCourseIds, onSelect, onRemoveCourse, onRemoveEvent }) {
   const selectedMonth = selectedDate.slice(0, 7)
   return (
     <>
@@ -32,7 +32,7 @@ export default function ScheduleMonthlyPage({ selectedDate, events, courses: cus
           <span><i className="schedule-dot schedule-dot--recommend" />AI 추천/시험</span>
         </div>
       </SectionCard>
-      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={customCourses} removedCourseIds={removedCourseIds} onRemoveCourse={onRemoveCourse} />
+      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={customCourses} removedCourseIds={removedCourseIds} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} />
     </>
   )
 }

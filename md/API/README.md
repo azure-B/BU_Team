@@ -166,7 +166,8 @@ Base URL: `http://localhost:5001/api/v1`
 ### GET /api/v1/courses
 
 - 설명: 2026-2 수강 책자에서 추출한 개설 과목
-- Query: `department`, `major`, `kind` (`major` | `general` | `teaching`), `q` (과목명), `limit` (기본 50, 최대 300)
+- Query: `department`, `major`, `kind` (`major` | `general` | `teaching`), `q` (과목명), `limit` (기본 50, 최대 300), `offset` (기본 0, 조회 시작 위치)
+- 정렬: 과목명, ID 오름차순. 프론트의 강의 검색은 `limit=300`과 `offset`으로 전체 개설 강의를 읽고 전공/영역·요일/시간·구분·검색어를 함께 적용한다.
 - 응답: `{ success, total, courses }`
 - 관련 파일: `Back/src/routes/courses.routes.ts`, `Back/src/services/course.service.ts`
 - 같은 핸들러를 `/api/courses`에도 연결한다.
