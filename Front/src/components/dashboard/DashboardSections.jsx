@@ -295,23 +295,24 @@ export function DeadlineList() {
 /**
  * 주요 공지사항 컴포넌트
  */
-export function NoticeList() {
+export function NoticeList({ limit = 5 } = {}) {
   const [notices, setNotices] = useState([])
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
     let ignore = false
-    getNotices(8)
+    getNotices(limit)
       .then((data) => {
         if (ignore) return
-        setNotices(Array.isArray(data?.notices) ? data.notices : [])
+        const list = Array.isArray(data?.notices) ? data.notices.slice(0, limit) : []
+        setNotices(list)
         setTotal(data?.total || 0)
       })
       .catch(() => {
         if (!ignore) setNotices([])
       })
     return () => { ignore = true }
-  }, [])
+  }, [limit])
 
   const recentCount = notices.filter((notice) => isRecentNotice(notice.createdAt)).length
 

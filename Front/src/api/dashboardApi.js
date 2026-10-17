@@ -19,7 +19,7 @@ export const getPrioritizedTasks = async () => {
 /**
  * 날짜 범위별 일정(시간표) 목록 조회
  */
-export const getNotices = async (limit = 8) => {
+export const getNotices = async (limit = 5) => {
   return api.get('/notices', { params: { limit } })
 }
 
