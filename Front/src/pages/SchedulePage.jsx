@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { CalendarBlank, CaretLeft, CaretRight, Clock, Plus, X } from '@phosphor-icons/react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
@@ -36,7 +37,11 @@ function PickerField({ id, label, value, displayValue, Icon, type, min, max, onC
 
 function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existingCourses }) {
   const dialogRef = useRef(null)
+  const contentRef = useRef(null)
+  const formRef = useRef(null)
   const titleRef = useRef(null)
+  const reducedMotion = useReducedMotion()
+  const [geometry, setGeometry] = useState(null)
   const [mode, setMode] = useState('event')
   const [eventDraft, setEventDraft] = useState({ date: selectedDate, title: '', time: '09:00', kind: 'task', repeatWeekly: false })
   const [error, setError] = useState('')
@@ -49,11 +54,35 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
     setError('')
     setEventDraft((previous) => ({ ...previous, [field]: value }))
   }
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current
     dialog.showModal()
     return () => dialog.close()
   }, [])
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current
+    const content = contentRef.current
+    const measure = () => {
+      const style = getComputedStyle(dialog)
+      const horizontalSpace = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth)
+      const verticalSpace = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth)
+      const scrollbarWidth = Math.max(0, dialog.offsetWidth - dialog.clientWidth - parseFloat(style.borderLeftWidth) - parseFloat(style.borderRightWidth))
+      const width = Math.min(isCourse ? 760 : 380, document.documentElement.clientWidth - 28)
+      // 최종 너비에서 내용을 측정해 텍스트를 늘리거나 줄이지 않고 표면만 움직인다.
+      formRef.current.style.width = `${Math.max(0, width - horizontalSpace - scrollbarWidth)}px`
+      const height = Math.min(content.offsetHeight + verticalSpace, window.innerHeight - 28)
+      setGeometry((previous) => previous?.width === width && previous?.height === height ? previous : { width, height })
+    }
+    dialog.scrollTop = 0
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(content)
+    window.addEventListener('resize', measure)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+    }
+  }, [isCourse])
   useEffect(() => { titleRef.current?.focus() }, [mode])
   const submit = (event) => {
     event.preventDefault()
@@ -65,13 +94,16 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
     onClose()
   }
   return (
-    <dialog ref={dialogRef} className={`schedule-dialog${isCourse ? ' schedule-dialog--course' : ''}`} aria-labelledby="add-schedule-title" onCancel={onClose} onClick={(event) => { if (event.target === dialogRef.current) onClose() }}>
-      <form onSubmit={submit}>
+    <motion.dialog ref={dialogRef} className={`schedule-dialog${isCourse ? ' schedule-dialog--course' : ''}`} aria-labelledby="add-schedule-title" onCancel={onClose} onClick={(event) => { if (event.target === dialogRef.current) onClose() }}
+      initial={false} animate={geometry ?? {}} transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 36, mass: 1 }}>
+      <div ref={contentRef} className="schedule-dialog__content">
         <div className="schedule-dialog__heading"><h2 id="add-schedule-title">{isCourse ? '새 수업 추가' : '새 일정 추가'}</h2><button type="button" className="schedule-icon-button" onClick={onClose} aria-label="추가 창 닫기"><X size={18} /></button></div>
         <div className="schedule-dialog__modes" role="group" aria-label="추가 모드">
           <button type="button" aria-pressed={!isCourse} onClick={() => { setMode('event'); setError('') }}>일정 추가</button>
           <button type="button" aria-pressed={isCourse} onClick={() => { setMode('course'); setError('') }}>수업 추가</button>
         </div>
+      <motion.form key={mode} ref={formRef} onSubmit={submit}
+        initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 0.2, ease: 'easeOut' }}>
         {isCourse ? <CourseSearch onAdd={onAddCourse} onClose={onClose} existingCourses={existingCourses} /> : <>
         <label>일정 제목<input ref={titleRef} required maxLength={100} value={draft.title} onChange={(event) => updateField('title', event.target.value)} placeholder="일정 또는 과제명을 입력하세요" /></label>
         <div className="schedule-dialog__dates">
@@ -83,8 +115,9 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
         {error && <p className="schedule-dialog__error" role="alert">{error}</p>}
         <button className="schedule-save-button" type="submit" disabled={!draft.title.trim()}>일정 저장</button>
         </>}
-      </form>
-    </dialog>
+      </motion.form>
+      </div>
+    </motion.dialog>
   )
 }
 
