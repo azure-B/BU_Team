@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getCourseCatalog } from '../../api'
+import { getCachedCourseCatalog, getCourseCatalog } from '../../api'
 import { hourLabel } from './scheduleModel'
 import { catalogAreas, catalogScheduleLabel, COURSE_KINDS, createCatalogCourses, filterCatalog } from './courseCatalog'
 import './CourseSearch.css'
 
 export default function CourseSearch({ onAdd, onClose, existingCourses }) {
-  const [courses, setCourses] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [courses, setCourses] = useState(() => getCachedCourseCatalog() ?? [])
+  const [loading, setLoading] = useState(() => getCachedCourseCatalog() === null)
   const [loadError, setLoadError] = useState('')
   const [attempt, setAttempt] = useState(0)
   const [filters, setFilters] = useState({ area: '', kind: '', day: '', start: 0, end: 24, q: '' })
@@ -14,20 +14,20 @@ export default function CourseSearch({ onAdd, onClose, existingCourses }) {
   const [error, setError] = useState('')
   const [visibleCount, setVisibleCount] = useState(30)
   useEffect(() => {
-    const controller = new AbortController()
-    setLoading(true)
+    let active = true
+    setLoading(getCachedCourseCatalog() === null)
     setLoadError('')
-    getCourseCatalog({ signal: controller.signal }).then((data) => {
-      if (!controller.signal.aborted) {
+    getCourseCatalog().then((data) => {
+      if (active) {
         setCourses(data)
         const availableAreas = catalogAreas(data)
         setFilters((previous) => previous.area && !availableAreas.some((area) => area.value === previous.area) ? { ...previous, area: '' } : previous)
         setSelectedId(null)
       }
     }).catch(() => {
-      if (!controller.signal.aborted) setLoadError('개설 강의를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.')
-    }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
-    return () => controller.abort()
+      if (active) setLoadError('개설 강의를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.')
+    }).finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
   }, [attempt])
   const showDefaultAreas = !courses.length && (loading || !!loadError)
   const areas = useMemo(() => catalogAreas(courses, { includeDefaults: showDefaultAreas }), [courses, showDefaultAreas])

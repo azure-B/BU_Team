@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { createCourseCatalogCache } from './courseCatalogCache'
 
 /**
  * Axios 인스턴스
@@ -28,16 +29,26 @@ api.interceptors.response.use(
 
 export default api
 
-export async function getCourseCatalog({ signal } = {}) {
+async function fetchCourseCatalog() {
   const courses = []
   const limit = 300
   let total = Infinity
   while (courses.length < total) {
-    const result = await api.get('/courses', { params: { limit, offset: courses.length }, signal })
+    const result = await api.get('/courses', { params: { limit, offset: courses.length } })
     if (!result.success || !Array.isArray(result.courses)) throw new Error('개설 강의 응답을 확인할 수 없습니다.')
     courses.push(...result.courses)
     total = Number(result.total)
     if (!Number.isFinite(total) || result.courses.length < limit) break
   }
   return courses
+}
+
+const courseCatalogCache = createCourseCatalogCache(fetchCourseCatalog)
+
+export function getCachedCourseCatalog() {
+  return courseCatalogCache.read()
+}
+
+export function getCourseCatalog() {
+  return courseCatalogCache.load()
 }

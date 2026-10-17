@@ -102,6 +102,18 @@ export function activeCourses(courses = [], removedCourseIds = []) {
   return [...COURSES, ...courses].filter((course) => !removedCourseIds.includes(course.id))
 }
 
+export function registerCourses(state, newCourses) {
+  const reject = (error) => ({ state, error })
+  if (!newCourses.length) return reject('등록할 수 있는 수업 시간이 없습니다.')
+  const existingCourses = activeCourses(state.courses, state.removedCourseIds)
+  if (existingCourses.some((existing) => existing.catalogId === newCourses[0].catalogId)) return reject('이미 추가한 수업입니다.')
+  if (newCourses.some((course) => existingCourses.some((existing) => existing.day === course.day && course.start < existing.end && course.end > existing.start))) return reject('기존 수업과 시간이 겹쳐 추가할 수 없습니다.')
+  return {
+    state: { ...state, selectedDate: weekDates(state.selectedDate, 7)[newCourses[0].day - 1], courses: [...state.courses, ...newCourses] },
+    error: null,
+  }
+}
+
 export function coursesForDate(value, courses = [], removedCourseIds = []) {
   const date = parseDate(value)
   return date ? activeCourses(courses, removedCourseIds).filter((course) => course.day % 7 === date.getDay()).sort((a, b) => a.start - b.start) : []
