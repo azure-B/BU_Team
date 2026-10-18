@@ -9,7 +9,6 @@ export default function ScheduleWeeklyPage({ selectedDate, events, courses, remo
   const allCourses = activeCourses(courses, removedCourseIds)
   const dates = weekDates(selectedDate, allCourses.some((course) => course.day > 5) ? 7 : 5)
   const timetableEvents = dates.flatMap((date) => eventsForDate(date, events)
-    .filter((event) => event.repeatWeekly === true || (event.kind === 'recommend' && event.time >= '09:00' && event.time < '18:00'))
     .map((event) => ({ ...event, date })))
   const eventStarts = timetableEvents.map((event) => {
     const [hour, minute] = event.time.split(':').map(Number)
@@ -33,7 +32,6 @@ export default function ScheduleWeeklyPage({ selectedDate, events, courses, remo
               {timetableEvents.filter((event) => event.date === value).map((event) => {
                 const [hour, minute] = event.time.split(':').map(Number)
                 const start = hour + minute / 60
-                if (!event.repeatWeekly && coursesForDate(value, courses, removedCourseIds).some((course) => start < course.end && Math.min(start + 1, 24) > course.start)) return null
                 const duration = Math.min(1, 24 - start)
                 return <button type="button" key={event.id} onClick={() => onSelect(value)} className={`timetable-event timetable-event--${event.kind} ${event.repeatWeekly ? 'timetable-event--recurring' : ''}`} style={{ top: (start - firstHour) * 48 + 2, height: Math.max(8, duration * 48 - 4) }} title={`${event.title} · ${event.time}${event.repeatWeekly ? ' · 매주 반복' : ''}`}><strong>{event.title}</strong><small>{event.time}{event.repeatWeekly ? ' · 매주' : ''}</small></button>
               })}
