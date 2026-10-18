@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./NotificationPanel.css"
 
 const MOCK_NOTIFICATIONS = [
@@ -69,8 +69,26 @@ function NotifIcon({ type }) {
   )
 }
 
+const STORAGE_KEY = 'baekseok_ai_notifications_v1'
+
+function getInitialNotifications() {
+  if (typeof window === 'undefined') return MOCK_NOTIFICATIONS
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load notifications from localStorage', e)
+  }
+  return MOCK_NOTIFICATIONS
+}
+
 export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange }) {
-  const [items, setItems] = useState(MOCK_NOTIFICATIONS)
+  const [items, setItems] = useState(getInitialNotifications)
   const panelRef = useRef(null)
 
   useEffect(() => {
@@ -87,6 +105,11 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
   }, [isOpen, onClose])
 
   useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    } catch (e) {
+      console.error('Failed to save notifications to localStorage', e)
+    }
     const count = items.filter((n) => n.unread).length
     onUnreadCountChange?.(count)
   }, [items, onUnreadCountChange])
