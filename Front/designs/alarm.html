@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html lang="ko" style="">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        name="viewport" />
+    <title>백석 AI 알림센터 - 백석대학교 스마트 캠퍼스</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Configuration -->
+    <script data-purpose="tailwind-config">
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0b0f19',
+                            card: '#161c2c',
+                            border: '#232c44',
+                            accent: '#3b82f6',
+                            highlight: '#60a5fa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'Helvetica Neue', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 20px -3px rgba(59, 130, 246, 0.45)',
+                        'popover': '0 20px 35px -5px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08)'
+                    }
+                }
+            }
+        };
+    </script>
+    <!-- Google Web Fonts for Pretendard-like Korean Typography -->
+    <link href="https://cdn.jsdelivr.net" rel="preconnect" />
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+    <!-- Core Component Layout & Micro-animations -->
+    <style data-purpose="custom-styling">
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* iOS Safe Area Inset Support */
+        .ios-safe-top {
+            padding-top: max(env(safe-area-inset-top), 16px);
+        }
+
+        .ios-safe-bottom {
+            padding-bottom: max(env(safe-area-inset-bottom), 16px);
+        }
+
+        /* Scrollbar Styling for Notifications Container */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+
+<body class="flex justify-center items-center min-h-screen bg-slate-950 select-none">
+    <!-- BEGIN: MobileDeviceContainer -->
+    <!-- iPhone Form Factor Emulation Wrapper -->
+    <div
+        class="relative w-full max-w-[430px] h-[932px] max-h-screen bg-[#0b0f19] text-white flex flex-col overflow-hidden shadow-2xl rounded-[44px] border border-slate-800/80">
+        <!-- BEGIN: iOSStatusBar -->
+        <div
+            class="ios-safe-top w-full px-7 flex justify-between items-center text-xs font-semibold text-slate-300 z-30 pt-3">
+            <span class="">9:41</span>
+            <div class="w-28 h-5 bg-black rounded-full absolute left-1/2 -translate-x-1/2 top-2"></div>
+            <div class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+                    <path
+                        d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.67 10.58 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z">
+                    </path>
+                </svg>
+                <svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+                    <path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"></path>
+                </svg>
+                <svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+                    <rect fill="none" height="10" rx="2" stroke="currentColor" stroke-width="2" width="18" x="2" y="7">
+                    </rect>
+                    <rect fill="currentColor" height="6" width="12" x="4" y="9"></rect>
+                    <path d="M21 11v2" stroke="currentColor" stroke-width="2"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- END: iOSStatusBar -->
+        <!-- BEGIN: MainHeader -->
+        <!-- Top Bar with BU AI branding and notification bell -->
+        <header
+            class="px-5 py-3.5 flex items-center justify-between z-30 border-b border-slate-800/40 bg-[#0b0f19]/90 backdrop-blur-md">
+            <!-- Left: Baekseok Logo & Name -->
+            <div class="flex items-center gap-2.5">
+                <div
+                    class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-extrabold text-white text-xs border border-blue-400/40 shadow-sm">
+                    BU
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-lg font-bold tracking-tight text-white">백석 AI</span>
+                    <span
+                        class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 font-medium border border-blue-500/20">캠퍼스</span>
+                </div>
+            </div>
+            <!-- Right: Actions (Notification Trigger & Avatar) -->
+            <div class="flex items-center gap-2 relative">
+                <!-- Active Bell Button -->
+                <button aria-label="알림 열림"
+                    class="relative p-2 rounded-xl text-blue-400 border transition-all hover:bg-blue-600/30 bg-blue-600/20 border-blue-500/30"
+                    data-purpose="notification-toggle" id="notification-button">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                    <!-- Unread Dot Indicator -->
+                    <span
+                        class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-[#0b0f19] transition-all duration-300"
+                        id="header-unread-dot"></span>
+                </button>
+                <!-- User Quick Avatar -->
+                <div
+                    class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700/60 overflow-hidden flex items-center justify-center text-xs text-slate-300 font-bold">
+                    홍
+                </div>
+            </div>
+        </header>
+        <!-- END: MainHeader -->
+        <!-- BEGIN: DashboardBackgroundView -->
+        <!-- The Student Dashboard page (IMAGE_8 context), dimmed and blurred by overlay -->
+        <main
+            class="flex-1 overflow-y-auto px-4 pt-4 pb-24 space-y-4 filter select-none transition-all duration-300 blur-[1.5px] opacity-40 pointer-events-none"
+            id="dashboard-main">
+            <!-- Page Title -->
+            <div class="flex items-center justify-between px-1 pt-1">
+                <h1 class="text-xl font-bold text-white tracking-tight">마이페이지</h1>
+                <span
+                    class="text-xs px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    </svg>
+                    로컬 저장
+                </span>
+            </div>
+            <!-- Student Profile Card (Reference: IMAGE_8) -->
+            <section class="bg-[#141b2a] border border-slate-800/90 rounded-2xl p-4 shadow-lg space-y-4">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-xl font-bold border-2 border-slate-700 overflow-hidden shadow-inner">
+                            <span class="text-slate-300">홍</span>
+                            <div
+                                class="absolute bottom-0 right-0 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center text-[10px]">
+                                📷
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg font-bold text-white">홍길동 학우</span>
+                                <span
+                                    class="text-[11px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-medium">학부생</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-0.5">전공 <span class="text-slate-200 font-medium">컴퓨터공학부
+                                    (소프트웨어학)</span></p>
+                            <p class="text-xs text-slate-400">학년: <span class="text-slate-200 font-medium">3학년</span> ·
+                                학번: <span class="text-slate-200 font-medium">20221340</span></p>
+                        </div>
+                    </div>
+                    <button
+                        class="px-2.5 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-xs text-slate-300 font-medium">
+                        정보 변경
+                    </button>
+                </div>
+                <div class="p-3 bg-[#0f1422] rounded-xl border border-slate-800/70 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5 text-xs">
+                        <span class="p-2 rounded-lg bg-blue-900/30 text-blue-400">🪪</span>
+                        <div>
+                            <p class="font-semibold text-slate-200">학적 정보 직접 수정</p>
+                            <p class="text-[10px] text-slate-500">학교 포털 연동 없이 기기에 안전하게 직접 저장됩니다</p>
+                        </div>
+                    </div>
+                    <span class="text-slate-500 text-xs">&gt;</span>
+                </div>
+            </section>
+            <!-- Activity & Saved Box Card (Reference: IMAGE_8) -->
+            <section class="bg-[#141b2a] border border-slate-800/90 rounded-2xl p-4 shadow-lg space-y-3">
+                <div class="flex items-center justify-between text-xs pb-1">
+                    <span class="font-semibold text-slate-200 flex items-center gap-1.5">
+                        📁 나의 활동 및 보관함
+                    </span>
+                    <span class="text-slate-400">전체보기 &gt;</span>
+                </div>
+                <div class="space-y-2.5">
+                    <div
+                        class="flex items-center justify-between p-3 rounded-xl bg-[#0f1422] border border-slate-800/70 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-blue-400 text-sm">📅</span>
+                            <div>
+                                <p class="font-medium text-slate-200">시간표 직접 등록 및 수정</p>
+                                <p class="text-[10px] text-slate-500">이번 학기 6개 과목 수동 입력 완료</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-slate-800 text-[11px] rounded text-slate-300">직접 관리 &gt;</span>
+                    </div>
+                    <div
+                        class="flex items-center justify-between p-3 rounded-xl bg-[#0f1422] border border-slate-800/70 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-indigo-400 text-sm">📑</span>
+                            <div>
+                                <p class="font-medium text-slate-200">수강 과목 및 과제 관리</p>
+                                <p class="text-[10px] text-slate-500">진행 중인 과제 3개 · 수동 체크리스트</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-blue-900/30 text-blue-300 text-[11px] rounded">14건 &gt;</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- END: DashboardBackgroundView -->
+        <!-- BEGIN: NotificationOverlayAndPopover -->
+        <!-- Darkened Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-40 transition-opacity duration-200 opacity-100"
+            data-purpose="modal-backdrop" id="notification-backdrop"></div>
+        <!-- Anchored Floating Notification Popover Window (Reference: IMAGE_3 style, tailored to Baekseok AI UI) -->
+        <section aria-label="알림 센터 팝업"
+            class="absolute top-[68px] right-3 left-3 sm:left-auto sm:w-[380px] bg-[#161d2d] rounded-2xl shadow-popover border border-slate-700/80 z-50 overflow-hidden flex flex-col max-h-[82%] transition-all duration-200 opacity-100 scale-100"
+            data-purpose="notification-popover" id="notification-panel">
+            <!-- Popover Pointer Triangle (pointing directly to bell icon) -->
+            <div class="absolute -top-1.5 right-6 w-3 h-3 bg-[#141b2a] rotate-45 border-l border-t border-slate-700/60">
+            </div>
+            <!-- Minimalist Popover Header (IMAGE_3 style: Bold 'Notifications' title with subtle close button) -->
+            <div class="px-5 py-4 border-b border-slate-800/80 bg-[#141b2a] flex items-center justify-between">
+                <h2 class="text-base font-bold text-white tracking-tight">Notifications</h2>
+                <button aria-label="팝업 닫기"
+                    class="w-6 h-6 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                    id="close-notification-button" type="button">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Streamlined Notification List (Scrollable, clean divider lines, minimal clutter) -->
+            <div class="overflow-y-auto custom-scrollbar divide-y divide-slate-800/70 bg-[#141b2a]"
+                id="notification-list">
+                <!-- Notification Item 1: Recommendation / Star Icon (IMAGE_3 style) -->
+                <article
+                    class="notification-item p-4 hover:bg-slate-800/30 transition-colors flex items-center gap-3.5 relative cursor-pointer group"
+                    data-unread="true">
+                    <div
+                        class="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 self-start mt-0.5">
+                        <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-slate-200 leading-snug break-words font-medium">
+                            오늘 당신을 위한 추천 카드가 도착했습니다.
+                        </p>
+                        <span class="text-[11px] text-slate-400 mt-1 block">8분 전</span>
+                    </div>
+                    <div class="unread-dot-wrapper shrink-0 flex items-center justify-center pl-2">
+                        <span
+                            class="unread-dot w-2 h-2 rounded-full bg-red-500 shadow-sm ring-2 ring-[#141b2a] transition-all duration-300"></span>
+                    </div>
+                </article>
+                <!-- Notification Item 2: Alert / Hourglass Icon (IMAGE_3 style) -->
+                <article
+                    class="notification-item p-4 hover:bg-slate-800/30 transition-colors flex items-center gap-3.5 relative cursor-pointer group"
+                    data-unread="true">
+                    <div
+                        class="w-8 h-8 rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0 self-start mt-0.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
+                                stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-slate-200 leading-snug break-words font-medium">
+                            남은 과제 마감 기한이 임박했습니다. 등록 서류를 확인하세요.
+                        </p>
+                        <span class="text-[11px] text-slate-400 mt-1 block">35분 전</span>
+                    </div>
+                    <div class="unread-dot-wrapper shrink-0 flex items-center justify-center pl-2">
+                        <span
+                            class="unread-dot w-2 h-2 rounded-full bg-red-500 shadow-sm ring-2 ring-[#141b2a] transition-all duration-300"></span>
+                    </div>
+                </article>
+                <!-- Notification Item 3: Info / Read (IMAGE_3 style) -->
+                <article
+                    class="notification-item p-4 hover:bg-slate-800/30 transition-colors flex items-center gap-3.5 relative cursor-pointer group"
+                    data-unread="false">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 self-start mt-0.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-slate-300 leading-snug break-words font-medium">
+                            15:00 [인공지능기초] 본부동 강의실로 이동할 시간입니다.
+                        </p>
+                        <span class="text-[11px] text-slate-500 mt-1 block">2시간 전</span>
+                    </div>
+                </article>
+                <!-- Notification Item 4: Notice / Read (IMAGE_3 style) -->
+                <article
+                    class="notification-item p-4 hover:bg-slate-800/30 transition-colors flex items-center gap-3.5 relative cursor-pointer group"
+                    data-unread="false">
+                    <div
+                        class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 shrink-0 self-start mt-0.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-slate-300 leading-snug break-words font-medium">
+                            2024년 2학기 수강신청 확인 및 변경 기간 안내입니다.
+                        </p>
+                        <span class="text-[11px] text-slate-500 mt-1 block">1년 전</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+        <!-- END: NotificationOverlayAndPopover -->
+        <!-- BEGIN: BottomNavigation -->
+        <!-- iOS Tab Navigation Bar with prominent AI 비서 floating button (IMAGE_8 inspired) -->
+        <nav
+            class="absolute bottom-0 inset-x-0 bg-[#0c101d]/95 backdrop-blur-xl border-t border-slate-800/80 px-6 py-2 z-30 ios-safe-bottom">
+            <ul class="flex items-center justify-between">
+                <!-- Tab: Home -->
+                <li class="flex flex-col items-center">
+                    <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200" href="#home">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span class="text-[10px] font-medium">홈</span>
+                    </a>
+                </li>
+                <!-- Tab: Schedule -->
+                <li class="flex flex-col items-center">
+                    <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200" href="#schedule">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span class="text-[10px] font-medium">일정</span>
+                    </a>
+                </li>
+                <!-- Center AI Button with Glowing Accent -->
+                <li class="relative -top-3 flex flex-col items-center">
+                    <button aria-label="백석 AI 비서 활성화"
+                        class="w-13 h-13 p-3.5 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-400 text-white shadow-glow-blue border-2 border-blue-300/40 transform active:scale-95 transition-transform"
+                        data-purpose="ai-assistant-button">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.286L13 21l-2.286-6.857L5 12l5.714-2.286L13 3z"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                    </button>
+                    <span class="text-[10px] font-bold text-blue-400 mt-0.5 tracking-tight">AI 비서</span>
+                </li>
+                <!-- Tab: Campus -->
+                <li class="flex flex-col items-center">
+                    <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200" href="#campus">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm1 14.93V17a1 1 0 01-2 0v-.07A8.006 8.006 0 014.07 13H5a1 1 0 010-2h-.93A8.006 8.006 0 0111 4.07V5a1 1 0 012 0v-.93A8.006 8.006 0 0119.93 11H19a1 1 0 010 2h.93A8.006 8.006 0 0113 16.93z"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span class="text-[10px] font-medium">캠퍼스</span>
+                    </a>
+                </li>
+                <!-- Tab: My Profile (Active in background) -->
+                <li class="flex flex-col items-center">
+                    <a class="flex flex-col items-center gap-1 text-blue-400 font-bold" href="#mypage">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                        </svg>
+                        <span class="text-[10px]">MY</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- END: BottomNavigation -->
+        <!-- BEGIN: iOSHomeIndicator -->
+        <div class="ios-safe-bottom absolute bottom-1.5 inset-x-0 flex justify-center pointer-events-none z-40">
+            <div class="w-32 h-1 bg-slate-500/60 rounded-full"></div>
+        </div>
+        <!-- END: iOSHomeIndicator -->
+    </div>
+    <!-- END: MobileDeviceContainer -->
+    <!-- BEGIN: InteractiveScripts -->
+    <!-- Micro-interactions to allow toggling, reading notifications, or clicking outside modal -->
+    <script data-purpose="notification-interactivity">
+        document.addEventListener('DOMContentLoaded', () => {
+            const panel = document.getElementById('notification-panel');
+            const backdrop = document.getElementById('notification-backdrop');
+            const bellButton = document.getElementById('notification-button');
+            const closeButton = document.getElementById('close-notification-button');
+            const dashboardMain = document.getElementById('dashboard-main');
+            const headerUnreadDot = document.getElementById('header-unread-dot');
+            const notificationItems = document.querySelectorAll('.notification-item');
+
+            let isOpen = true;
+
+            const updateHeaderBadge = () => {
+                const remainingUnread = document.querySelectorAll('.notification-item[data-unread="true"]');
+                if (remainingUnread.length === 0 && headerUnreadDot) {
+                    headerUnreadDot.classList.add('opacity-0', 'scale-0');
+                    setTimeout(() => {
+                        headerUnreadDot.classList.add('hidden');
+                    }, 300);
+                }
+            };
+
+            // Notification Click to Read Interaction
+            notificationItems.forEach((item) => {
+                item.addEventListener('click', () => {
+                    if (item.getAttribute('data-unread') === 'true') {
+                        item.setAttribute('data-unread', 'false');
+
+                        // Text color subtle adjustment to reflect read state
+                        const titleEl = item.querySelector('p');
+                        if (titleEl) {
+                            titleEl.classList.remove('text-slate-200');
+                            titleEl.classList.add('text-slate-300');
+                        }
+                        const timeEl = item.querySelector('span.text-slate-400');
+                        if (timeEl) {
+                            timeEl.classList.remove('text-slate-400');
+                            timeEl.classList.add('text-slate-500');
+                        }
+
+                        // Animate and remove the red dot
+                        const dot = item.querySelector('.unread-dot');
+                        const dotWrapper = item.querySelector('.unread-dot-wrapper');
+                        if (dot) {
+                            dot.classList.add('opacity-0', 'scale-0');
+                            setTimeout(() => {
+                                if (dotWrapper) dotWrapper.remove();
+                                else dot.remove();
+                            }, 300);
+                        }
+
+                        updateHeaderBadge();
+                    }
+                });
+            });
+
+            const closePanel = () => {
+                if (!isOpen) return;
+                isOpen = false;
+
+                // 부드러운 Fade-out 및 스케일 축소 효과
+                panel.classList.remove('opacity-100', 'scale-100');
+                panel.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+
+                // 배경 대시보드 블러/딤 해제 및 상호작용 복원
+                if (dashboardMain) {
+                    dashboardMain.classList.remove('blur-[1.5px]', 'opacity-40', 'pointer-events-none');
+                    dashboardMain.classList.add('opacity-100');
+                }
+
+                if (bellButton) {
+                    bellButton.setAttribute('aria-label', '알림 닫힘');
+                    bellButton.classList.remove('bg-blue-600/20', 'border-blue-500/30');
+                    bellButton.classList.add('bg-transparent', 'border-transparent');
+                }
+            };
+
+            const openPanel = () => {
+                if (isOpen) return;
+                isOpen = true;
+
+                // Fade-in 및 원래 크기로 복원
+                panel.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                panel.classList.add('opacity-100', 'scale-100');
+
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                backdrop.classList.add('opacity-100');
+
+                // 배경 대시보드 딤 및 블러 처리
+                if (dashboardMain) {
+                    dashboardMain.classList.add('blur-[1.5px]', 'opacity-40', 'pointer-events-none');
+                    dashboardMain.classList.remove('opacity-100');
+                }
+
+                if (bellButton) {
+                    bellButton.setAttribute('aria-label', '알림 열림');
+                    bellButton.classList.add('bg-blue-600/20', 'border-blue-500/30');
+                    bellButton.classList.remove('bg-transparent', 'border-transparent');
+                }
+            };
+
+            const togglePanel = () => {
+                if (isOpen) {
+                    closePanel();
+                } else {
+                    openPanel();
+                }
+            };
+
+            if (closeButton) closeButton.addEventListener('click', closePanel);
+            if (backdrop) backdrop.addEventListener('click', closePanel);
+            if (bellButton) bellButton.addEventListener('click', togglePanel);
+        });
+    </script>
+    <!-- END: InteractiveScripts -->
+</body>
+
+</html>
