@@ -2,7 +2,7 @@
 
 > **SSOT**: 이 파일이 유일한 API 명세입니다. Back 작업 시 반드시 갱신하세요.
 
-Base URL: `http://localhost:5001/api/v1`
+Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위해 `/api/*` 별칭도 전역 지원)
 
 ---
 

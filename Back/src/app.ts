@@ -23,10 +23,15 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/v1/schedules', scheduleRoutes);
+app.use('/api/schedules', scheduleRoutes);
 app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/tasks', taskRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/v1/campus', campusRoutes);
+app.use('/api/campus', campusRoutes);
 app.use('/api/v1/notices', noticeRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/v1/courses', courseRoutes);
