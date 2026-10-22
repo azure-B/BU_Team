@@ -135,7 +135,7 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
 
 export default function SchedulePage() {
   const { view } = useParams()
-  const { state, setState } = useSchedule()
+  const { state, setState, addServerSchedule, removeServerSchedule } = useSchedule()
   const [adding, setAdding] = useState(false)
   const validView = view === 'weekly' || view === 'monthly'
   useEffect(() => {
@@ -148,6 +148,7 @@ export default function SchedulePage() {
   const onSelect = (selectedDate) => setState((previous) => ({ ...previous, selectedDate }))
   const shift = (amount) => onSelect(shiftDate(state.selectedDate, monthly ? amount : amount * 7, monthly ? 'month' : 'day'))
   const ViewIcon = monthly ? Clock : CalendarBlank
+
   const View = monthly ? ScheduleMonthlyPage : ScheduleWeeklyPage
   const onAddCourse = (newCourses) => {
     const result = registerCourses(state, newCourses)
@@ -156,7 +157,10 @@ export default function SchedulePage() {
     return null
   }
   const onRemoveCourse = (id) => setState((previous) => removeCourse(previous, id))
-  const onRemoveEvent = (id) => setState((previous) => removeEvent(previous, id))
+  const onRemoveEvent = (id) => {
+    setState((previous) => removeEvent(previous, id))
+    if (removeServerSchedule) removeServerSchedule(id)
+  }
   return (
     <Layout>
       <div className="schedule-page">
@@ -173,7 +177,31 @@ export default function SchedulePage() {
           </div>
         </SectionCard>
         <View selectedDate={state.selectedDate} events={state.events} courses={state.courses} removedCourseIds={state.removedCourseIds} onSelect={onSelect} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} />
-        {adding && <AddScheduleDialog selectedDate={state.selectedDate} onClose={() => setAdding(false)} onAddCourse={onAddCourse} existingCourses={activeCourses(state.courses, state.removedCourseIds)} onAdd={(event) => setState((previous) => ({ ...previous, selectedDate: event.date, events: [...previous.events, event] }))} />}
+        {adding && (
+          <AddScheduleDialog
+            selectedDate={state.selectedDate}
+            onClose={() => setAdding(false)}
+            onAddCourse={onAddCourse}
+            existingCourses={activeCourses(state.courses, state.removedCourseIds)}
+            onAdd={async (event) => {
+              setState((previous) => ({ ...previous, selectedDate: event.date, events: [...previous.events, event] }))
+              if (addServerSchedule) {
+                try {
+                  const startAt = new Date(`${event.date}T${event.time || '09:00'}:00`)
+                  const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
+                  await addServerSchedule({
+                    title: event.title,
+                    startAt: startAt.toISOString(),
+                    endAt: endAt.toISOString(),
+                    type: event.kind === 'task' ? 'TASK' : 'CLASS',
+                  })
+                } catch {
+                  // 서버 통신 실패 시에도 로컬 상태는 유지
+                }
+              }
+            }}
+          />
+        )}
       </div>
     </Layout>
   )
