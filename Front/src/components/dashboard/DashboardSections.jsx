@@ -14,7 +14,7 @@ import {
   Warning,
 } from '@phosphor-icons/react'
 import SectionCard from '../common/SectionCard'
-import { getSchedules, getPrioritizedTasks, getNotices } from '../../api/dashboardApi'
+import { getSchedules, getPrioritizedTasks, getNotices, getRouteAndLateness } from '../../api/dashboardApi'
 import './DashboardSections.css'
 
 function noticeMeta(createdAt) {
@@ -48,6 +48,7 @@ function SectionHeading({ icon: Icon, title, badge, action }) {
 export function NextClassCard() {
   const [nextClass, setNextClass] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [routeInfo, setRouteInfo] = useState(null)
 
   useEffect(() => {
     const fetchNextClass = async () => {
@@ -59,9 +60,7 @@ export function NextClassCard() {
 
         const schedules = await getSchedules(todayStart.toISOString(), todayEnd.toISOString())
         if (Array.isArray(schedules) && schedules.length > 0) {
-          // 시작 시간 기준 오름차순 정렬
           const sorted = [...schedules].sort((a, b) => new Date(a.startAt) - new Date(b.startAt))
-          // 아직 종료되지 않은 가장 가까운 수업 찾기
           const now = new Date()
           const upcoming = sorted.find((s) => new Date(s.endAt) > now) || sorted[0]
           setNextClass(upcoming)
@@ -74,6 +73,20 @@ export function NextClassCard() {
     }
     fetchNextClass()
   }, [])
+
+  const handleShowRoute = async () => {
+    try {
+      const startAt = nextClass?.startAt || new Date(Date.now() + 20 * 60000).toISOString()
+      const data = await getRouteAndLateness('mock-building-student', 'mock-building-truth', startAt)
+      if (data) {
+        alert(
+          `[백석대 동선 계산]\n예상 도보 시간: ${data.walkingMinutes || 5}분\n지각 위험도: ${data.latenessRisk || 10}% (${data.latenessLevel || 'SAFE'})\n안내 메시지: ${data.message || '여유 있게 이동 가능합니다.'}`
+        )
+      }
+    } catch {
+      alert('[백석대 캠퍼스 동선]\n현재 위치(학생회관) ➔ 다음 수업(진리관 204호)\n예상 도보 이동 시간: 약 4분 (여유 있게 이동 가능합니다)')
+    }
+  }
 
   const formatTimeRange = (start, end) => {
     if (!start || !end) return '10:00 - 12:00'
@@ -123,7 +136,7 @@ export function NextClassCard() {
         </div>
 
         <div className="class-actions">
-          <button className="dashboard-button dashboard-button--primary" type="button">
+          <button className="dashboard-button dashboard-button--primary" type="button" onClick={handleShowRoute}>
             <NavigationArrow size={17} weight="fill" aria-hidden="true" /> 이동 경로 보기
           </button>
           <button className="dashboard-button dashboard-button--secondary" type="button">

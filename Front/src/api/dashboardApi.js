@@ -17,17 +17,68 @@ export const getPrioritizedTasks = async () => {
 }
 
 /**
- * 날짜 범위별 일정(시간표) 목록 조회
+ * 전체 과제 목록 조회
+ */
+export const getTasks = async () => {
+  const res = await api.get('/tasks')
+  return res.data
+}
+
+/**
+ * 과제 생성
+ */
+export const createTask = async (taskData) => {
+  const res = await api.post('/tasks', taskData)
+  return res.data
+}
+
+/**
+ * 주요 공지사항 목록 조회
  */
 export const getNotices = async (limit = 5) => {
   return api.get('/notices', { params: { limit } })
 }
 
+/**
+ * 날짜 범위별 일정(시간표) 목록 조회
+ */
 export const getSchedules = async (from, to) => {
   const params = {}
   if (from) params.from = from
   if (to) params.to = to
   const res = await api.get('/schedules', { params })
+  return res.data
+}
+
+/**
+ * 일정 추가 (서버 DB 등록)
+ */
+export const createSchedule = async (scheduleData) => {
+  const res = await api.post('/schedules', scheduleData)
+  return res.data
+}
+
+/**
+ * 일정 수정
+ */
+export const updateSchedule = async (id, scheduleData) => {
+  const res = await api.patch(`/schedules/${id}`, scheduleData)
+  return res.data
+}
+
+/**
+ * 일정 삭제
+ */
+export const deleteSchedule = async (id) => {
+  const res = await api.delete(`/schedules/${id}`)
+  return res.data
+}
+
+/**
+ * 특정 일정(수업)에 연계된 과제 목록 조회 (일정 ↔ 과제 연계 기능)
+ */
+export const getScheduleTasks = async (scheduleId) => {
+  const res = await api.get(`/schedules/${scheduleId}/tasks`)
   return res.data
 }
 
