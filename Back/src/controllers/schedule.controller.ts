@@ -38,3 +38,13 @@ export const deleteSchedule = async (req: Request, res: Response, next: NextFunc
     res.json({ success: true, message: '일정이 성공적으로 삭제되었습니다.' });
   } catch (error) { next(error); }
 };
+
+export const getScheduleTasks = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = getUserId(req);
+    const id = req.params.id as string;
+    const data = await scheduleService.getScheduleTasks(userId, id);
+    res.json({ success: true, data });
+  } catch (error) { next(error); }
+};
+

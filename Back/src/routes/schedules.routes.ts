@@ -2,7 +2,13 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/auth.middleware';
 import { validate } from '../middlewares/validate.middleware';
 import { createScheduleSchema, updateScheduleSchema, getSchedulesQuerySchema } from '../validations/schedule.validation';
-import { getSchedules, createSchedule, updateSchedule, deleteSchedule } from '../controllers/schedule.controller';
+import {
+  getSchedules,
+  createSchedule,
+  updateSchedule,
+  deleteSchedule,
+  getScheduleTasks,
+} from '../controllers/schedule.controller';
 
 const router = Router();
 
@@ -11,6 +17,7 @@ router.use(authenticate);
 
 router.get('/', validate({ query: getSchedulesQuerySchema }), getSchedules as any);
 router.post('/', validate({ body: createScheduleSchema }), createSchedule as any);
+router.get('/:id/tasks', getScheduleTasks as any);
 router.patch('/:id', validate({ body: updateScheduleSchema }), updateSchedule as any);
 router.delete('/:id', deleteSchedule as any);
 

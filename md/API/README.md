@@ -99,6 +99,21 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 - **설명**: 일정 수정 (본인 소유 검증 및 Zod 검증 적용)
 - **요청 Body**: 수정할 필드 선택 전송
 
+### GET /api/v1/schedules/:id/tasks
+- **설명**: 특정 수업 일정에 연계된 과제 목록 조회 (일정 ↔ 과제 연계 기능)
+- **응답**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "schedule": { "id": "uuid", "title": "인공지능 개론", "startAt": "...", "endAt": "..." },
+      "tasks": [
+        { "id": "uuid", "title": "인공지능 과제 초안 작성", "dueAt": "...", "importance": 5, "status": "PENDING" }
+      ]
+    }
+  }
+  ```
+
 ### DELETE /api/v1/schedules/:id
 - **설명**: 일정 삭제 (본인 소유 검증)
 

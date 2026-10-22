@@ -57,3 +57,32 @@ export const deleteSchedule = async (userId: string, scheduleId: string) => {
   if (!schedule) throw new AppError('해당 일정을 찾을 수 없거나 삭제 권한이 없습니다.', 404);
   return schedule;
 };
+
+// 💡 일정 ↔ 과제 기능 연동: 특정 일정(수업)에 연계된 과제 목록 조회
+export const getScheduleTasks = async (userId: string, scheduleId: string) => {
+  // 1. 해당 일정이 존재하는지 및 소유권 확인
+  const schedule = await unwrap(
+    supabase
+      .from('Schedule')
+      .select('*')
+      .eq('id', scheduleId)
+      .eq('userId', userId)
+      .maybeSingle()
+  );
+  if (!schedule) throw new AppError('해당 일정을 찾을 수 없거나 접근 권한이 없습니다.', 404);
+
+  // 2. 해당 일정과 연계된 과제들 조회 (scheduleId 기준 또는 제목 매칭)
+  const tasks = await unwrap(
+    supabase
+      .from('Task')
+      .select('*')
+      .eq('userId', userId)
+      .or(`scheduleId.eq.${scheduleId},title.ilike.%${schedule.title}%`)
+      .order('dueAt', { ascending: true })
+  );
+
+  return {
+    schedule,
+    tasks: tasks || [],
+  };
+};

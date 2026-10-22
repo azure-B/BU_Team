@@ -20,7 +20,9 @@ export const calculateRouteAndLateness = async (
 
   const now = new Date();
   const classStart = new Date(nextClassStartAt);
-  const minutesLeft = (classStart.getTime() - now.getTime()) / (1000 * 60);
+  const minutesLeft = isNaN(classStart.getTime())
+    ? 0
+    : (classStart.getTime() - now.getTime()) / (1000 * 60);
 
   let latenessRisk = 0;
   if (minutesLeft <= 0) latenessRisk = 100;
@@ -28,7 +30,7 @@ export const calculateRouteAndLateness = async (
   else if (minutesLeft < walkingMinutes + 5) latenessRisk = 50;
   else latenessRisk = 10;
 
-  const recommendedFacilities = await unwrap(
+  const facilities = await unwrap(
     supabase.from('Facility').select('*').eq('buildingId', currentBuildingId).limit(3)
   );
 
@@ -39,7 +41,7 @@ export const calculateRouteAndLateness = async (
     latenessLevel:
       latenessRisk >= 90 ? 'DANGER' :
       latenessRisk >= 50 ? 'WARNING' : 'SAFE',
-    recommendedFacilities,
+    recommendedFacilities: facilities || [],
     message:
       latenessRisk >= 90 ? '지금 바로 이동하세요!' :
       latenessRisk >= 50 ? '서두르는 것이 좋습니다.' : '여유 있게 이동 가능합니다.',
