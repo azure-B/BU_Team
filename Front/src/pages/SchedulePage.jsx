@@ -5,8 +5,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import SectionCard from '../components/common/SectionCard'
 import { useSchedule } from '../components/schedule/ScheduleContext'
-import { activeCourses, monthWeek, parseDate, registerCourses, removeCourse, removeEvent, shiftDate } from '../components/schedule/scheduleModel'
-import CourseSearch from '../components/schedule/CourseSearch'
+import { monthWeek, parseDate, removeCourse, removeEvent, shiftDate } from '../components/schedule/scheduleModel'
 import ScheduleMonthlyPage from './ScheduleMonthlyPage'
 import ScheduleWeeklyPage from './ScheduleWeeklyPage'
 import './SchedulePage.css'
@@ -35,7 +34,7 @@ function PickerField({ id, label, value, displayValue, Icon, type, min, max, onC
   )
 }
 
-function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existingCourses }) {
+function AddScheduleDialog({ selectedDate, onClose, onAdd }) {
   const dialogRef = useRef(null)
   const contentRef = useRef(null)
   const formRef = useRef(null)
@@ -43,17 +42,14 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
   const closeButtonRef = useRef(null)
   const reducedMotion = useReducedMotion()
   const [geometry, setGeometry] = useState(null)
-  const [mode, setMode] = useState('event')
-  const [eventDraft, setEventDraft] = useState({ date: selectedDate, title: '', time: '09:00', kind: 'task', repeatWeekly: false })
+  const [draft, setDraft] = useState({ date: selectedDate, title: '', time: '09:00', kind: 'task', repeatWeekly: false })
   const [error, setError] = useState('')
-  const eventDateLabel = parseDate(eventDraft.date)
-    ? new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' }).format(parseDate(eventDraft.date))
+  const eventDateLabel = parseDate(draft.date)
+    ? new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' }).format(parseDate(draft.date))
     : '날짜 선택'
-  const isCourse = mode === 'course'
-  const draft = eventDraft
   const updateField = (field, value) => {
     setError('')
-    setEventDraft((previous) => ({ ...previous, [field]: value }))
+    setDraft((previous) => ({ ...previous, [field]: value }))
   }
   useLayoutEffect(() => {
     const dialog = dialogRef.current
@@ -73,10 +69,9 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
       const horizontalSpace = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth)
       const verticalSpace = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth)
       const scrollbarWidth = Math.max(0, dialog.offsetWidth - dialog.clientWidth - parseFloat(style.borderLeftWidth) - parseFloat(style.borderRightWidth))
-      const width = Math.min(isCourse ? 760 : 380, document.documentElement.clientWidth - 28)
+      const width = Math.min(380, document.documentElement.clientWidth - 28)
       const maxHeight = parseFloat(style.maxHeight)
       dialog.style.setProperty('--schedule-dialog-content-max-height', `${Math.max(0, maxHeight - verticalSpace)}px`)
-      // 최종 너비에서 내용을 측정해 텍스트를 늘리거나 줄이지 않고 표면만 움직인다.
       formRef.current.style.width = `${Math.max(0, width - horizontalSpace - scrollbarWidth)}px`
       const height = Math.min(content.offsetHeight + verticalSpace, maxHeight)
       setGeometry((previous) => previous?.width === width && previous?.height === height ? previous : { width, height })
@@ -90,15 +85,14 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
       observer.disconnect()
       window.removeEventListener('resize', measure)
     }
-  }, [isCourse])
+  }, [])
   useEffect(() => {
     const mobile = window.matchMedia('(max-width: 600px), (pointer: coarse)').matches
     const target = mobile ? closeButtonRef.current : titleRef.current
     target?.focus({ preventScroll: true })
-  }, [mode])
+  }, [])
   const submit = (event) => {
     event.preventDefault()
-    if (isCourse) return
     if (!draft.title.trim()) return
     if (!parseDate(draft.date)) { setError('날짜를 선택해 주세요.'); return }
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(draft.time)) { setError('시간을 선택해 주세요.'); return }
@@ -106,28 +100,21 @@ function AddScheduleDialog({ selectedDate, onClose, onAdd, onAddCourse, existing
     onClose()
   }
   return (
-    <motion.dialog ref={dialogRef} className={`schedule-dialog${isCourse ? ' schedule-dialog--course' : ''}`} aria-labelledby="add-schedule-title" onCancel={onClose} onClick={(event) => { if (event.target === dialogRef.current) onClose() }}
+    <motion.dialog ref={dialogRef} className="schedule-dialog" aria-labelledby="add-schedule-title" onCancel={onClose} onClick={(event) => { if (event.target === dialogRef.current) onClose() }}
       initial={false} animate={geometry ?? {}} transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 36, mass: 1 }}>
       <div ref={contentRef} className="schedule-dialog__content">
-        <div className="schedule-dialog__heading"><h2 id="add-schedule-title">{isCourse ? '새 수업 추가' : '새 일정 추가'}</h2><button ref={closeButtonRef} type="button" className="schedule-icon-button" onClick={onClose} aria-label="추가 창 닫기"><X size={18} /></button></div>
-        <div className="schedule-dialog__modes" role="group" aria-label="추가 모드">
-          <button type="button" aria-pressed={!isCourse} onClick={() => { setMode('event'); setError('') }}>일정 추가</button>
-          <button type="button" aria-pressed={isCourse} onClick={() => { setMode('course'); setError('') }}>수업 추가</button>
-        </div>
-      <motion.form key={mode} ref={formRef} onSubmit={submit}
-        initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : 0.2, ease: 'easeOut' }}>
-        {isCourse ? <CourseSearch onAdd={onAddCourse} onClose={onClose} existingCourses={existingCourses} /> : <>
-        <label>일정 제목<input ref={titleRef} required maxLength={100} value={draft.title} onChange={(event) => updateField('title', event.target.value)} placeholder="일정 또는 과제명을 입력하세요" /></label>
-        <div className="schedule-dialog__dates">
-          <PickerField id="schedule-date" label="날짜" value={eventDraft.date} displayValue={eventDateLabel} Icon={CalendarBlank} type="date" min="1900-01-01" max="9999-12-31" onChange={(event) => updateField('date', event.target.value)} />
-          <PickerField id="schedule-time" label="시간" value={draft.time} Icon={Clock} type="time" onChange={(event) => updateField('time', event.target.value)} />
-        </div>
-        <label>종류<select value={draft.kind} onChange={(event) => updateField('kind', event.target.value)}><option value="task">과제/마감</option><option value="notice">학사 공지</option><option value="recommend">개인 일정/공부</option></select></label>
-        <label className="schedule-dialog__repeat"><input type="checkbox" checked={eventDraft.repeatWeekly} onChange={(event) => updateField('repeatWeekly', event.target.checked)} /><span>주간 반복</span></label>
-        {error && <p className="schedule-dialog__error" role="alert">{error}</p>}
-        <button className="schedule-save-button" type="submit" disabled={!draft.title.trim()}>일정 저장</button>
-        </>}
-      </motion.form>
+        <div className="schedule-dialog__heading"><h2 id="add-schedule-title">새 일정 추가</h2><button ref={closeButtonRef} type="button" className="schedule-icon-button" onClick={onClose} aria-label="추가 창 닫기"><X size={18} /></button></div>
+        <form ref={formRef} onSubmit={submit}>
+          <label>일정 제목<input ref={titleRef} required maxLength={100} value={draft.title} onChange={(event) => updateField('title', event.target.value)} placeholder="일정 또는 과제명을 입력하세요" /></label>
+          <div className="schedule-dialog__dates">
+            <PickerField id="schedule-date" label="날짜" value={draft.date} displayValue={eventDateLabel} Icon={CalendarBlank} type="date" min="1900-01-01" max="9999-12-31" onChange={(event) => updateField('date', event.target.value)} />
+            <PickerField id="schedule-time" label="시간" value={draft.time} Icon={Clock} type="time" onChange={(event) => updateField('time', event.target.value)} />
+          </div>
+          <label>종류<select value={draft.kind} onChange={(event) => updateField('kind', event.target.value)}><option value="task">과제/마감</option><option value="notice">학사 공지</option><option value="recommend">개인 일정/공부</option></select></label>
+          <label className="schedule-dialog__repeat"><input type="checkbox" checked={draft.repeatWeekly} onChange={(event) => updateField('repeatWeekly', event.target.checked)} /><span>주간 반복</span></label>
+          {error && <p className="schedule-dialog__error" role="alert">{error}</p>}
+          <button className="schedule-save-button" type="submit" disabled={!draft.title.trim()}>일정 저장</button>
+        </form>
       </div>
     </motion.dialog>
   )
@@ -150,12 +137,6 @@ export default function SchedulePage() {
   const ViewIcon = monthly ? Clock : CalendarBlank
 
   const View = monthly ? ScheduleMonthlyPage : ScheduleWeeklyPage
-  const onAddCourse = (newCourses) => {
-    const result = registerCourses(state, newCourses)
-    if (result.error) return result.error
-    setState((previous) => registerCourses(previous, newCourses).state)
-    return null
-  }
   const onRemoveCourse = (id) => setState((previous) => removeCourse(previous, id))
   const onRemoveEvent = (id) => {
     setState((previous) => removeEvent(previous, id))
@@ -181,8 +162,6 @@ export default function SchedulePage() {
           <AddScheduleDialog
             selectedDate={state.selectedDate}
             onClose={() => setAdding(false)}
-            onAddCourse={onAddCourse}
-            existingCourses={activeCourses(state.courses, state.removedCourseIds)}
             onAdd={async (event) => {
               setState((previous) => ({ ...previous, selectedDate: event.date, events: [...previous.events, event] }))
               if (addServerSchedule) {

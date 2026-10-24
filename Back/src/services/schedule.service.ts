@@ -71,15 +71,16 @@ export const getScheduleTasks = async (userId: string, scheduleId: string) => {
   );
   if (!schedule) throw new AppError('해당 일정을 찾을 수 없거나 접근 권한이 없습니다.', 404);
 
-  // 2. 해당 일정과 연계된 과제들 조회 (scheduleId 기준 또는 제목 매칭)
+  // 2. 연계 과제: 수업명(끝 강의실 괄호 제외)으로 제목 매칭 — 예) "인공지능 · 1주차: …"
+  const courseName = String(schedule.title || '').replace(/\s*\([^)]*\)\s*$/, '').trim()
   const tasks = await unwrap(
     supabase
       .from('Task')
       .select('*')
       .eq('userId', userId)
-      .or(`scheduleId.eq.${scheduleId},title.ilike.%${schedule.title}%`)
+      .ilike('title', `${courseName} ·%`)
       .order('dueAt', { ascending: true })
-  );
+  )
 
   return {
     schedule,

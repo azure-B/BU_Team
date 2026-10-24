@@ -72,12 +72,13 @@ test('월간 그리드는 5주와 6주 달 모두 빠짐없이 표시한다', ()
 })
 
 test('주간 보기는 같은 주의 날짜를 선택해도 동일한 범위와 주차를 유지한다', () => {
-  const expected = ['2026-09-14', '2026-09-15', '2026-09-16', '2026-09-17', '2026-09-18']
+  const expected = ['2026-09-14', '2026-09-15', '2026-09-16', '2026-09-17', '2026-09-18', '2026-09-19', '2026-09-20']
   for (const value of expected) {
     assert.deepEqual(weekDates(value), expected)
     assert.equal(monthWeek(value), 3)
   }
   assert.deepEqual(weekDates('2026-09-20'), expected)
+  assert.deepEqual(weekDates('2026-09-14', 5), expected.slice(0, 5))
 })
 
 test('수업은 같은 요일에 학기 제한 없이 반복하고 주말에는 표시하지 않는다', () => {
