@@ -41,24 +41,179 @@
 .calendar-legend > span { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 .calendar-legend .calendar-day__classes { width: 12px; }
 
-.weekly-timetable__header, .weekly-timetable__body { display: grid; grid-template-columns: 34px repeat(var(--timetable-days, 5), minmax(0, 1fr)); }
-.weekly-timetable__header { align-items: center; background: var(--color-surface-subtle); border-bottom: 1px solid var(--color-border); }
-.weekly-timetable__header > span { color: var(--color-muted); font-size: var(--font-size-micro-tight, 8px); font-weight: var(--font-weight-bold, 700); text-align: center; }
-.weekly-timetable__header button { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 2px; padding: 7px 2px; color: var(--color-text); background: transparent; border: 0; cursor: pointer; }
+.weekend-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 8px;
+  padding: 4px;
+  background: var(--color-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.weekend-toggle__thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--color-primary-strong), var(--color-primary));
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--color-primary) 28%, transparent);
+  transform: translateX(0);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+.weekend-toggle--hide .weekend-toggle__thumb {
+  transform: translateX(100%);
+}
+.weekend-toggle__button {
+  position: relative;
+  z-index: 1;
+  padding: 11px 12px;
+  color: var(--color-primary-strong);
+  background: transparent;
+  border: 0;
+  border-radius: 11px;
+  font: inherit;
+  font-size: var(--font-size-body, 12px);
+  font-weight: var(--font-weight-bold-strong, 750);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: color 0.35s ease;
+}
+.weekend-toggle__button.is-active {
+  color: #fff;
+}
+.weekend-toggle__button:active {
+  transform: scale(0.985);
+}
+@media (prefers-reduced-motion: reduce) {
+  .weekend-toggle__thumb,
+  .weekend-toggle__button {
+    transition: none;
+  }
+}
+/* 주말 열 비중(0→1)을 숫자로 보간 → 월~금이 같은 속도로 줄어듦 */
+@property --weekend-grow {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+.weekly-timetable {
+  --weekend-grow: 0;
+  --timetable-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --timetable-duration: 0.45s;
+  overflow: hidden;
+  transition: --weekend-grow var(--timetable-duration) var(--timetable-ease);
+}
+.weekly-timetable--weekend { --weekend-grow: 1; }
+.weekly-timetable__header,
+.weekly-timetable__body {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+.weekly-timetable__header {
+  background: var(--color-surface-subtle);
+  border-bottom: 1px solid var(--color-border);
+}
+.weekly-timetable__header > span,
+.weekly-timetable__hours {
+  flex: 0 0 34px;
+  width: 34px;
+  box-sizing: border-box;
+}
+.weekly-timetable__header > span {
+  display: grid;
+  place-items: center;
+  color: var(--color-muted);
+  font-size: var(--font-size-micro-tight, 8px);
+  font-weight: var(--font-weight-bold, 700);
+  text-align: center;
+}
+.weekly-timetable__header button {
+  display: flex;
+  flex: 1 1 0%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 2px;
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
 .weekly-timetable__header button strong { font-size: var(--font-size-subtext, 11px); }
 .weekly-timetable__header button small { color: var(--color-muted); font-size: var(--font-size-badge, 10px); }
 .weekly-timetable__header .is-selected { color: var(--color-primary); background: var(--color-primary-soft); }
 .weekly-timetable__header .is-selected small { color: var(--color-primary); }
-.weekly-timetable__hours { display: flex; flex-direction: column; background: var(--color-surface-subtle); }
-.weekly-timetable__hours span { height: 48px; padding-top: 5px; color: var(--color-muted); font-size: var(--font-size-badge, 10px); text-align: center; border-bottom: 1px solid var(--color-border); }
-.timetable-column { position: relative; height: var(--timetable-height, 432px); border-left: 1px solid var(--color-border); background: repeating-linear-gradient(to bottom, transparent 0, transparent 47px, var(--color-border) 47px, var(--color-border) 48px); }
-.timetable-column--selected { background-color: color-mix(in srgb, var(--color-primary-soft) 45%, transparent); }
-.timetable-course { position: absolute; inset-inline: 2px; display: flex; min-width: 0; align-items: stretch; flex-direction: column; gap: 3px; padding: 5px 4px; color: #fff; text-align: left; border: 0; border-radius: 7px; overflow: hidden; cursor: pointer; transition: filter var(--transition); }
-.timetable-course:hover { filter: brightness(0.94); }
-.timetable-course strong { font-size: var(--font-size-badge, 10px); line-height: 1.3; overflow-wrap: anywhere;
-  font-weight: var(--font-weight-bold-strong, 750);
+.weekly-timetable__header .is-weekend {
+  flex-grow: var(--weekend-grow);
+  opacity: var(--weekend-grow);
+  pointer-events: none;
 }
-.timetable-course small { font-size: var(--font-size-micro, 9px); opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.weekly-timetable--weekend .weekly-timetable__header .is-weekend { pointer-events: auto; }
+.weekly-timetable__hours {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-subtle);
+}
+.weekly-timetable__hours span {
+  height: var(--timetable-hour, 64px);
+  padding-top: 5px;
+  color: var(--color-muted);
+  font-size: var(--font-size-badge, 10px);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+.timetable-column {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  height: var(--timetable-height, 576px);
+  border-left: 1px solid var(--color-border);
+  overflow: hidden;
+  cursor: pointer;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--timetable-hour, 64px) - 1px), var(--color-border) calc(var(--timetable-hour, 64px) - 1px), var(--color-border) var(--timetable-hour, 64px));
+}
+.timetable-column:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  z-index: 1;
+}
+.timetable-column--weekend {
+  flex-grow: var(--weekend-grow);
+  opacity: var(--weekend-grow);
+  pointer-events: none;
+  border-left-color: color-mix(in srgb, var(--color-border) calc(var(--weekend-grow) * 100%), transparent);
+}
+.weekly-timetable--weekend .timetable-column--weekend { pointer-events: auto; }
+.timetable-column--selected { background-color: color-mix(in srgb, var(--color-primary-soft) 45%, transparent); }
+/* 주말 표시와 동시에 블록 글씨 페이드아웃 (너비 축소와 동기) */
+.weekly-timetable .timetable-course strong,
+.weekly-timetable .timetable-event strong {
+  opacity: calc(1 - var(--weekend-grow));
+}
+.weekly-timetable .timetable-course small,
+.weekly-timetable .timetable-event small {
+  opacity: calc((1 - var(--weekend-grow)) * 0.95);
+}
+@media (prefers-reduced-motion: reduce) {
+  .weekly-timetable { transition: none; }
+}
+.timetable-course { position: absolute; inset-inline: 2px; display: flex; min-width: 0; align-items: stretch; flex-direction: column; gap: 2px; padding: 6px 5px; color: #fff; text-align: left; border: 0; border-radius: 8px; overflow: visible; cursor: pointer; transition: filter var(--transition); z-index: 1; }
+.timetable-course:hover { filter: brightness(0.94); z-index: 2; }
+.timetable-course strong { font-size: var(--font-size-badge, 10px); line-height: 1.25; overflow-wrap: anywhere; word-break: keep-all; font-weight: var(--font-weight-bold-strong, 750); }
+.timetable-course small { font-size: var(--font-size-micro, 9px); line-height: 1.25; opacity: 0.95; overflow-wrap: anywhere; word-break: keep-all; white-space: normal; }
+.timetable-course__place { font-weight: var(--font-weight-semibold, 600); }
+.timetable-course__kind { opacity: 0.85; }
 .timetable-course--rose { background: #e11d48; }
 .timetable-course--amber { background: #b45309; }
 .timetable-course--blue { background: #1d4ed8; }
@@ -66,18 +221,20 @@
 .timetable-course--emerald { background: #047857; }
 .timetable-course--indigo { background: #4338ca; }
 .timetable-course--teal { background: #0f766e; }
+.timetable-course--violet { background: #7e22ce; }
+.timetable-course--cyan { background: #0e7490; }
+.timetable-course--pink { background: #be185d; }
+.timetable-course--slate { background: #334155; }
+.timetable-course--lime { background: #4d7c0f; }
 .timetable-course--major { background: #1d4ed8; }
 .timetable-course--general { background: #047857; }
 .timetable-course--teaching { background: #7e22ce; }
-.timetable-event { position: absolute; inset-inline: 2px; display: flex; min-width: 0; flex-direction: column; gap: 2px; padding: 4px; color: var(--color-primary); background: var(--color-primary-soft); border: 1px solid var(--color-primary); border-radius: 7px; overflow: hidden; text-align: left; cursor: pointer; }
+.timetable-event { position: absolute; inset-inline: 2px; display: flex; min-width: 0; flex-direction: column; gap: 2px; padding: 5px; color: var(--color-primary); background: var(--color-primary-soft); border: 1px solid var(--color-primary); border-radius: 8px; overflow: visible; text-align: left; cursor: pointer; }
 .timetable-event--task { color: var(--color-danger); background: var(--color-danger-soft); border-color: var(--color-danger); }
 .timetable-event--recommend { color: #7e22ce; background: #f3e8ff; border-color: #a855f7; }
 .timetable-event--recurring { border-style: dashed; }
-.timetable-event strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-size-micro, 9px); }
-.timetable-event small { font-size: var(--font-size-micro-tight, 8px); }
-.weekly-timetable__summary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; padding: 10px; background: var(--color-surface-subtle); color: var(--color-muted); font-size: var(--font-size-badge, 10px); border-top: 1px solid var(--color-border); }
-.weekly-timetable__summary strong { color: var(--color-primary); font-size: var(--font-size-micro, 9px); }
-
+.timetable-event strong { font-size: var(--font-size-micro, 9px); line-height: 1.25; overflow-wrap: anywhere; word-break: keep-all; white-space: normal; }
+.timetable-event small { font-size: var(--font-size-micro-tight, 8px); line-height: 1.25; overflow-wrap: anywhere; white-space: normal; }
 .schedule-details { padding: 14px; }
 .schedule-details__heading { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 6px; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border); }
 .schedule-details__heading > span { display: grid; width: 24px; height: 24px; color: var(--color-primary); background: var(--color-primary-soft); border-radius: 7px; place-items: center; }
@@ -97,6 +254,19 @@
 .schedule-kind--general { color: var(--color-success); background: var(--color-success-soft); }
 .schedule-kind--teaching { color: #7e22ce; background: #f3e8ff; }
 .schedule-empty { margin: 20px 0; color: var(--color-muted); font-size: var(--font-size-body, 12px); text-align: center; }
+.schedule-empty--weekend {
+  margin: 16px 0;
+  padding: 16px 18px;
+  color: var(--color-primary);
+  background: linear-gradient(160deg, var(--color-primary-soft), color-mix(in srgb, var(--color-primary) 8%, transparent));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border-radius: 12px;
+  font-size: var(--font-size-item-title, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
 
 .schedule-dialog { width: min(380px, calc(100% - 28px)); max-width: calc(100% - 28px); max-height: calc(100dvh - 28px); overflow-x: hidden; overflow-y: auto; padding: 20px; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card); box-shadow: var(--shadow-float); }
 .schedule-dialog::backdrop { background: rgb(15 23 42 / 0.4); backdrop-filter: blur(4px); }
