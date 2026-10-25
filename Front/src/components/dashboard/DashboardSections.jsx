@@ -34,9 +34,12 @@ import { getEarlyEndRecord, isClassMarkedEarly, markClassEarlyEnd } from '../../
 import {
   analyzeDayWrapActivity,
   analyzeGapActivity,
+  isNightHours,
   pickPlanStyle,
   PLAN_STYLES,
   PLAN_STYLE_LABEL,
+  NIGHT_PLAN_STYLES,
+  NIGHT_PLAN_STYLE_LABEL,
 } from '../../utils/gapActivities'
 import { buildDueTodayPrompt } from '../../utils/dueToday'
 import { fetchGapRouteTimes, resolveRouteOrigin } from '../../utils/campusRouteTimes'
@@ -493,11 +496,12 @@ export function GapActivityCard() {
 
   const reshuffleCourse = () => {
     seedSaltRef.current += 1 + Math.floor(Math.random() * 9)
-    // 직전과 다른 테마 (식사 여유 / 과제 집중 / 산책·휴식 / 골고루)
-    const others = PLAN_STYLES.filter((s) => s !== planStyleRef.current)
-    const pool = others.length ? others : PLAN_STYLES
+    const night = isNightHours(getDashboardNow())
+    const styles = night ? NIGHT_PLAN_STYLES : PLAN_STYLES
+    const others = styles.filter((s) => s !== planStyleRef.current)
+    const pool = others.length ? others : styles
     planStyleRef.current = pool[Math.floor(Math.random() * pool.length)]
-      || pickPlanStyle(Date.now() + seedSaltRef.current * 17)
+      || (night ? 'task' : pickPlanStyle(Date.now() + seedSaltRef.current * 17))
     evaluateRef.current?.()
   }
 
@@ -512,13 +516,17 @@ export function GapActivityCard() {
     'move-now': '바로 이동',
     tight: '바로 이동',
   }[suggestion.kind] || '준비'
-  const styleLabel = suggestion.planStyleLabel || PLAN_STYLE_LABEL[suggestion.planStyle] || kindLabel
+  const styleLabel = suggestion.planStyleLabel
+    || NIGHT_PLAN_STYLE_LABEL[suggestion.planStyle]
+    || PLAN_STYLE_LABEL[suggestion.planStyle]
+    || kindLabel
   const canReshuffle = suggestion.kind === 'plan'
     || suggestion.kind === 'meal'
     || suggestion.kind === 'task'
     || suggestion.kind === 'activity'
     || suggestion.kind === 'day-wrap'
   const isDayWrap = suggestion.kind === 'day-wrap'
+  const isNightWrap = Boolean(suggestion.night)
 
   return (
     <SectionCard className="gap-activity">
@@ -527,15 +535,17 @@ export function GapActivityCard() {
           <Lightbulb size={18} weight="fill" />
         </span>
         <div className="gap-activity__heading">
-          <p>{isDayWrap ? '수업 끝난 뒤 추천' : '다음 수업 전 추천'}</p>
+          <p>{isNightWrap ? '밤 마무리 추천' : isDayWrap ? '수업 끝난 뒤 추천' : '다음 수업 전 추천'}</p>
           <small>
-            {isDayWrap
-              ? '오늘 남은 수업 없음'
-              : typeof suggestion.freeGapMinutes === 'number'
-                ? `${suggestion.freeGapMinutes}분 여유`
-                : typeof suggestion.gapMinutes === 'number'
-                  ? `${suggestion.gapMinutes}분 틈`
-                  : ''}
+            {isNightWrap
+              ? '사강·과제 · 취침 전'
+              : isDayWrap
+                ? '오늘 남은 수업 없음'
+                : typeof suggestion.freeGapMinutes === 'number'
+                  ? `${suggestion.freeGapMinutes}분 여유`
+                  : typeof suggestion.gapMinutes === 'number'
+                    ? `${suggestion.gapMinutes}분 틈`
+                    : ''}
             {' · '}
             {styleLabel}
           </small>
@@ -646,7 +656,9 @@ export function NextClassCard() {
     const onEarly = () => load()
     window.addEventListener('bu-class-early-end', onEarly)
     window.addEventListener(DEMO_GPS_EVENT, onEarly)
-    const timer = setInterval(load, 60_000)
+    // 실시간 모드에서는 수업 종료 직후 메시지가 남지 않도록 더 자주 갱신
+    const intervalMs = isDashboardDemoClock() ? 60_000 : 15_000
+    const timer = setInterval(load, intervalMs)
     return () => {
       ignore = true
       clearInterval(timer)
@@ -693,6 +705,12 @@ export function NextClassCard() {
     && new Date(nextClass.startAt) <= demoNowForCard
     && demoNowForCard < new Date(nextClass.endAt),
   )
+  const classNotStarted = Boolean(
+    nextClass && new Date(nextClass.startAt) > demoNowForCard,
+  )
+  const classEnded = Boolean(
+    nextClass && new Date(nextClass.endAt) <= demoNowForCard,
+  )
   const minutesIntoClass = classOngoing
     ? Math.round((demoNowForCard.getTime() - new Date(nextClass.startAt).getTime()) / 60000)
     : 0
@@ -701,17 +719,32 @@ export function NextClassCard() {
   const classEndLabel = nextClass ? new Date(nextClass.endAt).toTimeString().slice(0, 5) : ''
   const classStartLabel = nextClass ? new Date(nextClass.startAt).toTimeString().slice(0, 5) : ''
 
-  let walkLabel = routeInfo?.travelLabel || routeInfo?.walkLabel
-    || (typeof routeInfo?.totalMinutes === 'number'
-      ? `현재 위치에서 강의실까지 총 ${routeInfo.totalMinutes}분`
-      : null)
-  let tipLevel = routeInfo?.latenessLevel || 'SAFE'
-  let tipHighlight = routeInfo?.tipHighlight
-    || (tipLevel === 'DANGER' ? '지금 바로 출발하세요' : tipLevel === 'WARNING' ? '조금 서두르는 게 좋아요' : '여유 있게 걸어가도 돼요')
-  let tipSub = routeInfo?.tipSub || routeInfo?.message
-    || (routeOrigin?.lat == null
-      ? '위치 권한이 없어 직전·현재 수업 건물 기준으로 안내해요.'
-      : '이동 시간을 계산하고 있습니다.')
+  // 종료된 수업·시작 전 수업에 경로 API의 LATE(「이미 시작」) 팁을 쓰지 않음
+  const routeTipOk = classOngoing || classNotStarted
+  let walkLabel = routeTipOk
+    ? (routeInfo?.travelLabel || routeInfo?.walkLabel
+      || (typeof routeInfo?.totalMinutes === 'number'
+        ? `현재 위치에서 강의실까지 총 ${routeInfo.totalMinutes}분`
+        : null))
+    : null
+  let tipLevel = routeTipOk ? (routeInfo?.latenessLevel || 'SAFE') : 'SAFE'
+  let tipHighlight = routeTipOk
+    ? (routeInfo?.tipHighlight
+      || (tipLevel === 'DANGER' ? '지금 바로 출발하세요' : tipLevel === 'WARNING' ? '조금 서두르는 게 좋아요' : '여유 있게 걸어가도 돼요'))
+    : '오늘 수업이 끝났어요'
+  let tipSub = routeTipOk
+    ? (routeInfo?.tipSub || routeInfo?.message
+      || (routeOrigin?.lat == null
+        ? '위치 권한이 없어 직전·현재 수업 건물 기준으로 안내해요.'
+        : '이동 시간을 계산하고 있습니다.'))
+    : '등록된 남은 수업이 없어요. 밥·과제·휴식을 추천해 드릴게요.'
+
+  if (classEnded) {
+    walkLabel = '오늘 남은 수업 없음'
+    tipLevel = 'SAFE'
+    tipHighlight = '오늘 수업이 끝났어요'
+    tipSub = '수고하셨어요. 홈의 공강 추천에서 다음 할 일을 골라 보세요.'
+  }
 
   if (!walkLabel && routeOrigin?.lat == null && !classOngoing) {
     walkLabel = '위치 없이 시간표 기준'
@@ -765,7 +798,8 @@ export function NextClassCard() {
     )
   }
 
-  if (!nextClass) {
+  if (!nextClass || classEnded) {
+    const finished = classEnded || !nextClass
     return (
       <SectionCard className="next-class">
         <div className="next-class__top">
@@ -773,16 +807,16 @@ export function NextClassCard() {
             <span className="next-class__spark"><Sparkle size={18} weight="fill" aria-hidden="true" /></span>
             <div>
               <p>오늘의 캠퍼스 이동 &amp; 강의 안내</p>
-              <small>오늘은 등록된 수업이 없어요</small>
+              <small>남은 수업이 없어요</small>
             </div>
           </div>
-          <span className="status-chip status-chip--muted">휴일/공강</span>
+          <span className="status-chip status-chip--muted">{finished ? '수업 종료' : '휴일/공강'}</span>
         </div>
         <div className="next-class__body">
           <p className="location-line">
             <MapPin size={16} weight="fill" aria-hidden="true" />
             <strong>여유로운 하루</strong>
-            <span>오늘은 등록된 수업이 없어요. 푹 쉬어도 좋아요.</span>
+            <span>오늘 남은 수업이 없어요. 푹 쉬어도 좋아요.</span>
           </p>
         </div>
       </SectionCard>

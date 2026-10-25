@@ -370,7 +370,9 @@ export function looksLikeScheduleCandidate(question: string) {
   if (/사무실|과사/.test(q) && /어디|위치|몇호|전화/.test(q) && !CREATE_RE.test(q) && !QUERY_RE.test(q) && !DELETE_RE.test(q)) {
     return false
   }
-  if (/다음\s*수업\s*전|공강|뭐\s*하지|뭐하지|틈새/.test(q) && !CREATE_RE.test(q) && !DELETE_RE.test(q)) {
+  if (/다음\s*수업\s*전|공강|뭐\s*하지|뭐하지|틈새|추천|붕\s*뜨|시간\s*짜|어디서|하면\s*좋|할\s*과제/.test(q)
+    && !/등록해|넣어\s*줘|넣어줘|추가해|스케줄에\s*넣|일정에\s*넣/.test(q)
+    && !DELETE_RE.test(q)) {
     return false
   }
   if (/병결|질병\s*결석|출석\s*인정/.test(q) && !CREATE_RE.test(q) && !KIND_RE.test(q)) {

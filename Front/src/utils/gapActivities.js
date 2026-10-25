@@ -748,13 +748,99 @@ const DAY_WRAP_TITLES = [
   () => '다음 수업 없는 날이에요. 밥·과제부터 골라봐요',
 ]
 
+const NIGHT_WRAP_TITLES = [
+  () => '밤이에요. 사강·과제부터 정리해 볼까요?',
+  () => '캠퍼스는 닫혀 가는 시간 — 집·기숙사에서 할 일만 정리했어요',
+  () => '취침 전까지 이렇게 마무리해 보아요',
+]
+
 /** 저녁 식사 추천 구간 */
 const DINNER_FROM = 17 * 60
 const DINNER_TO = 20 * 60
+/** 이 시각 이후엔 북카페·산책 대신 사강·과제·취침 전 계획 */
+const NIGHT_FROM = 20 * 60
+const BEDTIME_DEFAULT = 23 * 60 + 30
+
+export function isNightHours(now = new Date()) {
+  return minutesOfDay(now) >= NIGHT_FROM
+}
+
+export const NIGHT_PLAN_STYLES = ['task', 'balanced']
+export const NIGHT_PLAN_STYLE_LABEL = {
+  task: '사강·과제',
+  balanced: '취침 전 루틴',
+}
+
+function buildNightWrapPlan({ now, works, seed, style }) {
+  const hour = minutesOfDay(now)
+  const bedtime = Math.max(hour + 60, BEDTIME_DEFAULT)
+  const bedLabel = `${String(Math.floor(bedtime / 60) % 24).padStart(2, '0')}:${String(bedtime % 60).padStart(2, '0')}`
+  const untilBed = Math.max(30, bedtime - hour)
+  const items = []
+  const tags = []
+
+  const cybers = works.filter((w) => w.cyber)
+  const homework = works.filter((w) => !w.cyber)
+  const focusWorks = style === 'task'
+    ? [...cybers, ...homework].slice(0, 3)
+    : [...cybers.slice(0, 2), ...homework.slice(0, 1)].filter(Boolean)
+
+  if (focusWorks.length) {
+    focusWorks.forEach((w, i) => {
+      const block = i === 0
+        ? Math.min(40, Math.max(20, Math.floor(untilBed * 0.4)))
+        : Math.min(30, Math.max(15, Math.floor(untilBed * 0.25)))
+      items.push({
+        name: `「${w.label}」 ${w.noun}`,
+        detail: `${w.dueText} 마감 · 약 ${block}분`
+          + (w.cyber ? ' · 출석 영상부터 틀어 두세요' : ' · 오늘 손댈 분량만 정해 보세요'),
+      })
+      tags.push(w.noun)
+    })
+  } else {
+    items.push({
+      name: '밀린 사강·과제 점검',
+      detail: '등록된 마감이 없어도 LMS·과제함을 한번 훑어 보세요 · 약 15분',
+    })
+    tags.push('점검')
+  }
+
+  const used = items.reduce((sum, it) => {
+    const m = String(it.detail).match(/약\s*(\d+)분/)
+    return sum + (m ? Number(m[1]) : 20)
+  }, 0)
+  const stretchLeft = Math.max(15, untilBed - used - 20)
+
+  if (style !== 'task' || stretchLeft >= 25) {
+    items.push({
+      name: '내일 시간표·가방 정리',
+      detail: `취침 전 ${Math.min(20, stretchLeft)}분 · 내일 첫 수업·제출물만 확인해 두세요`,
+    })
+    tags.push('내일 준비')
+  }
+
+  items.push({
+    name: `취침 목표 ${bedLabel}`,
+    detail: '폰은 충전·무음, 내일 알람만 맞춰 두고 쉬어요',
+  })
+  tags.push('취침')
+
+  const title = pickRandom(NIGHT_WRAP_TITLES, seed)()
+  const order = tags.length ? `${tags.join(' → ')} 순으로 짜 봤어요. ` : ''
+  return {
+    kind: 'day-wrap',
+    night: true,
+    title,
+    body: `${order}밤에는 캠퍼스 스팟보다 사강·과제가 먼저예요. ${bedLabel} 전에 마무리해 볼까요?`,
+    planStyle: style,
+    planStyleLabel: NIGHT_PLAN_STYLE_LABEL[style] || '취침 전 루틴',
+    items,
+  }
+}
 
 /**
  * 오늘 남은 수업이 없을 때 — 밥·사이버강의·과제·캠퍼스 활동 유도
- * (다음 강의실 이동 제약 없음)
+ * 밤(20시~)에는 북카페 등 대신 사강·과제·취침 전 계획
  */
 export function analyzeDayWrapActivity({
   now = new Date(),
@@ -766,11 +852,19 @@ export function analyzeDayWrapActivity({
   planStyle = null,
   seedSalt = 0,
 } = {}) {
-  const style = PLAN_STYLES.includes(planStyle) ? planStyle : pickPlanStyle(seedSalt || Date.now())
-  const styleMeta = { planStyle: style, planStyleLabel: PLAN_STYLE_LABEL[style] || '골고루' }
+  const hour = minutesOfDay(now)
   const seed = Math.floor(now.getTime() / (5 * 60 * 1000)) + Number(seedSalt || 0) * 97
   const works = toWorkItems(pickRelevantTasks(tasks, now), now, 3)
-  const hour = minutesOfDay(now)
+
+  if (hour >= NIGHT_FROM) {
+    const nightStyle = NIGHT_PLAN_STYLES.includes(planStyle)
+      ? planStyle
+      : NIGHT_PLAN_STYLES[Math.abs(seed) % NIGHT_PLAN_STYLES.length]
+    return buildNightWrapPlan({ now, works, seed, style: nightStyle })
+  }
+
+  const style = PLAN_STYLES.includes(planStyle) ? planStyle : pickPlanStyle(seedSalt || Date.now())
+  const styleMeta = { planStyle: style, planStyleLabel: PLAN_STYLE_LABEL[style] || '골고루', night: false }
   const mealLunch = shouldSuggestMeal(now, previousClassEndAt)
   const mealDinner = hour >= DINNER_FROM && hour < DINNER_TO
   const mealOk = mealLunch || mealDinner

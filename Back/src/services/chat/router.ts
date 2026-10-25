@@ -153,6 +153,7 @@ async function runLlm(question: string, department: string | null | undefined, t
   const context = [
     academicCalendarContextSnippet(),
     campusBuildingsContextBlock(),
+    '[캠퍼스 시설] 편의점: 본부동6층CU, 진리관B1 CU, 지혜관3층CU, 복지동1층세븐, 생활관2층GS25. 창업카페 본부동1층. 학식: 밀겨울·교수회관·안골·기숙사식당.',
     office
       ? `[질문자 학부] ${office.department}: ${office.building} ${office.room}, ${office.phones.join(' · ')}`
       : department
@@ -161,7 +162,8 @@ async function runLlm(question: string, department: string | null | undefined, t
     officeContextBlock(),
     professorsContextBlock(),
     `[FAQ 요약]\n${faqHints}`,
-    '위 근거를 우선 사용하고, 부족하면 확인 불가로 답하세요. 건물·이동시간은 [캠퍼스 건물] 근거를 따르세요. 통학버스는 학생처 문의.',
+    '위 근거를 우선 사용하고, 부족하면 확인 불가로 답하세요. 건물·이동시간은 [캠퍼스 건물] 근거를 따르세요. '
+      + '경유지(찍고·거쳐)가 있으면 구간 분수를 더해 합산하세요. 통학버스는 학생처 문의.',
   ]
   const llm = await askGpt(question, context)
   return withMeta({
@@ -261,7 +263,7 @@ export async function routeChat(input: ChatInput): Promise<ChatResponse> {
 
   const now = input.now || new Date()
 
-  // 1) 캠퍼스 건물·이동
+  // 1) 캠퍼스 건물·이동 (경유지 합산 / 표 없으면 GPT)
   if (looksLikeCampusCandidate(question)) {
     const campus = await tryHandleCampusIntent({ question, now })
     if (campus.handled && campus.answer) {
@@ -273,6 +275,9 @@ export async function routeChat(input: ChatInput): Promise<ChatResponse> {
         latencyMs: Date.now() - t0,
         sentContext: buildSentContext(input, { routeHint: 'campus' }),
       }, true)
+    }
+    if (campus.deferToLlm) {
+      return runLlm(question, input.department, t0, input)
     }
   }
 
@@ -292,14 +297,14 @@ export async function routeChat(input: ChatInput): Promise<ChatResponse> {
     }
   }
 
-  // 3) 공강·틈새 (일정 등록보다 먼저)
+  // 3) 공강·과제 추천·시간 짜기 (일정 등록보다 먼저)
   if (looksLikeGapCandidate(question)) {
-    const gap = await tryHandleGapIntent({ question, now })
+    const gap = await tryHandleGapIntent({ question, now, userId: input.userId })
     if (gap.handled && gap.answer) {
       return withMeta({
         route: 'gap',
         answer: gap.answer,
-        badge: gap.badge || '공강 추천',
+        badge: gap.badge || '비서 추천',
         choices: gap.choices,
         latencyMs: Date.now() - t0,
         sentContext: buildSentContext(input, { routeHint: 'gap' }),

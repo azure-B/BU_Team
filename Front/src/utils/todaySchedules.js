@@ -15,6 +15,24 @@ const DEMO_D = 27
 const DOW_LABEL = ['일', '월', '화', '수', '목', '금', '토']
 
 /**
+ * 스케줄 문자열에서 벽시계(시·분·요일)만 추출.
+ * Supabase가 naive datetime에 Z를 붙여도 13:00 → 13시로 유지 (UTC 변환 방지).
+ */
+function wallClockParts(raw) {
+  const m = String(raw || '').match(
+    /^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})(?::(\d{2}))?/,
+  )
+  if (!m) return null
+  const y = Number(m[1])
+  const mo = Number(m[2]) - 1
+  const d = Number(m[3])
+  const hours = Number(m[4])
+  const minutes = Number(m[5])
+  const local = new Date(y, mo, d, 12, 0, 0, 0)
+  return { hours, minutes, dow: local.getDay() }
+}
+
+/**
  * localhost 데모 시각.
  * - 기본: 화 12:30 (계정별 wind-down / 체크인 / 식사·과제 공강 등)
  * - URL `?time=0700` / `?time=12:30` / `?demoTime=10:15` 덮어쓰기
@@ -64,9 +82,17 @@ export function projectSchedulesOntoDay(schedules = [], targetDay = new Date()) 
     if (Number.isNaN(startSrc.getTime())) continue
 
     if (item.type === 'CLASS' || item.type === 'WEEKLY' || !item.type) {
-      if (startSrc.getDay() !== dow) continue
-      const startAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), startSrc.getHours(), startSrc.getMinutes(), 0, 0)
-      let endAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), endSrc.getHours(), endSrc.getMinutes(), 0, 0)
+      // DB naive 벽시계(…T13:00:00)는 로컬로, 잘못 붙은 Z는 시각 숫자만 써서 투영
+      const wall = wallClockParts(item.startAt)
+      const wallEnd = wallClockParts(item.endAt || item.startAt)
+      const srcDow = wall ? wall.dow : startSrc.getDay()
+      if (srcDow !== dow) continue
+      const sh = wall ? wall.hours : startSrc.getHours()
+      const sm = wall ? wall.minutes : startSrc.getMinutes()
+      const eh = wallEnd ? wallEnd.hours : endSrc.getHours()
+      const em = wallEnd ? wallEnd.minutes : endSrc.getMinutes()
+      const startAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), sh, sm, 0, 0)
+      let endAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), eh, em, 0, 0)
       if (endAt <= startAt) endAt = new Date(endAt.getTime() + 60 * 60 * 1000)
       const { name, room } = parseScheduleTitle(item.title)
       projected.push({
@@ -96,9 +122,9 @@ export function pickNextClass(schedules = [], now = new Date()) {
 }
 
 /**
- * 아직 시작하지 않은 다음 수업.
- * skipOngoing=true 이면 진행 중 수업을 건너뛰고 그다음을 고른다
- * (종료 30분 전 / 일찍 종료 확정 시 이동 안내용).
+ * 아직 끝나지 않은 다음(또는 진행 중) 수업.
+ * skipOngoing=true 이면 진행 중을 건너뛰고 아직 시작 전인 수업만.
+ * 오늘 수업이 모두 끝났으면 null (지난 수업으로 폴백하지 않음).
  */
 export function pickUpcomingClass(schedules = [], now = new Date(), { skipOngoing = false } = {}) {
   if (!schedules.length) return null
@@ -106,5 +132,5 @@ export function pickUpcomingClass(schedules = [], now = new Date(), { skipOngoin
   if (skipOngoing) {
     return sorted.find((s) => new Date(s.startAt) > now) || null
   }
-  return sorted.find((s) => new Date(s.endAt) > now) || sorted[0]
+  return sorted.find((s) => new Date(s.endAt) > now) || null
 }
