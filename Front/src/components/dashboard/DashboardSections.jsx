@@ -1085,7 +1085,7 @@ export function NoticeList({ limit = 5 } = {}) {
     <SectionCard className="dashboard-section">
       <SectionHeading
         icon={Megaphone}
-        title="너한테 해당되는 공지"
+        title="추천 공지"
         badge={notices.length ? `${notices.length}건` : undefined}
         action="전체보기"
         actionTo="https://www.bu.ac.kr/web/3483/subview.do"
