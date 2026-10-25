@@ -19,7 +19,10 @@ function toDbTimestamp(value: string | Date): string {
 }
 
 export const getSchedules = async (userId: string, from?: string, to?: string) => {
-  let query = supabase.from('Schedule').select('*').eq('userId', userId);
+  let query = supabase
+    .from('Schedule')
+    .select('id, userId, type, title, startAt, endAt, buildingId')
+    .eq('userId', userId);
 
   if (from && to) {
     query = query.lte('startAt', new Date(to).toISOString()).gte('endAt', new Date(from).toISOString());

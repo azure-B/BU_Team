@@ -7,7 +7,8 @@ import { createCourseCatalogCache } from './courseCatalogCache'
  */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  timeout: 10000,
+  // Render 콜드스타트 여유 (기본 10s면 첫 요청 실패하기 쉬움)
+  timeout: Number(import.meta.env.VITE_API_TIMEOUT_MS) || 25000,
   headers: { 'Content-Type': 'application/json' },
 })
 

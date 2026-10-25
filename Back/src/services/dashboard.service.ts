@@ -58,35 +58,23 @@ export const getDashboardData = async (userId: string) => {
     supabase.from('User').select('name, studentId, department, grade').eq('id', userId).maybeSingle()
   );
 
-  const [allSchedules, buildings, notices] = await Promise.all([
-    unwrap(supabase.from('Schedule').select('*').eq('userId', userId).order('startAt', { ascending: true })),
-    unwrap(supabase.from('Building').select('id, name')),
+  // 홈 UI는 공지 미표시 — Notice 전체/목록을 대시보드에서 끌어오지 않음
+  const [allSchedules, buildings, priorityTasks] = await Promise.all([
     unwrap(
       supabase
-        .from('Notice')
-        .select('id, title, category, tags, createdAt')
-        .order('createdAt', { ascending: false })
-        .limit(5)
+        .from('Schedule')
+        .select('id, userId, type, title, startAt, endAt, buildingId')
+        .eq('userId', userId)
+        .order('startAt', { ascending: true }),
     ),
+    unwrap(supabase.from('Building').select('id, name')),
+    taskService.getPrioritizedTasks(userId),
   ]);
 
   const buildingMap = Object.fromEntries((buildings || []).map((b: { id: string; name: string }) => [b.id, b.name]));
   const todaySchedules = projectOntoToday(allSchedules || [], buildingMap);
   const now = new Date();
   const nextClass = todaySchedules.find((s) => new Date(s.endAt) > now) || todaySchedules[0] || null;
-  const priorityTasks = await taskService.getPrioritizedTasks(userId);
-  const recommendedNotices = (notices || []).map((row: any) => {
-    const link = String(row.content ?? '').match(/https?:\/\/\S+/)?.[0] ?? null;
-    return {
-      id: row.id,
-      title: row.title,
-      category: row.category,
-      tags: row.tags,
-      source: row.tags,
-      link,
-      createdAt: row.createdAt,
-    };
-  });
 
   return {
     greeting: {
@@ -100,7 +88,7 @@ export const getDashboardData = async (userId: string) => {
     todaySchedules,
     todayTasks: priorityTasks,
     nextClass,
-    recommendedNotices,
+    recommendedNotices: [],
     recentSummaries: [],
     freeTimeRecommendation: {},
   };

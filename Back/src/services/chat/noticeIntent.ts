@@ -98,11 +98,12 @@ export function looksLikeNoticeCandidate(question: string) {
 }
 
 export async function searchNotices(question: string, department?: string | null, limit = 4) {
+  // 최근 N건만 가져와 점수화 (전체 공지 풀스캔 방지)
   const { data, error } = await supabase
     .from('Notice')
     .select('id, title, content, category, tags, createdAt')
     .order('createdAt', { ascending: false })
-    .limit(300)
+    .limit(80)
 
   if (error || !data?.length) return [] as Array<NoticeRow & { score: number; link: string | null }>
 

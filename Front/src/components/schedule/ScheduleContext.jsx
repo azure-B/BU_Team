@@ -85,7 +85,7 @@ export function ScheduleProvider({ children }) {
 
   const syncServerSchedules = useCallback(async () => {
     try {
-      const serverData = await getSchedules()
+      const serverData = await getSchedules(undefined, undefined, { force: true })
       if (!Array.isArray(serverData)) return
 
       const serverCourses = schedulesToCourses(serverData)
