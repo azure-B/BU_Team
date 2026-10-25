@@ -10,7 +10,7 @@
 - `dashboardCache.js`: schedules/buildings/facilities/tasks 동시요청 합치기 + 45s TTL
 - HomePage: `/dashboard/today`만으로 인사·건수
 - Axios timeout 25s (Render 콜드스타트)
-- Schedule/MyPage lazy + vite manualChunks (react, motion)
+- Schedule/MyPage lazy + vite `manualChunks` **함수** (Vite 8/rolldown — 객체 형태는 TypeError)
 
 ## Back
 - dashboard: Notice 조회 제거, Schedule 컬럼 한정
