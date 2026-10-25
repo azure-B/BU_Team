@@ -51,17 +51,28 @@ function schedulesToCourses(serverData) {
 }
 
 function schedulesToEvents(serverData) {
+  const pad = (n) => String(n).padStart(2, '0')
+  const hm = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`
   return serverData
     .filter((item) => item.type !== 'CLASS')
     .map((item) => {
       const start = new Date(item.startAt)
-      const pad = (n) => String(n).padStart(2, '0')
+      const end = new Date(item.endAt || item.startAt)
+      const kind = item.type === 'TASK' ? 'task' : item.type === 'WEEKLY' || item.type === 'PERSONAL' ? 'personal' : 'recommend'
+      let endTime = Number.isNaN(end.getTime()) ? null : hm(end)
+      // 종료가 시작과 같거나 이전이면 +1시간
+      if (!endTime || end <= start) {
+        const fallback = new Date(start.getTime() + 60 * 60 * 1000)
+        endTime = hm(fallback)
+      }
       return {
         id: item.id,
         title: item.title,
         date: dateKey(start),
-        time: `${pad(start.getHours())}:${pad(start.getMinutes())}`,
-        kind: item.type === 'TASK' ? 'task' : 'recommend',
+        time: hm(start),
+        endTime,
+        kind,
+        repeatWeekly: item.type === 'WEEKLY',
         location: item.buildingId ? '백석대 강의실' : '캠퍼스',
         fromServer: true,
       }

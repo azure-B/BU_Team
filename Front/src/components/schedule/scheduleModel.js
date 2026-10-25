@@ -49,7 +49,7 @@ export function readSchedule(storage) {
     return {
       view: saved?.view === 'monthly' ? 'monthly' : 'weekly',
       selectedDate: parseDate(saved?.selectedDate) ? saved.selectedDate : DEFAULT_SCHEDULE.selectedDate,
-      events: Array.isArray(saved?.events) ? saved.events.filter((event) => event && typeof event.id === 'string' && typeof event.title === 'string' && event.title.trim() && parseDate(event.date) && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) && ['task', 'notice', 'recommend'].includes(event.kind)) : [],
+      events: Array.isArray(saved?.events) ? saved.events.filter((event) => event && typeof event.id === 'string' && typeof event.title === 'string' && event.title.trim() && parseDate(event.date) && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) && ['task', 'notice', 'recommend', 'personal'].includes(event.kind)) : [],
       courses: Array.isArray(saved?.courses) ? saved.courses.map(normalizeCourse).filter(Boolean) : [],
       removedCourseIds: [],
     }

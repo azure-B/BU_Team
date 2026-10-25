@@ -1,11 +1,8 @@
 /**
- * 데모 계정 풀 (화 12:30 기준 대시보드 케이스)
+ * 데모 계정 풀 (화 12:30 · Course 실제 과목 기준)
  * 공통 비밀번호: password123
  *
- * URL 고정 예)
- *   ?account=0  … ?account=4   (인덱스)
- *   ?demoUser=곽두팔 / 20221002 / kwak
- *   ?time=0700&account=1
+ * 헤더 DemoControls 또는 URL `?account=0&time=1230`
  */
 export const DEMO_PASSWORD = 'password123'
 
@@ -14,31 +11,31 @@ export const DEMO_ACCOUNTS = [
     studentId: '20221001',
     name: '이승빈',
     slug: 'lee',
-    caseLabel: '수업 마무리(wind-down)',
+    caseLabel: '정보보안컨설팅 마무리',
   },
   {
     studentId: '20221002',
     name: '곽두팔',
     slug: 'kwak',
-    caseLabel: '수업 중 체크인',
+    caseLabel: 'C언어프로그래밍 수업 중',
   },
   {
     studentId: '20221003',
     name: '김갑순',
     slug: 'kim',
-    caseLabel: '공강·식사 추천',
+    caseLabel: '자료구조론 공강·식사',
   },
   {
     studentId: '20221004',
     name: '조박필',
     slug: 'jo',
-    caseLabel: '공강·과제/식사',
+    caseLabel: '긴 공강·과제',
   },
   {
     studentId: '20221005',
     name: '엄가영',
     slug: 'um',
-    caseLabel: '짧은 이동 여유',
+    caseLabel: '짧은 이동',
   },
 ]
 

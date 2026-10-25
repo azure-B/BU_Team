@@ -1,12 +1,11 @@
 import {
-  BookBookmark,
   CalendarBlank,
-  Clock,
   Compass,
   House,
   Microphone,
   PaperPlaneTilt,
   Sparkle,
+  Trash,
   UserCircle,
   Warning,
   X,
@@ -15,19 +14,66 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { motion, useReducedMotion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { useSchedule } from '../../schedule/ScheduleContext'
+import { postChat } from '../../../api/chatApi'
+import { getCurrentUser } from '../../../api/authApi'
 import { useAssistantPreferences } from './AssistantPreferences'
 import './Footer.css'
 
-const QUICK_QUESTIONS = [
-  { label: '오늘 남은 일정 알려줘', icon: Clock },
-  { label: '이번 주 마감 과제', icon: Warning },
-  { label: '중간고사 공부 계획', icon: BookBookmark },
+/** 추천 질문 풀 — 열 때마다 3개 랜덤 */
+const QUICK_QUESTION_POOL = [
+  { label: '곽노윤 교수님 전화', icon: Compass },
+  { label: '첨단IT 교수님 목록', icon: CalendarBlank },
+  { label: '임장훈 교수님 이메일', icon: Warning },
+  { label: '보건학부 사무실 어디야?', icon: Compass },
+  { label: '기말고사 언제야?', icon: CalendarBlank },
+  { label: '지각 3번이면?', icon: Warning },
+  { label: '장학금 어떻게 받아?', icon: Warning },
+  { label: '도서관 금요일 몇 시까지?', icon: CalendarBlank },
+  { label: '컴퓨터공학부 과사 전화', icon: Compass },
+  { label: '진리축전 언제야?', icon: CalendarBlank },
+  { label: '매주 화 4~5시 스터디 등록', icon: CalendarBlank },
+  { label: '진리관', icon: Compass },
+  { label: '진리관에서 본부동까지', icon: Compass },
+  { label: '진리관에서 본부동 뛰어가면?', icon: Compass },
+  { label: '진리관에서 본부동 비 오면?', icon: Compass },
 ]
+
+function pickQuickQuestions(count = 3) {
+  const pool = [...QUICK_QUESTION_POOL]
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+  return pool.slice(0, count)
+}
+
+const PROFESSOR_NAME_HINT = /교수|님$/
+const ASSISTANT_CHAT_KEY = 'baekseok.assistant.chat.v1'
+const ASSISTANT_CHAT_MAX = 80
+
+function loadAssistantChat() {
+  try {
+    const raw = JSON.parse(window.localStorage.getItem(ASSISTANT_CHAT_KEY) || 'null')
+    if (!raw || typeof raw !== 'object') return { messages: [], aiLinked: false }
+    const messages = Array.isArray(raw.messages)
+      ? raw.messages.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.text === 'string').slice(-ASSISTANT_CHAT_MAX)
+      : []
+    return { messages, aiLinked: Boolean(raw.aiLinked) }
+  } catch {
+    return { messages: [], aiLinked: false }
+  }
+}
 
 function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef }) {
   const isExpanded = mode === 'expanded'
   const [query, setQuery] = useState('')
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(() => loadAssistantChat().messages)
+  const [sending, setSending] = useState(false)
+  /** 즉시 응답 불만 시 이후(또는 재질문) GPT 우선 */
+  const [aiLinked, setAiLinked] = useState(() => loadAssistantChat().aiLinked)
+  const [quickQuestions, setQuickQuestions] = useState(() => pickQuickQuestions(3))
+  const { syncServerSchedules } = useSchedule() || {}
+  const lastUserQuestionRef = useRef('')
   const [historyVisible, setHistoryVisible] = useState(() => mode === 'expanded')
   const inputRef = useRef(null)
   const handleRef = useRef(null)
@@ -90,6 +136,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   useEffect(() => {
     if (!open) return undefined
     hasOpenedRef.current = true
+    setQuickQuestions(pickQuickQuestions(3))
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKeyDown = (event) => {
@@ -122,24 +169,91 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
     if (open && isExpanded) setHistoryVisible(true)
   }, [open, isExpanded])
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        ASSISTANT_CHAT_KEY,
+        JSON.stringify({ messages: messages.slice(-ASSISTANT_CHAT_MAX), aiLinked }),
+      )
+    } catch {
+      /* ignore quota */
+    }
+  }, [messages, aiLinked])
+
   const toggleExpanded = () => {
     if (!isExpanded) setHistoryVisible(true)
     onToggle()
   }
 
-  const submitQuery = (event) => {
-    event.preventDefault()
-    const text = query.trim()
-    if (!text) return
+  const askAssistant = async (text, { forceLlm = false, showUser = true } = {}) => {
+    if (!text || sending) return
     setHistoryVisible(true)
     onExpand()
-    setMessages((previous) => [...previous, { id: previous.length + 1, text }])
+    lastUserQuestionRef.current = text
+    if (showUser) {
+      setMessages((previous) => [...previous, { id: `u-${Date.now()}`, role: 'user', text }])
+    }
+    setSending(true)
+    try {
+      const user = getCurrentUser?.() || null
+      const res = await postChat({
+        question: text,
+        department: user?.department,
+        forceLlm: forceLlm || aiLinked,
+      })
+      const data = res?.data || res
+      const answer = data?.answer || '답변을 받지 못했습니다.'
+      const badge = data?.badge || ''
+      const botText = badge ? `[${badge}]\n${answer}` : answer
+      setMessages((previous) => [
+        ...previous,
+        {
+          id: `a-${Date.now()}`,
+          role: 'assistant',
+          text: botText,
+          route: data?.route,
+          choices: data?.choices,
+          canEscalateToAi: Boolean(data?.canEscalateToAi),
+        },
+      ])
+      if (
+        (data?.scheduleAction?.status === 'created' || data?.scheduleAction?.status === 'deleted')
+        && syncServerSchedules
+      ) {
+        syncServerSchedules()
+      }
+    } catch {
+      setMessages((previous) => [
+        ...previous,
+        {
+          id: `a-${Date.now()}`,
+          role: 'assistant',
+          text: '서버에 연결하지 못했어요. 백엔드가 켜져 있는지 확인해 주세요.',
+        },
+      ])
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const submitQuery = async (event) => {
+    event.preventDefault()
+    const text = query.trim()
+    if (!text || sending) return
     setQuery('')
     if (window.matchMedia('(pointer: coarse)').matches) {
       inputRef.current?.blur()
     } else {
       inputRef.current?.focus({ preventScroll: true })
     }
+    await askAssistant(text, { forceLlm: aiLinked })
+  }
+
+  const connectAi = async () => {
+    const prev = lastUserQuestionRef.current
+    if (!prev || sending) return
+    setAiLinked(true)
+    await askAssistant(prev, { forceLlm: true, showUser: true })
   }
 
   return (
@@ -186,9 +300,25 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
               <div className="assistant-sheet__title-line">
                 <h2 id="assistant-title">백석AI 비서</h2>
               </div>
-              <p>캠퍼스 일정, 학사 공지, 과제 질의가 가능해요</p>
+              <p>캠퍼스 일정, 학사일정, 과제 질의가 가능해요</p>
             </div>
           </div>
+          {messages.length > 0 && (
+            <button
+              className="sheet-close"
+              type="button"
+              aria-label="대화 내역 지우기"
+              title="대화 내역 지우기"
+              onClick={() => {
+                setMessages([])
+                setAiLinked(false)
+                try { window.localStorage.removeItem(ASSISTANT_CHAT_KEY) } catch { /* ignore */ }
+              }}
+              style={{ marginRight: 4 }}
+            >
+              <Trash size={16} weight="bold" aria-hidden="true" />
+            </button>
+          )}
           <button className="sheet-close" type="button" aria-label="AI 비서 닫기" onClick={onClose}>
             <X size={18} weight="bold" aria-hidden="true" />
           </button>
@@ -199,9 +329,57 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           inert={!isExpanded} tabIndex={isExpanded ? 0 : -1}>
           <div ref={historyContentRef} className="assistant-history__messages">
             {messages.map((message) => (
-              <p key={message.id} className="assistant-history__message"><span className="assistant-history__speaker">나</span>{message.text}</p>
+              <div key={message.id} className={`assistant-history__message${message.role === 'assistant' ? ' assistant-history__message--bot' : ''}`}>
+                <span className="assistant-history__speaker">{message.role === 'assistant' ? '비서' : '나'}</span>
+                <p className="assistant-history__text">{message.text}</p>
+                {Array.isArray(message.choices) && message.choices.length > 0 && (
+                  <div className="assistant-history__choices">
+                    {message.choices.slice(0, 8).map((choice) => (
+                      <button
+                        key={choice}
+                        type="button"
+                        className="assistant-history__choice"
+                        disabled={sending}
+                        onClick={() => {
+                          if (
+                            message.route === 'schedule'
+                            || message.route === 'notice'
+                            || message.route === 'campus'
+                            || /일정 등록|일정 삭제|공지|까지|정보/.test(choice)
+                          ) {
+                            void askAssistant(choice)
+                            return
+                          }
+                          const bare = choice.replace(/\(.*\)/, '').trim()
+                          if (/\(/.test(choice) || PROFESSOR_NAME_HINT.test(choice)) {
+                            setQuery(`${bare} 교수님`)
+                          } else if (/학부|학과/.test(choice)) {
+                            setQuery(`${choice} 교수님 목록`)
+                          } else {
+                            setQuery(`${choice} 사무실 어디야?`)
+                          }
+                        }}
+                      >
+                        {choice}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {message.canEscalateToAi && !aiLinked && (
+                  <button
+                    type="button"
+                    className="assistant-history__ai-link"
+                    disabled={sending}
+                    onClick={connectAi}
+                  >
+                    답변이 마음에 들지 않나요? AI 연결하기
+                  </button>
+                )}
+              </div>
             ))}
             {messages.length === 0 && <p className="assistant-history__hint">메세지를 입력하고 전송해 주세요.</p>}
+            {aiLinked && <p className="assistant-history__ai-badge">AI 연결됨</p>}
+            {sending && <p className="assistant-history__hint">답변 준비 중…</p>}
           </div>
         </div>
 
@@ -213,11 +391,12 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
             onChange={(event) => setQuery(event.target.value)}
             placeholder="무엇이든 물어보세요"
             aria-label="AI 비서 질문"
+            disabled={sending}
           />
           <button className="assistant-input__voice" type="button" aria-label="음성 명령">
             <Microphone size={19} weight="fill" aria-hidden="true" />
           </button>
-          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={!query.trim()}>
+          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={sending || !query.trim()}>
             <PaperPlaneTilt size={17} weight="fill" aria-hidden="true" />
           </button>
         </form>
@@ -225,7 +404,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
         <div className="quick-questions">
           <p><Sparkle size={14} weight="fill" aria-hidden="true" /> 추천 질문</p>
           <div className="quick-questions__track">
-            {QUICK_QUESTIONS.map(({ label, icon: Icon }) => (
+            {quickQuestions.map(({ label, icon: Icon }) => (
               <button type="button" key={label} onClick={() => setQuery(label)}>
                 <Icon size={14} weight="fill" aria-hidden="true" /> {label}
               </button>

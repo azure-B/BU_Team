@@ -33,17 +33,26 @@ function currentOrLastClass(today = [], now = new Date()) {
 
 /**
  * 「이동 & 강의 안내」와 「다음 수업 전 추천」이 같은 출발점을 쓰도록 통일.
- * 데모 시계면 GPS 대신 지금(또는 직전) 수업 건물 좌표.
+ * - readGps가 좌표를 주면 우선 (데모 GPS 오버라이드·실제 GPS)
+ * - 없거나 데모 시계면 지금(또는 직전) 수업 건물 좌표
  */
 export async function resolveRouteOrigin({ today, now, buildings, demoClock, readGps }) {
   const cls = currentOrLastClass(today, now)
   const buildingId = cls?.buildingId || FALLBACK_BUILDING
   const floor = cls ? floorFromRoom(cls.room) : null
-  if (!demoClock && readGps) {
+  if (readGps) {
     const gps = await readGps()
-    if (gps && Number.isFinite(gps.lat)) {
-      return { currentBuildingId: buildingId, floor, lat: gps.lat, lng: gps.lng }
+    if (gps && Number.isFinite(gps.lat) && Number.isFinite(gps.lng)) {
+      return {
+        currentBuildingId: gps.buildingId || buildingId,
+        floor,
+        lat: gps.lat,
+        lng: gps.lng,
+      }
     }
+  }
+  if (!demoClock) {
+    /* readGps가 null을 준 경우 — 건물 폴백 */
   }
   const p = buildingPoint(buildings, buildingId)
   return { currentBuildingId: buildingId, floor, lat: p?.lat, lng: p?.lng }

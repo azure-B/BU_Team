@@ -12,7 +12,7 @@ function isWeekendToday() {
   return day === 0 || day === 6
 }
 
-export default function ScheduleWeeklyPage({ selectedDate, events, courses, removedCourseIds, onSelect, onRemoveCourse, onRemoveEvent }) {
+export default function ScheduleWeeklyPage({ selectedDate, events, courses, removedCourseIds, onSelect, onRemoveEvent }) {
   // 초기 접근: 오늘이 토·일이면 주말 표시, 평일이면 미표시
   const [showWeekend, setShowWeekend] = useState(() => isWeekendToday())
   const allCourses = activeCourses(courses, removedCourseIds)
@@ -32,16 +32,35 @@ export default function ScheduleWeeklyPage({ selectedDate, events, courses, remo
   const visibleDates = showWeekend ? week : week.slice(0, 5)
   const timetableEvents = week.flatMap((date) => eventsForDate(date, events)
     .map((event) => ({ ...event, date })))
-  const eventStarts = timetableEvents
+  const eventHours = timetableEvents
     .filter((event) => visibleDates.includes(event.date))
-    .map((event) => {
-      const [hour, minute] = event.time.split(':').map(Number)
-      return hour + minute / 60
+    .flatMap((event) => {
+      const [sh, sm] = String(event.time || '0:0').split(':').map(Number)
+      const start = sh + (sm || 0) / 60
+      let end = start + 1
+      if (event.endTime) {
+        const [eh, em] = String(event.endTime).split(':').map(Number)
+        const endRaw = eh + (em || 0) / 60
+        if (endRaw > start) end = endRaw
+      }
+      return [start, end]
     })
   const snapped = allCourses.map(snapCourseHours)
-  const firstHour = Math.min(9, ...snapped.map((course) => course.start), ...eventStarts.map(Math.floor))
-  const lastHour = Math.max(18, ...snapped.map((course) => course.end), ...eventStarts.map((start) => Math.min(24, Math.ceil(start + 1))))
-  const hours = Array.from({ length: lastHour - firstHour }, (_, index) => index + firstHour)
+  const firstHour = Math.min(9, ...snapped.map((course) => course.start), ...eventHours.map(Math.floor))
+  const lastHour = Math.max(18, ...snapped.map((course) => course.end), ...eventHours.map((h) => Math.min(24, Math.ceil(h))))
+  const hours = Array.from({ length: Math.max(1, lastHour - firstHour) }, (_, index) => index + firstHour)
+
+  const eventBlock = (event) => {
+    const [sh, sm] = String(event.time || '0:0').split(':').map(Number)
+    const start = sh + (sm || 0) / 60
+    let end = start + 1
+    if (event.endTime) {
+      const [eh, em] = String(event.endTime).split(':').map(Number)
+      const endRaw = eh + (em || 0) / 60
+      if (endRaw > start) end = endRaw
+    }
+    return { start, end }
+  }
 
   return (
     <>
@@ -113,21 +132,21 @@ export default function ScheduleWeeklyPage({ selectedDate, events, courses, remo
                   )
                 })}
                 {timetableEvents.filter((event) => event.date === value).map((event) => {
-                  const [hour] = event.time.split(':').map(Number)
-                  const start = hour
-                  const duration = 1
+                  const { start, end } = eventBlock(event)
+                  const timeLabel = event.endTime ? `${event.time}–${event.endTime}` : event.time
                   return (
                     <button
                       type="button"
-                      key={event.id}
+                      key={`${event.id}-${value}`}
                       onClick={() => onSelect(value)}
-                      className={`timetable-event timetable-event--${event.kind} ${event.repeatWeekly ? 'timetable-event--recurring' : ''}`}
-                      style={{ top: (start - firstHour) * HOUR_PX + 2, height: Math.max(8, duration * HOUR_PX - 4) }}
-                      title={`${event.title} · ${event.time}${event.repeatWeekly ? ' · 매주 반복' : ''}`}
+                      className={`timetable-event timetable-event--${event.kind || 'personal'} ${event.repeatWeekly ? 'timetable-event--recurring' : ''}`}
+                      style={{ top: (start - firstHour) * HOUR_PX + 2, height: Math.max(28, (end - start) * HOUR_PX - 4) }}
+                      title={`${event.title} · ${timeLabel}${event.repeatWeekly ? ' · 매주 반복' : ''}`}
+                      aria-label={`${event.title}, ${timeLabel}${event.repeatWeekly ? ', 매주 반복' : ''}`}
                       tabIndex={weekend && !showWeekend ? -1 : undefined}
                     >
                       <strong>{event.title}</strong>
-                      <small>{event.time}{event.repeatWeekly ? ' · 매주' : ''}{event.location ? ` · ${event.location}` : ''}</small>
+                      <small>{timeLabel}{event.repeatWeekly ? ' · 매주' : ''}{event.location ? ` · ${event.location}` : ''}</small>
                     </button>
                   )
                 })}
@@ -161,7 +180,7 @@ export default function ScheduleWeeklyPage({ selectedDate, events, courses, remo
         </button>
       </div>
 
-      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={courses} removedCourseIds={removedCourseIds} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} weekly />
+      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={courses} removedCourseIds={removedCourseIds} onRemoveEvent={onRemoveEvent} weekly />
     </>
   )
 }

@@ -12,7 +12,8 @@
  * - ASU Learning Hub: define a concept in your own words (every ~15 min)
  */
 
-export const CLASS_BUILDING_RADIUS_M = 150
+/** 본부동↔진리관 ≈136m — 150이면 옆 건물도 「도착」으로 오인 */
+export const CLASS_BUILDING_RADIUS_M = 70
 export const ENGAGEMENT_END_BUFFER_MIN = 30
 
 /** @type {{ id: string, highlight: string, sub: string }[]} */
@@ -101,6 +102,10 @@ export function isInWindDownWindow(classItem, now = new Date(), bufferMin = ENGA
 
 export function isNearBuilding(gps, building, radiusM = CLASS_BUILDING_RADIUS_M) {
   if (!gps || !building) return false
+  // 데모 GPS 등 buildingId가 있으면 좌표 반경보다 건물 일치 우선
+  if (gps.buildingId && building.id) {
+    return gps.buildingId === building.id
+  }
   const lat = Number(building.x)
   const lng = Number(building.y)
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false

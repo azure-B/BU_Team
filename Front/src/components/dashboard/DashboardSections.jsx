@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   BookOpenText,
@@ -6,11 +6,9 @@ import {
   CheckCircle,
   ChatCircleDots,
   Clock,
-  FileText,
   Lightbulb,
   MapPin,
   Megaphone,
-  NavigationArrow,
   Sparkle,
   Warning,
 } from '@phosphor-icons/react'
@@ -32,14 +30,25 @@ import {
   pickEngagementPrompt,
   pickOngoingClass,
 } from '../../utils/classEngagement'
-import { isClassMarkedEarly, markClassEarlyEnd, resetEarlyEndForDemo } from '../../utils/classSession'
-import { analyzeGapActivity } from '../../utils/gapActivities'
+import { getEarlyEndRecord, isClassMarkedEarly, markClassEarlyEnd } from '../../utils/classSession'
+import {
+  analyzeDayWrapActivity,
+  analyzeGapActivity,
+  pickPlanStyle,
+  PLAN_STYLES,
+  PLAN_STYLE_LABEL,
+} from '../../utils/gapActivities'
 import { buildDueTodayPrompt } from '../../utils/dueToday'
 import { fetchGapRouteTimes, resolveRouteOrigin } from '../../utils/campusRouteTimes'
+import { DEMO_GPS_EVENT, getDemoGpsOverride } from '../../utils/demoGps'
 import './DashboardSections.css'
 
-/** 브라우저 GPS — 거부/실패 시 null */
+/** 데모 GPS 오버라이드 우선, 없으면 브라우저 GPS — 거부/실패 시 null */
 function readCurrentPosition() {
+  const mock = getDemoGpsOverride()
+  if (mock && Number.isFinite(mock.lat) && Number.isFinite(mock.lng)) {
+    return Promise.resolve({ lat: mock.lat, lng: mock.lng, buildingId: mock.buildingId })
+  }
   return new Promise((resolve) => {
     if (!navigator?.geolocation) {
       resolve(null)
@@ -117,22 +126,33 @@ export function ClassEngagementCard() {
     let timer
     const forcePreview = new URLSearchParams(window.location.search).has('checkin')
     const forceWind = new URLSearchParams(window.location.search).has('winddown')
-    // 데모 시계: 이전에 눌러둔 early-end 잔상 때문에 버튼이 사라지지 않게
-    if (isDashboardDemoClock()) resetEarlyEndForDemo()
+    let seq = 0
 
     const evaluate = async () => {
+      const my = ++seq
       try {
         const [schedules, buildingList] = await Promise.all([
           getSchedules(),
           getBuildings().catch(() => []),
         ])
-        if (ignore) return
+        if (ignore || my !== seq) return
         const now = getDashboardNow()
         const today = projectSchedulesOntoDay(Array.isArray(schedules) ? schedules : [], now)
         let ongoing = pickOngoingClass(today, now)
         let engage = ongoing && isInEngagementWindow(ongoing, now)
+        // 다음 수업이 없어도 조기종료 → 밥·과제·사이버강의(day-wrap) 추천으로 연결
         let wind = ongoing && isInWindDownWindow(ongoing, now)
         let previewMode = false
+
+        // 이미 일찍 끝냄 → 마무리 카드 즉시 숨김 (틈새/하루 마무리 추천에 넘김)
+        if (ongoing && isClassMarkedEarly(ongoing.id)) {
+          setActive(ongoing)
+          setMode('winddown')
+          setEarlyDone(true)
+          setPrompt(null)
+          setPreview(false)
+          return
+        }
 
         if ((!ongoing || (!engage && !wind)) && (forcePreview || forceWind)) {
           ongoing = today.find((s) => s.type === 'CLASS' || !s.type) || today[0] || null
@@ -159,7 +179,7 @@ export function ClassEngagementCard() {
 
         const building = (buildingList || []).find((b) => b.id === ongoing.buildingId)
         const gps = await readCurrentPosition()
-        if (ignore) return
+        if (ignore || my !== seq) return
         const demoClock = isDashboardDemoClock()
         const near = isNearBuilding(gps, building)
         if (!near && !previewMode && !demoClock) {
@@ -170,13 +190,12 @@ export function ClassEngagementCard() {
           return
         }
 
-        const marked = isClassMarkedEarly(ongoing.id)
         setActive(ongoing)
         setPlace([building?.name, ongoing.room].filter(Boolean).join(' · ') || '강의실')
         setPreview(previewMode || (demoClock && !near))
-        setEarlyDone(marked)
+        setEarlyDone(false)
 
-        if (wind || marked) {
+        if (wind) {
           setMode('winddown')
           setPrompt(null)
         } else {
@@ -184,7 +203,7 @@ export function ClassEngagementCard() {
           setPrompt(pickEngagementPrompt(ongoing, now))
         }
       } catch {
-        if (!ignore) {
+        if (!ignore && my === seq) {
           setActive(null)
           setMode(null)
           setPrompt(null)
@@ -197,10 +216,12 @@ export function ClassEngagementCard() {
     timer = setInterval(evaluate, 60_000)
     const onEarly = () => evaluate()
     window.addEventListener('bu-class-early-end', onEarly)
+    window.addEventListener(DEMO_GPS_EVENT, onEarly)
     return () => {
       ignore = true
       clearInterval(timer)
       window.removeEventListener('bu-class-early-end', onEarly)
+      window.removeEventListener(DEMO_GPS_EVENT, onEarly)
     }
   }, [])
 
@@ -227,7 +248,7 @@ export function ClassEngagementCard() {
             <strong>{title}, 아직 수업 시간인데 예상보다 일찍 끝났나요?</strong>
           </p>
           <p className="class-engage__hint">
-            끝났다면 알려 주세요. 확인 후에야 다음 수업 전 추천(이동·식사·과제)을 열어 둘게요.
+            끝났다면 알려 주세요. 확인 후 다음 수업 동선이나, 남은 수업이 없으면 밥·과제·사이버강의 추천을 열어 둘게요.
           </p>
           <button
             type="button"
@@ -334,12 +355,19 @@ export function DueTodayCard() {
  */
 export function GapActivityCard() {
   const [suggestion, setSuggestion] = useState(null)
+  // 이벤트 detail로 즉시 잠금 해제 (effect 재구독 없이 ref로 유지)
+  const earlyUnlockedRef = useRef(Boolean(getEarlyEndRecord()?.classId))
+  const seedSaltRef = useRef(0)
+  const planStyleRef = useRef(pickPlanStyle(Date.now()))
+  const evaluateRef = useRef(null)
 
   useEffect(() => {
     let ignore = false
     let timer
+    let seq = 0
 
     const evaluate = async () => {
+      const my = ++seq
       try {
         const now = getDashboardNow()
         const [schedules, buildingList, facilities, tasks] = await Promise.all([
@@ -348,28 +376,26 @@ export function GapActivityCard() {
           getFacilities().catch(() => []),
           getTasks().catch(() => getPrioritizedTasks().catch(() => [])),
         ])
-        if (ignore) return
+        if (ignore || my !== seq) return
         const today = projectSchedulesOntoDay(Array.isArray(schedules) ? schedules : [], now)
         const ongoing = pickOngoingClass(today, now)
-        const wind = ongoing && isInWindDownWindow(ongoing, now)
-        const early = ongoing && isClassMarkedEarly(ongoing.id)
+        const markedEarly = Boolean(
+          (ongoing && isClassMarkedEarly(ongoing.id))
+          || (earlyUnlockedRef.current && getEarlyEndRecord()?.classId),
+        )
+        const early = markedEarly || earlyUnlockedRef.current
         const forceGap = new URLSearchParams(window.location.search).has('gap')
-        // 다음 수업 기준 틈: 조기종료 확인 후 · 수업 사이 · 미리보기
-        // (wind-down만으로는 버튼 확인 전이라 틈새 추천은 숨김)
-        const between = !ongoing || (ongoing && new Date(ongoing.endAt) <= now)
-        if (!early && !between && !forceGap) {
+        // 조기종료 확정이면 시계상 수업 중이어도 「수업 사이」로 취급
+        const between = !ongoing || early || new Date(ongoing.endAt) <= now
+        // wind-down만으로는 버튼 확인 전이라 틈새 추천은 숨김
+        if (!between && !forceGap) {
           setSuggestion(null)
           return
         }
-        const skipOngoing = Boolean(early || between || forceGap || wind)
-        const next = pickUpcomingClass(today, now, { skipOngoing })
-        if (!next) {
-          setSuggestion(null)
-          return
-        }
-
+        const next = pickUpcomingClass(today, now, { skipOngoing: true })
         const buildingsSafe = Array.isArray(buildingList) ? buildingList : []
         const tasksSafe = Array.isArray(tasks) ? tasks : []
+        const prevEnd = early ? now.toISOString() : (ongoing?.endAt || null)
         const origin = await resolveRouteOrigin({
           today,
           now,
@@ -377,44 +403,106 @@ export function GapActivityCard() {
           demoClock: isDashboardDemoClock(),
           readGps: readCurrentPosition,
         })
-        if (ignore) return
-        const rawGapMin = (new Date(next.startAt).getTime() - now.getTime()) / 60000
-        const routeTimes = await fetchGapRouteTimes({
-          origin,
-          nextClass: next,
-          buildings: buildingsSafe,
-          nowAt: now.toISOString(),
-          includeBuildings: rawGapMin >= 30,
-        }).catch(() => null)
-        if (ignore) return
+        if (ignore || my !== seq) return
 
-        const analyzed = analyzeGapActivity({
+        // 오늘 남은 수업 없음 → 밥·과제·사이버강의 유도
+        if (!next) {
+          const wrap = analyzeDayWrapActivity({
+            now,
+            previousClassEndAt: prevEnd,
+            origin,
+            tasks: tasksSafe,
+            facilities: Array.isArray(facilities) ? facilities : [],
+            buildings: buildingsSafe,
+            planStyle: planStyleRef.current,
+            seedSalt: seedSaltRef.current,
+          })
+          if (!ignore && my === seq) setSuggestion(wrap)
+          return
+        }
+
+        const buildSuggestion = (routeTimes) => analyzeGapActivity({
           now,
           nextClass: next,
-          previousClassEndAt: ongoing?.endAt || null,
+          previousClassEndAt: prevEnd,
           origin,
           tasks: tasksSafe,
           facilities: Array.isArray(facilities) ? facilities : [],
           buildings: buildingsSafe,
           routeTimes,
+          planStyle: planStyleRef.current,
+          seedSalt: seedSaltRef.current,
         })
-        if (!ignore) setSuggestion(analyzed)
-      } catch {
-        if (!ignore) setSuggestion(null)
+
+        // 1) 경로 API 기다리지 말고 바로 추천 표시
+        const quick = buildSuggestion(null)
+        if (!ignore && my === seq && quick) setSuggestion(quick)
+
+        // 2) 다음 강의실 경로만 보정 (건물 일괄 조회는 느림)
+        const routeTimes = await fetchGapRouteTimes({
+          origin,
+          nextClass: next,
+          buildings: buildingsSafe,
+          nowAt: now.toISOString(),
+          includeBuildings: false,
+        }).catch(() => null)
+        if (ignore || my !== seq) return
+        if (routeTimes) {
+          const refined = buildSuggestion(routeTimes)
+          if (!ignore && my === seq && refined) setSuggestion(refined)
+        }
+      } catch (err) {
+        console.warn('틈새 추천 실패:', err)
+        if (!ignore && my === seq) setSuggestion(null)
       }
     }
 
+    evaluateRef.current = evaluate
     evaluate()
     timer = setInterval(evaluate, 60_000)
-    window.addEventListener('bu-class-early-end', evaluate)
+    const onEarly = (event) => {
+      if (event?.detail?.classId) earlyUnlockedRef.current = true
+      else if (event?.detail === null) earlyUnlockedRef.current = false
+      evaluate()
+    }
+    window.addEventListener('bu-class-early-end', onEarly)
+    window.addEventListener(DEMO_GPS_EVENT, evaluate)
     return () => {
       ignore = true
       clearInterval(timer)
-      window.removeEventListener('bu-class-early-end', evaluate)
+      window.removeEventListener('bu-class-early-end', onEarly)
+      window.removeEventListener(DEMO_GPS_EVENT, evaluate)
     }
   }, [])
 
+  const reshuffleCourse = () => {
+    seedSaltRef.current += 1 + Math.floor(Math.random() * 9)
+    // 직전과 다른 테마 (식사 여유 / 과제 집중 / 산책·휴식 / 골고루)
+    const others = PLAN_STYLES.filter((s) => s !== planStyleRef.current)
+    const pool = others.length ? others : PLAN_STYLES
+    planStyleRef.current = pool[Math.floor(Math.random() * pool.length)]
+      || pickPlanStyle(Date.now() + seedSaltRef.current * 17)
+    evaluateRef.current?.()
+  }
+
   if (!suggestion) return null
+
+  const kindLabel = {
+    meal: '식사',
+    task: '과제',
+    activity: '캠퍼스',
+    plan: '추천 코스',
+    'day-wrap': '하루 마무리',
+    'move-now': '바로 이동',
+    tight: '바로 이동',
+  }[suggestion.kind] || '준비'
+  const styleLabel = suggestion.planStyleLabel || PLAN_STYLE_LABEL[suggestion.planStyle] || kindLabel
+  const canReshuffle = suggestion.kind === 'plan'
+    || suggestion.kind === 'meal'
+    || suggestion.kind === 'task'
+    || suggestion.kind === 'activity'
+    || suggestion.kind === 'day-wrap'
+  const isDayWrap = suggestion.kind === 'day-wrap'
 
   return (
     <SectionCard className="gap-activity">
@@ -423,22 +511,17 @@ export function GapActivityCard() {
           <Lightbulb size={18} weight="fill" />
         </span>
         <div className="gap-activity__heading">
-          <p>다음 수업 전 추천</p>
+          <p>{isDayWrap ? '수업 끝난 뒤 추천' : '다음 수업 전 추천'}</p>
           <small>
-            {typeof suggestion.freeGapMinutes === 'number'
-              ? `${suggestion.freeGapMinutes}분 여유`
-              : typeof suggestion.gapMinutes === 'number'
-                ? `${suggestion.gapMinutes}분 틈`
-                : ''}
+            {isDayWrap
+              ? '오늘 남은 수업 없음'
+              : typeof suggestion.freeGapMinutes === 'number'
+                ? `${suggestion.freeGapMinutes}분 여유`
+                : typeof suggestion.gapMinutes === 'number'
+                  ? `${suggestion.gapMinutes}분 틈`
+                  : ''}
             {' · '}
-            {{
-              meal: '식사',
-              task: '과제',
-              activity: '캠퍼스',
-              plan: '추천 코스',
-              'move-now': '바로 이동',
-              tight: '바로 이동',
-            }[suggestion.kind] || '준비'}
+            {styleLabel}
           </small>
         </div>
       </div>
@@ -455,13 +538,27 @@ export function GapActivityCard() {
             ))}
           </ul>
         )}
+        {canReshuffle && (
+          <div className="gap-activity__actions">
+            <button
+              type="button"
+              className="dashboard-button dashboard-button--secondary gap-activity__reshuffle"
+              onClick={reshuffleCourse}
+            >
+              <Sparkle size={16} weight="fill" aria-hidden="true" />
+              다른 코스 추천
+            </button>
+          </div>
+        )}
       </div>
     </SectionCard>
   )
 }
 
 /**
- * 다음 수업 안내 카드 (CLASS 요일 투영 + 캠퍼스 동선)
+ * 캠퍼스 이동 & 강의 안내
+ * - 진행 중 수업이 있으면(조기종료 전) 그 수업을 보여 주고 GPS로 출석/미도착 안내
+ * - 조기종료·공강 시에만 다음 수업 동선으로 넘어감
  */
 export function NextClassCard() {
   const [nextClass, setNextClass] = useState(null)
@@ -470,6 +567,10 @@ export function NextClassCard() {
   const [loading, setLoading] = useState(true)
   const [routeOrigin, setRouteOrigin] = useState(null)
   const [lookingAhead, setLookingAhead] = useState(false)
+  /** 현재(또는 조기종료) 수업 뒤에 이어질 수업이 있는지 */
+  const [hasFollowingClass, setHasFollowingClass] = useState(true)
+  /** 'in' | 'away' | 'unknown' — GPS 기준 현재 수업 건물 체류 */
+  const [presence, setPresence] = useState('unknown')
 
   useEffect(() => {
     let ignore = false
@@ -484,10 +585,11 @@ export function NextClassCard() {
         const demoNow = getDashboardNow()
         const today = projectSchedulesOntoDay(list, demoNow)
         const ongoing = pickOngoingClass(today, demoNow)
-        const wind = ongoing && isInWindDownWindow(ongoing, demoNow)
-        const early = ongoing && isClassMarkedEarly(ongoing.id)
-        const forceWind = new URLSearchParams(window.location.search).has('winddown')
-        const skipOngoing = Boolean(wind || early || forceWind)
+        const early = Boolean(ongoing && isClassMarkedEarly(ongoing.id))
+        // wind-down만으로는 다음 수업으로 넘기지 않음. 조기종료 확인 후에만.
+        const skipOngoing = early
+        const focus = pickUpcomingClass(today, demoNow, { skipOngoing })
+        const following = pickUpcomingClass(today, demoNow, { skipOngoing: true })
         const origin = await resolveRouteOrigin({
           today,
           now: demoNow,
@@ -497,9 +599,27 @@ export function NextClassCard() {
         })
         if (ignore) return
         setLookingAhead(skipOngoing)
+        setHasFollowingClass(Boolean(following))
         setRouteOrigin(origin)
-        setNextClass(pickUpcomingClass(today, demoNow, { skipOngoing }))
+        setNextClass(focus)
         setBuildings(buildingList)
+
+        // GPS로 진행 중 수업 건물 체류 여부 (데모 시계여도 실제 GPS 우선)
+        const classOngoing = Boolean(
+          focus
+          && !skipOngoing
+          && new Date(focus.startAt) <= demoNow
+          && demoNow < new Date(focus.endAt),
+        )
+        if (!classOngoing || !focus?.buildingId) {
+          setPresence('unknown')
+        } else {
+          const building = (buildingList || []).find((b) => b.id === focus.buildingId)
+          const gps = await readCurrentPosition()
+          if (ignore) return
+          if (!gps || !building) setPresence('unknown')
+          else setPresence(isNearBuilding(gps, building) ? 'in' : 'away')
+        }
       } catch (err) {
         console.warn('다음 수업 정보 로드 실패:', err.message)
       } finally {
@@ -509,11 +629,13 @@ export function NextClassCard() {
     load()
     const onEarly = () => load()
     window.addEventListener('bu-class-early-end', onEarly)
+    window.addEventListener(DEMO_GPS_EVENT, onEarly)
     const timer = setInterval(load, 60_000)
     return () => {
       ignore = true
       clearInterval(timer)
       window.removeEventListener('bu-class-early-end', onEarly)
+      window.removeEventListener(DEMO_GPS_EVENT, onEarly)
     }
   }, [])
 
@@ -525,13 +647,20 @@ export function NextClassCard() {
     let ignore = false
     ;(async () => {
       try {
+        // 진행 중 수업이면 실제 GPS로 강의실까지 거리 계산 (데모 스냅보다 우선)
+        const demoNow = getDashboardNow()
+        const ongoing = !lookingAhead
+          && new Date(nextClass.startAt) <= demoNow
+          && demoNow < new Date(nextClass.endAt)
+        const gps = ongoing ? await readCurrentPosition() : null
+        if (ignore) return
         const data = await getRouteAndLateness({
-          currentBuildingId: routeOrigin.currentBuildingId,
-          lat: routeOrigin.lat,
-          lng: routeOrigin.lng,
+          currentBuildingId: gps ? undefined : routeOrigin.currentBuildingId,
+          lat: gps?.lat ?? routeOrigin.lat,
+          lng: gps?.lng ?? routeOrigin.lng,
           nextClassBuildingId: nextClass.buildingId,
           nextClassStartAt: nextClass.startAt,
-          nowAt: getDashboardNow().toISOString(),
+          nowAt: demoNow.toISOString(),
         })
         if (!ignore) setRouteInfo(data || null)
       } catch {
@@ -539,54 +668,63 @@ export function NextClassCard() {
       }
     })()
     return () => { ignore = true }
-  }, [nextClass?.id, nextClass?.buildingId, nextClass?.startAt, routeOrigin?.currentBuildingId, routeOrigin?.lat, routeOrigin?.lng])
+  }, [nextClass?.id, nextClass?.buildingId, nextClass?.startAt, nextClass?.endAt, lookingAhead, routeOrigin?.currentBuildingId, routeOrigin?.lat, routeOrigin?.lng])
 
-  const handleShowRoute = () => {
-    if (!nextClass) {
-      alert('오늘 예정된 수업이 없어 이동 경로를 안내할 수 없습니다.')
-      return
-    }
-    const toName = buildings.find((b) => b.id === nextClass.buildingId)?.name || nextClass.room || '강의실'
-    if (routeInfo) {
-      const moveLine = `${routeInfo.travelMode === 'transit' ? '대중교통 포함 ' : ''}강의실까지 총 ${routeInfo.totalMinutes ?? '-'}분 예상되어져요`
-      alert(
-        `[현재 위치 → ${toName}${nextClass.room ? ` (${nextClass.room})` : ''}]\n` +
-          moveLine +
-          `\n권장 도착 ${routeInfo.recommendArriveLabel || '-'}\n` +
-          `${tipHighlight}\n${tipSub}`,
-      )
-      return
-    }
-    alert(`[현재 위치 → ${toName}]\n경로 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.`)
-  }
-
+  const demoNowForCard = getDashboardNow()
+  const classOngoing = Boolean(
+    nextClass
+    && !lookingAhead
+    && new Date(nextClass.startAt) <= demoNowForCard
+    && demoNowForCard < new Date(nextClass.endAt),
+  )
+  const minutesIntoClass = classOngoing
+    ? Math.round((demoNowForCard.getTime() - new Date(nextClass.startAt).getTime()) / 60000)
+    : 0
   const buildingName = buildings.find((b) => b.id === nextClass?.buildingId)?.name
   const place = [buildingName, nextClass?.room].filter(Boolean).join(' · ') || '캠퍼스'
-  // 이미 그 건물에서 수업 중이면 "이동하세요" 대신 수업 응원
-  const demoNowForCard = getDashboardNow()
-  const attendingNow = Boolean(
-    nextClass
-    && new Date(nextClass.startAt) <= demoNowForCard
-    && demoNowForCard < new Date(nextClass.endAt)
-    && routeInfo?.fromBuildingId === nextClass.buildingId,
-  )
   const classEndLabel = nextClass ? new Date(nextClass.endAt).toTimeString().slice(0, 5) : ''
+  const classStartLabel = nextClass ? new Date(nextClass.startAt).toTimeString().slice(0, 5) : ''
 
-  const walkLabel = attendingNow
-    ? `지금 ${buildingName || '이 건물'}에서 수업 중이에요`
-    : routeInfo?.travelLabel || routeInfo?.walkLabel
-      || (typeof routeInfo?.totalMinutes === 'number'
-        ? `현재 위치에서 강의실까지 총 ${routeInfo.totalMinutes}분`
-        : null)
-  const tipLevel = attendingNow ? 'SAFE' : (routeInfo?.latenessLevel || 'SAFE')
+  let walkLabel = routeInfo?.travelLabel || routeInfo?.walkLabel
+    || (typeof routeInfo?.totalMinutes === 'number'
+      ? `현재 위치에서 강의실까지 총 ${routeInfo.totalMinutes}분`
+      : null)
+  let tipLevel = routeInfo?.latenessLevel || 'SAFE'
+  let tipHighlight = routeInfo?.tipHighlight
+    || (tipLevel === 'DANGER' ? '지금 바로 출발하세요' : tipLevel === 'WARNING' ? '조금 서두르는 게 좋아요' : '여유 있게 걸어가도 돼요')
+  let tipSub = routeInfo?.tipSub || routeInfo?.message || '이동 시간을 계산하고 있습니다.'
+
+  if (classOngoing && presence === 'in') {
+    walkLabel = `지금 ${buildingName || '이 건물'}에서 수업 중이에요`
+    tipLevel = 'SAFE'
+    tipHighlight = '강의실에 잘 도착하셨네요'
+    tipSub = hasFollowingClass
+      ? `${classEndLabel}에 끝나요. 편하게 수업에 집중해 보세요. 끝나면 다음 동선도 바로 알려드릴게요.`
+      : `${classEndLabel}에 끝나요. 편하게 수업에 집중해 보세요. 끝나면 밥·과제·사이버강의 중 뭐부터 할지 추천해 드릴게요.`
+  } else if (classOngoing && presence === 'away') {
+    const totalMin = routeInfo?.totalMinutes
+    walkLabel = typeof totalMin === 'number'
+      ? `강의실까지 총 ${totalMin}분 정도 보여요`
+      : `아직 ${buildingName || '강의실'} 근처는 아닌 것 같아요`
+    if (minutesIntoClass <= 20) {
+      tipLevel = 'WARNING'
+      tipHighlight = '수업이 이미 시작했어요'
+      tipSub = typeof totalMin === 'number'
+        ? `가까운 길로 가면 약 ${totalMin}분이면 도착해요. 무리하지 않는 선에서 조금 서둘러 볼까요?`
+        : '강의실 쪽으로 천천히 발걸음을 옮겨 볼까요?'
+    } else {
+      tipLevel = 'WARNING'
+      tipHighlight = '오늘은 강의실과 조금 떨어져 있어요'
+      tipSub = '괜찮으신가요? 사정이 있다면 천천히, 오실 수 있다면 편한 길로 와 주세요.'
+    }
+  } else if (classOngoing && presence === 'unknown') {
+    walkLabel = `지금은 ${classStartLabel}~${classEndLabel} 수업 시간이에요`
+    tipLevel = 'SAFE'
+    tipHighlight = '수업 시간이에요'
+    tipSub = '위치 확인이 어려워 동선만 참고로 보여 드릴게요. 강의실에 계시다면 편하게 수업에 집중해 주세요.'
+  }
+
   const tipTone = latenessTone(tipLevel)
-  const tipHighlight = attendingNow
-    ? '수업 잘 듣고 있나요?'
-    : routeInfo?.tipHighlight
-      || (tipLevel === 'DANGER' ? '지금 바로 출발하세요' : tipLevel === 'WARNING' ? '조금 서두르는 게 좋아요' : '여유 있게 걸어가도 돼요')
-  const tipSub = attendingNow
-    ? `${classEndLabel}에 끝나요. 끝나면 다음 일정 동선을 바로 알려드릴게요.`
-    : routeInfo?.tipSub || routeInfo?.message || '이동 시간을 계산하고 있습니다.'
 
   if (loading) {
     return (
@@ -621,13 +759,8 @@ export function NextClassCard() {
           <p className="location-line">
             <MapPin size={16} weight="fill" aria-hidden="true" />
             <strong>여유로운 하루</strong>
-            <span>주간 시간표에서 이번 주 수업을 확인해 보세요.</span>
+            <span>오늘은 등록된 수업이 없어요. 푹 쉬어도 좋아요.</span>
           </p>
-          <div className="class-actions">
-            <Link className="dashboard-button dashboard-button--primary" to="/schedule/weekly">
-              <NavigationArrow size={17} weight="fill" aria-hidden="true" /> 주간 시간표 보기
-            </Link>
-          </div>
         </div>
       </SectionCard>
     )
@@ -640,18 +773,24 @@ export function NextClassCard() {
           <span className="next-class__spark"><Sparkle size={18} weight="fill" aria-hidden="true" /></span>
           <div>
             <p>오늘의 캠퍼스 이동 &amp; 강의 안내</p>
-            <small>{lookingAhead ? '곧 이어질 다음 수업 기준 동선' : '실시간 백석대 동선 계산 모듈 연동'}</small>
+            <small>
+              {lookingAhead
+                ? '곧 이어질 다음 수업 기준 동선'
+                : classOngoing
+                  ? '지금 진행 중인 수업 기준'
+                  : '실시간 백석대 동선 계산 모듈 연동'}
+            </small>
           </div>
         </div>
         <span className={`status-chip status-chip--${tipTone === 'muted' ? 'primary' : tipTone}`}>
-          {lookingAhead ? '다음 수업' : '오늘 수업'}
+          {lookingAhead ? '다음 수업' : classOngoing ? '수업 중' : '오늘 수업'}
         </span>
       </div>
 
       <div className="next-class__body">
         <div className="next-class__title-row">
           <div>
-            <span className="next-class__label">NEXT CLASS</span>
+            <span className="next-class__label">{classOngoing ? 'NOW' : 'NEXT CLASS'}</span>
             <h2>{nextClass.displayTitle || parseScheduleTitle(nextClass.title).name}</h2>
           </div>
           <strong>{formatTimeRange(nextClass.startAt, nextClass.endAt)}</strong>
@@ -671,15 +810,6 @@ export function NextClassCard() {
             </p>
             <p className="class-tip__sub" title={tipSub}>{tipSub}</p>
           </div>
-        </div>
-
-        <div className="class-actions">
-          <button className="dashboard-button dashboard-button--primary" type="button" onClick={handleShowRoute}>
-            <NavigationArrow size={17} weight="fill" aria-hidden="true" /> 이동 경로 보기
-          </button>
-          <Link className="dashboard-button dashboard-button--secondary" to="/schedule/weekly">
-            <FileText size={17} weight="fill" aria-hidden="true" /> 주간 시간표
-          </Link>
         </div>
       </div>
     </SectionCard>
@@ -818,9 +948,9 @@ export function DeadlineList() {
 
   return (
     <SectionCard className="dashboard-section">
-      <SectionHeading
-        icon={Warning}
-        title="놓치면 안 돼요"
+      <SectionHeading 
+        icon={Warning} 
+        title="놓치면 안 돼요" 
         badge={loading ? '불러오는 중' : `${tasks.length}건 마감 임박 (우선순위 Top 3)`}
         action="전체보기"
         actionTo="/schedule/weekly"

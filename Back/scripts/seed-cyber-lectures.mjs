@@ -1,15 +1,8 @@
 /**
  * 데모 5계정 사이버강의 + 오늘 마감 과제 시드
- * Task 테이블에 type 컬럼이 없어 id `cyber-…`, 제목 「과목 · N주차 사이버강의」로 구분한다.
+ * 과목명은 Course 테이블 실제 명칭 사용
  *
  * 사용: cd Back && node scripts/seed-cyber-lectures.mjs
- *
- * 데모일 화 2026-10-27 기준
- * - 이승빈(수업 중): 선형대수학 사강 오늘 마감
- * - 곽두팔(수업 중): 자료구조 사강 + 자료구조 퀴즈 과제 오늘 마감
- * - 김갑순(공강): 컴퓨터네트워크 사강 오늘 마감
- * - 조박필(공강): 알고리즘 과제 오늘 마감(seed-demo-students), 사강은 내일 이후
- * - 엄가영: 오늘 마감 없음 (대조군)
  */
 import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
@@ -35,36 +28,48 @@ const headers = {
   Prefer: 'resolution=merge-duplicates,return=representation',
 }
 
-/** 9주차 마감 = 2026-10-27(화) + offsetDays. 주차마다 7일씩 */
 const WEEK9_BASE = new Date(2026, 9, 27, 23, 59, 0)
 const WEEKS = 10
+const DEMO_USERS = ['mocked_user_id', 'demo-user-kwak', 'demo-user-kim', 'demo-user-jo', 'demo-user-um']
 
 function dueFor(week, offsetDays) {
   const d = new Date(WEEK9_BASE)
   d.setDate(d.getDate() + offsetDays + (week - 9) * 7)
   const p = (n) => String(n).padStart(2, '0')
-  // timestamp without time zone → 오프셋 없이 로컬 시각 그대로
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:00`
 }
 
+function slugCourse(name) {
+  return String(name).replace(/\s+/g, '')
+}
+
+/** Course 실제 과목명 */
 const CYBER = [
   { userId: 'mocked_user_id', slug: 'lee', course: '선형대수학', offset: 0, importance: 4 },
-  { userId: 'mocked_user_id', slug: 'lee', course: '사람다운 사람의 길', offset: 0, importance: 2 },
-  { userId: 'demo-user-kwak', slug: 'kwak', course: '자료구조', offset: 0, importance: 4 },
+  { userId: 'mocked_user_id', slug: 'lee', course: '채플과 섬김', offset: 0, importance: 2 },
+  { userId: 'demo-user-kwak', slug: 'kwak', course: '자료구조론', offset: 0, importance: 4 },
   { userId: 'demo-user-kwak', slug: 'kwak', course: '컴퓨터네트워크', offset: 3, importance: 3 },
   { userId: 'demo-user-kim', slug: 'kim', course: '컴퓨터네트워크', offset: 0, importance: 3 },
-  { userId: 'demo-user-kim', slug: 'kim', course: '데이터베이스', offset: 2, importance: 3 },
-  { userId: 'demo-user-jo', slug: 'jo', course: '운영체제', offset: 2, importance: 4 },
+  { userId: 'demo-user-kim', slug: 'kim', course: '데이터베이스이론 및 실습', offset: 2, importance: 3 },
+  { userId: 'demo-user-jo', slug: 'jo', course: '운영체제론', offset: 2, importance: 4 },
   { userId: 'demo-user-jo', slug: 'jo', course: '컴퓨터네트워크', offset: 1, importance: 3 },
-  { userId: 'demo-user-um', slug: 'um', course: '정보보안', offset: 1, importance: 4 },
-  { userId: 'demo-user-um', slug: 'um', course: '모바일프로그래밍', offset: 3, importance: 3 },
+  { userId: 'demo-user-um', slug: 'um', course: '정보보안컨설팅', offset: 1, importance: 4 },
+  { userId: 'demo-user-um', slug: 'um', course: '스마트폰프로그래밍', offset: 3, importance: 3 },
 ]
+
+// 예전 잘못된 과목명 cyber-* 정리
+const del = await fetch(
+  `${SUPABASE_URL}/rest/v1/Task?userId=in.(${DEMO_USERS.join(',')})&id=like.cyber-*`,
+  { method: 'DELETE', headers: { ...headers, Prefer: 'return=minimal' } },
+)
+if (!del.ok) console.warn('cyber 삭제 경고', del.status, await del.text())
+else console.log('기존 cyber-* Task 삭제')
 
 const tasks = []
 for (const c of CYBER) {
   for (let week = 1; week <= WEEKS; week += 1) {
     tasks.push({
-      id: `cyber-${c.slug}-${c.course.replace(/\s+/g, '')}-w${String(week).padStart(2, '0')}`,
+      id: `cyber-${c.slug}-${slugCourse(c.course)}-w${String(week).padStart(2, '0')}`,
       userId: c.userId,
       title: `${c.course} · ${week}주차 사이버강의`,
       dueAt: dueFor(week, c.offset),
@@ -73,26 +78,6 @@ for (const c of CYBER) {
     })
   }
 }
-
-// 오늘 마감 과제 (수업 중 케이스)
-tasks.push(
-  {
-    id: 'task-lee-ai-w9-today',
-    userId: 'mocked_user_id',
-    title: '인공지능 · 9주차: CNN 실습 노트 제출',
-    dueAt: '2026-10-27T23:59:00',
-    importance: 5,
-    status: 'PENDING',
-  },
-  {
-    id: 'task-kwak-ds-quiz-w9',
-    userId: 'demo-user-kwak',
-    title: '자료구조 · 9주차: 스택·큐 퀴즈 제출',
-    dueAt: '2026-10-27T23:59:00',
-    importance: 4,
-    status: 'PENDING',
-  },
-)
 
 const res = await fetch(`${SUPABASE_URL}/rest/v1/Task?on_conflict=id`, {
   method: 'POST',

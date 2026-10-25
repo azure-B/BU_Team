@@ -1,7 +1,7 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-10-13
+> 마지막 갱신: 2026-10-25
 
 ```
 asdasd/
@@ -82,11 +82,14 @@ asdasd/
 │   │   │   ├── validate.middleware.ts — Zod 요청 유효성 검증 미들웨어
 │   │   │   └── error.middleware.ts    — 전역 에러 핸들러
 │   │   ├── routes/              — auth, schedules, tasks, campus, dashboard
-│   │   ├── services/            — auth, schedule, task, campus, dashboard
+│   │   ├── data/                — faqSeeds, professors, departmentOffices, academicCalendar, campusBuildings, elevatorWaitSlots
+│   │   ├── services/            — auth, schedule, task, campus, dashboard, chat(router/llm/kbStore/scheduleIntent/campusIntent/noticeIntent)
 │   │   ├── validations/         — schedule, task, campus Zod 스키마
 │   │   ├── utils/               — app-error, captain-calculator
 │   │   ├── app.ts               — Express 앱 구성
 │   │   └── server.ts            — 서버 진입점
+│   ├── scripts/                 — 시드·크롤 (crawl-dept-notices.mjs, seed-*.mjs 등)
+│   ├── supabase/                — SQL·수집 JSON (kb_chat.sql, dept-notices-2026.json 등)
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -115,4 +118,13 @@ asdasd/
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 VITE_API_URL=
+KAKAO_REST_API_KEY=
+
+# OpenAI (서버 전용)
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
+EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_API_KEY=
+DAILY_BUDGET_USD=1
+MAX_OUTPUT_TOKENS=800
 ```

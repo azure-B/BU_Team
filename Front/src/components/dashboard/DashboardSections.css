@@ -203,6 +203,14 @@
   white-space: nowrap;
 }
 
+.gap-activity__actions {
+  margin-top: 4px;
+}
+
+.gap-activity__reshuffle {
+  width: 100%;
+}
+
 .gap-activity__list span {
   font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);

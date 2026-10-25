@@ -9,6 +9,7 @@ import dashboardRoutes from './routes/dashboard.routes';
 import campusRoutes from './routes/campus.routes';
 import noticeRoutes from './routes/notices.routes';
 import courseRoutes from './routes/courses.routes';
+import chatRoutes from './routes/chat.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app = express();
@@ -36,6 +37,8 @@ app.use('/api/v1/notices', noticeRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/v1/chat', chatRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use(errorHandler as any);
 

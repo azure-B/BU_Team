@@ -4,7 +4,7 @@ import { coursesForDate, eventsForDate, monthDates, parseDate } from '../compone
 
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
-export default function ScheduleMonthlyPage({ selectedDate, events, courses: customCourses, removedCourseIds, onSelect, onRemoveCourse, onRemoveEvent }) {
+export default function ScheduleMonthlyPage({ selectedDate, events, courses: customCourses, removedCourseIds, onSelect, onRemoveEvent }) {
   const selectedMonth = selectedDate.slice(0, 7)
   return (
     <>
@@ -28,11 +28,12 @@ export default function ScheduleMonthlyPage({ selectedDate, events, courses: cus
         <div className="calendar-legend">
           <span><i className="calendar-day__classes" />매주 반복 수업</span>
           <span><i className="schedule-dot schedule-dot--task" />과제/마감</span>
+          <span><i className="schedule-dot schedule-dot--personal" />개인 일정</span>
           <span><i className="schedule-dot schedule-dot--notice" />학사 공지</span>
           <span><i className="schedule-dot schedule-dot--recommend" />AI 추천/시험</span>
         </div>
       </SectionCard>
-      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={customCourses} removedCourseIds={removedCourseIds} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} />
+      <ScheduleDetails selectedDate={selectedDate} events={events} customCourses={customCourses} removedCourseIds={removedCourseIds} onRemoveEvent={onRemoveEvent} />
     </>
   )
 }

@@ -170,9 +170,11 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 
 ### GET /api/v1/notices
 
-- 설명: 백석대 전체공지 2026년 목록. 최신순.
+- 설명: 백석대 공지 목록(전체공지 + 학부공지 2026). 최신순.
 - Query: `limit` (기본 8, 최대 300)
 - 응답: `{ success, total, notices: [{ id, title, category, tags, source, link, createdAt }] }`
+  - DB 컬럼: `title, content, category, tags, createdAt` (`source`/`link` 컬럼 없음). `source`←`tags`, `link`←`content` 내 URL.
+  - 학부공지 적재: `Back/scripts/crawl-dept-notices.mjs` → `category=학부공지`, `tags`=첨단IT학부|컴퓨터공학부
 - 관련 파일: `Back/src/routes/notices.routes.ts`, `Back/src/services/notice.service.ts`
 - 같은 핸들러를 `/api/notices`에도 연결한다. 배포 프론트의 `VITE_API_URL`이 `/api`로 끝나기 때문이다.
 
@@ -224,4 +226,29 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 - **상황(`situation`)**: `LATE` | `CRITICAL` | `URGENT` | `HURRY` | `STEADY` | `RELAXED` — `tipHighlight` / `tipSub` 멘트로 내려감
 - **응답 주요 필드**: `walkingMinutes`, `walkLabel`, `walkSpeedMPerMin`, `weather`, `elevatorMinutes`, `elevatorPeak`, `totalMinutes`, `recommendArriveLabel`, `situation`, `tipHighlight`, `tipSub`, `latenessLevel`
 - **관련**: `Back/src/utils/captain-route-calculator.ts`, `Back/src/utils/kakao-walking.ts`, `Back/src/utils/walk-speed.ts`
+
+---
+
+## 9. 백석AI 비서 (Chat)
+
+### POST /api/v1/chat  (별칭 `/api/chat`)
+- **설명**: FAQ·학사일정은 즉시 응답, 그 외·`forceLlm`은 GPT. 일정·공지 후보는 GPT가 **숫자 하나**(0~4)로 의도 분류 후 분기. KB는 Supabase 우선, 없으면 로컬 시드
+- **의도 코드(숫자 하나)**: `0` 기타 · `1` 일정 조회 · `2` 일정 등록 · `3` 일정 애매 · `4` 공지·대회·모집(Notice DB 매칭) · `5` 일정 삭제
+- **인증**: 선택(`optionalAuthenticate`) — body `department` 또는 토큰 사용자 학부. 일정 조회·등록은 `userId` 필요(없으면 로그인 안내)
+- **요청 Body**:
+  ```json
+  { "question": "보건학부 사무실 어디야?", "department": "컴퓨터공학부", "forceLlm": false }
+  ```
+- **응답 `data`**: `route`, `answer`, `badge`, `choices`, `canEscalateToAi`, `kbSource`(`db`|`seed`), `faqId`, `latencyMs`, `scheduleAction` …
+- **route**: `faq` | `faq_clarify` | `engine` | `rag_llm` | `no_source` | `blocked` | `schedule` | `notice` | `campus`
+- **캠퍼스(`campus`)**: 건물명만(「진리관」) → 층·휴게·시설·붐빔. 「A에서 B까지」→ 도보분. 「뛰어가면」「비 오면」보정. 데이터 `Back/src/data/campusBuildings.ts`
+- **`scheduleAction.status`**: `queried` | `created` | `deleted` | `conflict` | `need_login` | `need_clarify`
+- 챗봇 등록 타입: 개인=`PERSONAL`, 매주 개인=`WEEKLY`(요일 투영·수업 아님), 과제=`TASK`, 수업 명시 시에만 `CLASS`
+- 챗봇 삭제(`5`): 개인·WEEKLY·TASK만. 실제 수업(`CLASS`)은 삭제 불가(잘못 CLASS로 남은 스터디·약속 제목은 예외 삭제)
+- 일정 시각은 한국 벽시계 naive datetime 으로 저장 (UTC `toISOString` 그대로 넣지 않음)
+- **개인 일정**: 「오늘 14시에 일정 있어?」→ 조회+비면 약속 유도. 「목요일에 밥먹기로 함」→ 등록(시간 없으면 `choices`)
+- **공지(`4`)**: Notice DB 매칭. 학부공지 크롤 `node Back/scripts/crawl-dept-notices.mjs` — [첨단IT](https://community.bu.ac.kr/smartit/6301/subview.do) · [컴퓨터공학부](https://community.bu.ac.kr/info/1788/subview.do)
+- **KB 준비**: Supabase SQL Editor에 `Back/supabase/kb_chat.sql` 실행 → `cd Back && npm run kb:seed`
+- **환경변수**: `OPENAI_API_KEY`, `OPENAI_MODEL`, `MAX_OUTPUT_TOKENS`
+- **관련**: `router.ts`, `kbStore.ts`, `Back/src/data/*`
 

@@ -5,7 +5,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import Layout from '../components/layout/Layout'
 import SectionCard from '../components/common/SectionCard'
 import { useSchedule } from '../components/schedule/ScheduleContext'
-import { monthWeek, parseDate, removeCourse, removeEvent, shiftDate } from '../components/schedule/scheduleModel'
+import { monthWeek, parseDate, removeEvent, shiftDate } from '../components/schedule/scheduleModel'
 import ScheduleMonthlyPage from './ScheduleMonthlyPage'
 import ScheduleWeeklyPage from './ScheduleWeeklyPage'
 import './SchedulePage.css'
@@ -137,7 +137,6 @@ export default function SchedulePage() {
   const ViewIcon = monthly ? Clock : CalendarBlank
 
   const View = monthly ? ScheduleMonthlyPage : ScheduleWeeklyPage
-  const onRemoveCourse = (id) => setState((previous) => removeCourse(previous, id))
   const onRemoveEvent = (id) => {
     setState((previous) => removeEvent(previous, id))
     if (removeServerSchedule) removeServerSchedule(id)
@@ -157,7 +156,7 @@ export default function SchedulePage() {
             <Link className="schedule-icon-button" to={`/schedule/${monthly ? 'weekly' : 'monthly'}`} aria-label={monthly ? '주간 시간표로 보기' : '월간 달력으로 보기'}><ViewIcon size={18} weight="fill" /></Link>
           </div>
         </SectionCard>
-        <View selectedDate={state.selectedDate} events={state.events} courses={state.courses} removedCourseIds={state.removedCourseIds} onSelect={onSelect} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} />
+        <View selectedDate={state.selectedDate} events={state.events} courses={state.courses} removedCourseIds={state.removedCourseIds} onSelect={onSelect} onRemoveEvent={onRemoveEvent} />
         {adding && (
           <AddScheduleDialog
             selectedDate={state.selectedDate}

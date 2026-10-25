@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { CalendarBlank, Bell, Trash, CheckSquareOffset, CaretDown, CaretUp } from '@phosphor-icons/react'
+import { CalendarBlank, Bell, Trash, CheckSquareOffset, CaretUp } from '@phosphor-icons/react'
 import SectionCard from '../common/SectionCard'
 import { coursesForDate, eventsForDate, hourLabel, parseDate } from './scheduleModel'
 import { COURSE_KINDS } from './courseCatalog'
@@ -41,7 +41,7 @@ function displayTaskTitle(title) {
   return String(title || '').replace(/^(.+?)\s·\s/, '')
 }
 
-export default function ScheduleDetails({ selectedDate, events, customCourses, removedCourseIds, onRemoveCourse, onRemoveEvent, weekly = false }) {
+export default function ScheduleDetails({ selectedDate, events, customCourses, removedCourseIds, onRemoveEvent, weekly = false }) {
   const date = parseDate(selectedDate)
   const courses = coursesForDate(selectedDate, customCourses, removedCourseIds)
   const personal = eventsForDate(selectedDate, events)
@@ -125,15 +125,6 @@ export default function ScheduleDetails({ selectedDate, events, customCourses, r
               >
                 {isExpanded ? <CaretUp size={16} /> : <CheckSquareOffset size={16} />}
               </button>
-
-              <button
-                type="button"
-                className="schedule-icon-button"
-                aria-label={`${course.title} 수업 삭제`}
-                onClick={() => onRemoveCourse(course.id)}
-              >
-                <Trash size={16} aria-hidden="true" />
-              </button>
             </div>
 
             {/* 일정 ↔ 과제 연계 뷰 — 선택 날짜가 속한 주차 과제만 */}
@@ -175,9 +166,9 @@ export default function ScheduleDetails({ selectedDate, events, customCourses, r
 
       {personal.map((event) => (
         <div className="schedule-detail" key={event.id}>
-          <time>{event.time}</time>
+          <time>{event.endTime ? <>{event.time}<br />– {event.endTime}</> : event.time}</time>
           <div><strong>{event.title}</strong><small>{event.repeatWeekly ? '매주 반복 · ' : ''}{event.location || '개인 일정'}</small></div>
-          <span className={`schedule-kind schedule-kind--${event.kind}`}>{event.kind === 'task' ? '과제/마감' : event.kind === 'notice' ? '학사 공지' : 'AI 추천'}</span>
+          <span className={`schedule-kind schedule-kind--${event.kind}`}>{event.kind === 'task' ? '과제/마감' : event.kind === 'notice' ? '학사 공지' : event.kind === 'personal' ? '개인 일정' : 'AI 추천'}</span>
           {onRemoveEvent && events.some((savedEvent) => savedEvent.id === event.id) && (
             <button
               type="button"

@@ -1,6 +1,23 @@
 import supabase, { unwrap } from '../config/supabase';
 import { AppError } from '../utils/app-error';
 
+/**
+ * Schedule 시각은 시드·프론트와 같이 「한국 벽시계」 naive datetime 으로 저장한다.
+ * toISOString() UTC 를 그대로 넣으면 DB(timestamp w/o tz)에 04:00 등으로 남아
+ * 프론트가 13:00 을 04:00 으로 보여 주는 문제가 난다.
+ */
+function toDbTimestamp(value: string | Date): string {
+  const raw = String(value ?? '').trim()
+  const naive = raw.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})(?::(\d{2}))?(?:\.\d+)?$/)
+  if (naive && !/[zZ]|[+-]\d{2}:?\d{2}$/.test(raw)) {
+    return `${naive[1]}:${naive[2] || '00'}`
+  }
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return raw
+  const seoul = new Date(d.getTime() + 9 * 60 * 60 * 1000)
+  return seoul.toISOString().replace(/\.\d{3}Z$/, '').slice(0, 19)
+}
+
 export const getSchedules = async (userId: string, from?: string, to?: string) => {
   let query = supabase.from('Schedule').select('*').eq('userId', userId);
 
@@ -18,8 +35,8 @@ export const createSchedule = async (userId: string, data: any) => {
       .insert({
         ...data,
         userId,
-        startAt: new Date(data.startAt).toISOString(),
-        endAt: new Date(data.endAt).toISOString(),
+        startAt: toDbTimestamp(data.startAt),
+        endAt: toDbTimestamp(data.endAt),
       })
       .select()
       .single()
@@ -28,8 +45,8 @@ export const createSchedule = async (userId: string, data: any) => {
 
 export const updateSchedule = async (userId: string, scheduleId: string, data: any) => {
   const updateData = { ...data };
-  if (data.startAt) updateData.startAt = new Date(data.startAt).toISOString();
-  if (data.endAt) updateData.endAt = new Date(data.endAt).toISOString();
+  if (data.startAt) updateData.startAt = toDbTimestamp(data.startAt);
+  if (data.endAt) updateData.endAt = toDbTimestamp(data.endAt);
 
   const schedule = await unwrap(
     supabase

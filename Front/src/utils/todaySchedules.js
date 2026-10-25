@@ -63,7 +63,7 @@ export function projectSchedulesOntoDay(schedules = [], targetDay = new Date()) 
     const endSrc = new Date(item.endAt || item.startAt)
     if (Number.isNaN(startSrc.getTime())) continue
 
-    if (item.type === 'CLASS' || !item.type) {
+    if (item.type === 'CLASS' || item.type === 'WEEKLY' || !item.type) {
       if (startSrc.getDay() !== dow) continue
       const startAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), startSrc.getHours(), startSrc.getMinutes(), 0, 0)
       let endAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), endSrc.getHours(), endSrc.getMinutes(), 0, 0)

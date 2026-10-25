@@ -215,6 +215,7 @@ export const CAMPUS_SPOTS = [
     blurb: '베데스다 옆 커피',
   },
   // 학식·구내 (11:00–13:30 방문 권장)
+  // readyMin: 메뉴 대기(분). 미지정 시 일반 식당처럼 10~15분 랜덤
   {
     id: 'cafeteria-mill',
     name: '밀겨울 백석대점',
@@ -233,6 +234,7 @@ export const CAMPUS_SPOTS = [
     type: 'cafeteria',
     lat: 36.8397053,
     lng: 127.1847795,
+    readyMin: 5,
     blurb: '캠퍼스 안쪽 구내식당 백반',
     quips: [
       '교수회관에서 든든한 백반으로 학점까지 채워볼까요?',
@@ -245,6 +247,7 @@ export const CAMPUS_SPOTS = [
     // 카카오: 백석대학교 글로벌외식산업관 (외식글로벌학습관) 1층
     lat: 36.8375385,
     lng: 127.1851016,
+    readyMin: 0,
     blurb: '외식글로벌학습관(글로벌외식산업관) 1층 학식',
     quips: [
       '안골에서 안 골고루 먹으면 섭섭하죠, 학식 한 판 어때요?',
@@ -257,10 +260,84 @@ export const CAMPUS_SPOTS = [
     type: 'cafeteria',
     lat: 36.8425016,
     lng: 127.1852033,
+    readyMin: 0,
     blurb: '백석생활관 식당 백반',
     quips: [
       '기숙사식당에서 집밥 느낌 백반 한 상 어때요?',
       '생활관 식당에서 엄마 밥 대신 든든하게 채워볼까요?',
+    ],
+  },
+  // 교내 편의점 — 시간 촉박 + 식사 필요할 때
+  {
+    id: 'cvs-truth-cu',
+    name: '진리관 CU',
+    type: 'cvs',
+    buildingId: 'bldg-truth',
+    floor: -1,
+    readyMin: 0,
+    eatMin: 10,
+    blurb: '진리관 지하1층',
+    quips: [
+      '시간이 없어요! 진리관 지하 CU에서 삼각김밥 원샷 어때요?',
+      '진리관 B1 CU에서 한입 충전하고 바로 강의실로!',
+    ],
+  },
+  {
+    id: 'cvs-wisdom-cu',
+    name: '지혜관 CU',
+    type: 'cvs',
+    buildingId: 'bldg-wisdom',
+    floor: 3,
+    readyMin: 0,
+    eatMin: 10,
+    blurb: '지혜관 3층',
+    quips: [
+      '지혜관 3층 CU에서 빠르게 집어 들고 갈까요?',
+      '여유 없을 땐 지혜관 CU가 정답이에요!',
+    ],
+  },
+  {
+    id: 'cvs-dorm-gs',
+    name: '기숙사 GS25',
+    type: 'cvs',
+    buildingId: null,
+    floor: 2,
+    lat: DORM.lat,
+    lng: DORM.lng,
+    readyMin: 0,
+    eatMin: 10,
+    blurb: '백석생활관 2층',
+    quips: [
+      '기숙사 2층 GS25에서 한 끼 때우고 뛰어요!',
+      '생활관 GS25면 대기 제로, 시간 저축 각이에요',
+    ],
+  },
+  {
+    id: 'cvs-hq-cu',
+    name: '본부동 CU',
+    type: 'cvs',
+    buildingId: 'bldg-hq',
+    floor: 6,
+    readyMin: 0,
+    eatMin: 10,
+    blurb: '본부동 6층',
+    quips: [
+      '본부동 6층 CU에서 엘리베이터 타고 편의점 레이드!',
+      '본부 수업 앞이면 6층 CU가 제일 가까워요',
+    ],
+  },
+  {
+    id: 'cvs-stu-seven',
+    name: '학생복지동 세븐일레븐',
+    type: 'cvs',
+    buildingId: 'bldg-stu',
+    floor: 1,
+    readyMin: 0,
+    eatMin: 10,
+    blurb: '학생복지동 1층',
+    quips: [
+      '복지동 1층 세븐일레븐에서 빠르게 한 입 어때요?',
+      '세븐에서 도시락 집어 들면 대기열 스킵!',
     ],
   },
   // 일반 식당
