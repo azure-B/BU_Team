@@ -2894,3 +2894,35 @@ export const ELEVATOR_WAIT_SLOTS: ElevatorWaitSlot[] = [
     "isPeak": false
   }
 ]
+
+/** 건물·요일(1=월…5=금) 정시 슬롯 */
+export function elevatorSlotsForDay(buildingName: string, day: number) {
+  return ELEVATOR_WAIT_SLOTS.filter(
+    (s) => s.buildingName === buildingName && s.day === day,
+  ).sort((a, b) => a.hour - b.hour)
+}
+
+/**
+ * 정시별 예상 유동 인원 표 (Course capacity 합)
+ * day: 0=일…6=토 → 평일만. 주말이면 피크 요일(화=2) 폴백
+ */
+export function formatHourlyCrowdTable(buildingName: string, now = new Date()) {
+  let day = now.getDay()
+  if (day === 0 || day === 6) day = 2
+  const slots = elevatorSlotsForDay(buildingName, day)
+  if (!slots.length) return null
+  const label = slots[0].dayLabel
+  const peak = slots.reduce((a, b) => (b.estimatedTraffic > a.estimatedTraffic ? b : a), slots[0])
+  const lines = [
+    `【${buildingName} ${label}요일 정시 예상 유동】`,
+    '해당 시각에 시작하는 수업 정원(capacity) 합 · 개설강의 기준',
+    '',
+    ...slots.map((s) => {
+      const mark = s.isPeak || s.id === peak.id ? ' ★피크' : ''
+      return `${s.startLabel} 약 ${s.estimatedTraffic.toLocaleString('ko-KR')}명 (${s.classStartCount}강) · 엘리베이터 ≈${s.elevatorMinutes}분${mark}`
+    }),
+    '',
+    `이날 최대: ${peak.startLabel} 약 ${peak.estimatedTraffic.toLocaleString('ko-KR')}명`,
+  ]
+  return lines.join('\n')
+}

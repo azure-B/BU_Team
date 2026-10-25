@@ -28,7 +28,8 @@ const ETA_RE =
 const RUN_RE = /뛰어|뛰면|달려|달리기|러닝|조깅/
 const RAIN_RE = /비\s*오|비오면|우천|비\s*올|장마|소나기/
 const INFO_RE =
-  /정보|알려|어때|뭐\s*있|시설|휴게|몇\s*층|층수|편의점|CU|붐비|혼잡|엘리베이터|라운지|학습|소개|뭐야|어디/
+  /정보|알려|어때|뭐\s*있|시설|휴게|몇\s*층|층수|편의점|CU|붐비|혼잡|엘리베이터|라운지|학습|소개|뭐야|어디|정시|몇\s*명|유동/
+const CROWD_RE = /붐비|혼잡|엘리베이터|정시|몇\s*명|유동|피크|대기/
 const ROUTE_RE = /까지|부터|에서/
 
 function rainLabel(band: RainBand) {
@@ -184,6 +185,8 @@ export async function tryHandleCampusIntent(input: {
   const building = findCampusBuilding(question)
   if (!building) return { handled: false }
 
+  const now = input.now || new Date()
+  const crowdOnly = CROWD_RE.test(question) && !/시설|층|휴게|CU|편의|사무실/.test(question)
   const neighbors = Object.entries(CAMPUS_WALK_MINUTES[building.name] || {})
     .sort((a, b) => a[1] - b[1])
     .slice(0, 3)
@@ -191,10 +194,12 @@ export async function tryHandleCampusIntent(input: {
 
   return {
     handled: true,
-    badge: '캠퍼스 건물',
-    answer: formatBuildingAnswer(building),
-    choices: neighbors.length
-      ? neighbors
-      : ['진리관에서 본부동까지', '본부동 정보', '도서관 정보'],
+    badge: crowdOnly ? '캠퍼스 붐빔' : '캠퍼스 건물',
+    answer: formatBuildingAnswer(building, { now, crowdOnly }),
+    choices: crowdOnly
+      ? [`${building.name} 정보`, `${building.name}에서 진리관까지`, '본부동 붐빔']
+      : neighbors.length
+        ? [...neighbors, `${building.name} 붐빔`]
+        : ['진리관에서 본부동까지', '본부동 정보', '본부동 붐빔'],
   }
 }

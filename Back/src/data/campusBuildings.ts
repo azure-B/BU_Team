@@ -4,7 +4,11 @@
  * 건물 간 도보(분)는 CampusEdge 시드(seed-campus-edges)와 동일.
  */
 import { DEPARTMENT_OFFICES } from './departmentOffices'
-import { ELEVATOR_WAIT_PEAKS, ELEVATOR_WAIT_RULES } from './elevatorWaitSlots'
+import {
+  ELEVATOR_WAIT_PEAKS,
+  ELEVATOR_WAIT_RULES,
+  formatHourlyCrowdTable,
+} from './elevatorWaitSlots'
 
 export type CampusBuildingProfile = {
   id: string
@@ -206,7 +210,21 @@ export function elevatorHintFor(buildingName: string): string | null {
   return parts.join('. ')
 }
 
-export function formatBuildingAnswer(building: CampusBuildingProfile): string {
+export function formatBuildingAnswer(
+  building: CampusBuildingProfile,
+  options?: { now?: Date; crowdOnly?: boolean },
+): string {
+  const now = options?.now || new Date()
+  const crowd = formatHourlyCrowdTable(building.name, now)
+
+  if (options?.crowdOnly && crowd) {
+    return (
+      crowd
+      + `\n\n참고: ${building.busyHint}`
+      + '\n더 자세한 시설은 「본부동 정보」로 물어보세요.'
+    )
+  }
+
   const offices = officesInBuilding(building.name)
   const elev = elevatorHintFor(building.name)
   const lines = [
@@ -223,6 +241,9 @@ export function formatBuildingAnswer(building: CampusBuildingProfile): string {
   lines.push(`· 붐빔: ${building.busyHint}`)
   if (elev) lines.push(`· ${elev}`)
   if (building.tips?.length) lines.push(`· 팁: ${building.tips.join(' / ')}`)
+  if (crowd) {
+    lines.push('', crowd)
+  }
   lines.push('', '이동 시간이 궁금하면 「진리관에서 본부동까지」「뛰어가면?」「비 오면?」처럼 물어보세요.')
   return lines.join('\n')
 }
