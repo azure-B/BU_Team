@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Layout from '../components/layout/Layout'
 import {
   DeadlineList,
   NextClassCard,
@@ -23,18 +22,16 @@ export default function HomePage() {
   const studentId = user?.studentId || '20221001'
 
   return (
-    <Layout>
-      <div className="dashboard-page">
-        <section className="student-greeting" aria-labelledby="dashboard-title">
-          <h1 id="dashboard-title">안녕하세요, <strong>{userName}</strong> 학우님</h1>
-          <p>{department} {grade}학년 · 학번 {studentId}</p>
-        </section>
+    <div className="dashboard-page">
+      <section className="student-greeting" aria-labelledby="dashboard-title">
+        <h1 id="dashboard-title">안녕하세요, <strong>{userName}</strong> 학우님</h1>
+        <p>{department} {grade}학년 · 학번 {studentId}</p>
+      </section>
 
-        <NextClassCard />
-        <TodaySchedule />
-        <DeadlineList />
-        <NoticeList />
-      </div>
-    </Layout>
+      <NextClassCard />
+      <TodaySchedule />
+      <DeadlineList />
+      <NoticeList />
+    </div>
   )
 }

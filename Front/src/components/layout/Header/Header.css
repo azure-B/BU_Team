@@ -87,7 +87,7 @@
   background: color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
-/* 읽지 않은 알림 배지 */
+/* 읽지 않은 알림 배지 (기본 상태는 정적으로 유지) */
 .notif-badge {
   position: absolute;
   top: 4px;
@@ -104,7 +104,12 @@
   text-align: center;
   pointer-events: none;
   box-shadow: 0 0 0 2px var(--color-surface, #ffffff);
-  animation: badge-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(1);
+}
+
+/* 앱 첫 실행 또는 새로운 알림 갱신 시에만 동작하는 팝 애니메이션 */
+.notif-badge--pop {
+  animation: badge-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes badge-pop {

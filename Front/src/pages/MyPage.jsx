@@ -1,4 +1,3 @@
-import Layout from '../components/layout/Layout'
 import {
   ActivityArchiveCard,
   IntegrationUtilityCard,
@@ -12,18 +11,16 @@ import './MyPage.css'
 
 export default function MyPage() {
   return (
-    <Layout>
-      <div className="mypage-container">
-        <header className="mypage-header">
-          <h1 className="mypage-title">마이페이지</h1>
-        </header>
+    <div className="mypage-container">
+      <header className="mypage-header">
+        <h1 className="mypage-title">마이페이지</h1>
+      </header>
 
-        <ProfileSettingCard />
-        <ActivityArchiveCard />
-        <IntegrationUtilityCard />
-        <NotificationSettingCard />
-        <SettingAccountActions />
-      </div>
-    </Layout>
+      <ProfileSettingCard />
+      <ActivityArchiveCard />
+      <IntegrationUtilityCard />
+      <NotificationSettingCard />
+      <SettingAccountActions />
+    </div>
   )
 }

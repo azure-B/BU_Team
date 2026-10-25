@@ -1,36 +1,6 @@
-﻿import { useEffect, useRef, useState } from "react"
+﻿import { useEffect, useRef } from "react"
+import { useNotificationState } from "./NotificationContext"
 import "./NotificationPanel.css"
-
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 1,
-    type: "recommendation",
-    message: "오늘 당신을 위한 추천 카드가 도착했습니다.",
-    time: "8분 전",
-    unread: true,
-  },
-  {
-    id: 2,
-    type: "deadline",
-    message: "남은 과제 마감 기한이 임박했습니다. 등록 서류를 확인하세요.",
-    time: "35분 전",
-    unread: true,
-  },
-  {
-    id: 3,
-    type: "class",
-    message: "15:00 [인공지능기초] 본부동 강의실로 이동할 시간입니다.",
-    time: "2시간 전",
-    unread: false,
-  },
-  {
-    id: 4,
-    type: "notice",
-    message: "2024년 2학기 수강신청 확인 및 변경 기간 안내입니다.",
-    time: "1년 전",
-    unread: false,
-  },
-]
 
 function NotifIcon({ type }) {
   if (type === "recommendation") {
@@ -69,8 +39,8 @@ function NotifIcon({ type }) {
   )
 }
 
-export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange }) {
-  const [items, setItems] = useState(MOCK_NOTIFICATIONS)
+export default function NotificationPanel({ isOpen, onClose }) {
+  const { items, setItems, unreadCount } = useNotificationState()
   const panelRef = useRef(null)
 
   useEffect(() => {
@@ -86,11 +56,6 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [isOpen, onClose])
 
-  useEffect(() => {
-    const count = items.filter((n) => n.unread).length
-    onUnreadCountChange?.(count)
-  }, [items, onUnreadCountChange])
-
   function handleRead(id) {
     setItems((prev) =>
       prev.map((n) => (n.id === id ? { ...n, unread: false } : n))
@@ -100,8 +65,6 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
   function handleReadAll() {
     setItems((prev) => prev.map((n) => ({ ...n, unread: false })))
   }
-
-  const unreadCount = items.filter((n) => n.unread).length
 
   return (
     <>

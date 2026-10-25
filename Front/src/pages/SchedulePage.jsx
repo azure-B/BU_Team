@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { CalendarBlank, CaretLeft, CaretRight, Clock, Plus, X } from '@phosphor-icons/react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import Layout from '../components/layout/Layout'
 import SectionCard from '../components/common/SectionCard'
 import { useSchedule } from '../components/schedule/ScheduleContext'
 import { activeCourses, monthWeek, parseDate, registerCourses, removeCourse, removeEvent, shiftDate } from '../components/schedule/scheduleModel'
@@ -158,23 +157,21 @@ export default function SchedulePage() {
   const onRemoveCourse = (id) => setState((previous) => removeCourse(previous, id))
   const onRemoveEvent = (id) => setState((previous) => removeEvent(previous, id))
   return (
-    <Layout>
-      <div className="schedule-page">
-        <section className="schedule-page__intro" aria-labelledby="schedule-title"><h1 id="schedule-title">{monthly ? '월간 일정' : '주간 시간표'}</h1><p>2026학년도 2학기 · 나의 수업과 일정</p></section>
-        <SectionCard className="schedule-toolbar">
-          <div className="schedule-toolbar__period">
-            <button className="schedule-icon-button" type="button" aria-label={monthly ? '이전 달' : '이전 주'} onClick={() => shift(-1)}><CaretLeft size={16} /></button>
-            <h2>{monthly ? `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}` : `${date.getMonth() + 1}월 ${monthWeek(state.selectedDate)}주차`}</h2>
-            <button className="schedule-icon-button" type="button" aria-label={monthly ? '다음 달' : '다음 주'} onClick={() => shift(1)}><CaretRight size={16} /></button>
-          </div>
-          <div className="schedule-toolbar__actions">
-            <button className="schedule-icon-button schedule-icon-button--primary" type="button" aria-label="새 일정 추가" onClick={() => setAdding(true)}><Plus size={18} weight="bold" /></button>
-            <Link className="schedule-icon-button" to={`/schedule/${monthly ? 'weekly' : 'monthly'}`} aria-label={monthly ? '주간 시간표로 보기' : '월간 달력으로 보기'}><ViewIcon size={18} weight="fill" /></Link>
-          </div>
-        </SectionCard>
-        <View selectedDate={state.selectedDate} events={state.events} courses={state.courses} removedCourseIds={state.removedCourseIds} onSelect={onSelect} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} />
-        {adding && <AddScheduleDialog selectedDate={state.selectedDate} onClose={() => setAdding(false)} onAddCourse={onAddCourse} existingCourses={activeCourses(state.courses, state.removedCourseIds)} onAdd={(event) => setState((previous) => ({ ...previous, selectedDate: event.date, events: [...previous.events, event] }))} />}
-      </div>
-    </Layout>
+    <div className="schedule-page">
+      <section className="schedule-page__intro" aria-labelledby="schedule-title"><h1 id="schedule-title">{monthly ? '월간 일정' : '주간 시간표'}</h1><p>2026학년도 2학기 · 나의 수업과 일정</p></section>
+      <SectionCard className="schedule-toolbar">
+        <div className="schedule-toolbar__period">
+          <button className="schedule-icon-button" type="button" aria-label={monthly ? '이전 달' : '이전 주'} onClick={() => shift(-1)}><CaretLeft size={16} /></button>
+          <h2>{monthly ? `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}` : `${date.getMonth() + 1}월 ${monthWeek(state.selectedDate)}주차`}</h2>
+          <button className="schedule-icon-button" type="button" aria-label={monthly ? '다음 달' : '다음 주'} onClick={() => shift(1)}><CaretRight size={16} /></button>
+        </div>
+        <div className="schedule-toolbar__actions">
+          <button className="schedule-icon-button schedule-icon-button--primary" type="button" aria-label="새 일정 추가" onClick={() => setAdding(true)}><Plus size={18} weight="bold" /></button>
+          <Link className="schedule-icon-button" to={`/schedule/${monthly ? 'weekly' : 'monthly'}`} aria-label={monthly ? '주간 시간표로 보기' : '월간 달력으로 보기'}><ViewIcon size={18} weight="fill" /></Link>
+        </div>
+      </SectionCard>
+      <View selectedDate={state.selectedDate} events={state.events} courses={state.courses} removedCourseIds={state.removedCourseIds} onSelect={onSelect} onRemoveCourse={onRemoveCourse} onRemoveEvent={onRemoveEvent} />
+      {adding && <AddScheduleDialog selectedDate={state.selectedDate} onClose={() => setAdding(false)} onAddCourse={onAddCourse} existingCourses={activeCourses(state.courses, state.removedCourseIds)} onAdd={(event) => setState((previous) => ({ ...previous, selectedDate: event.date, events: [...previous.events, event] }))} />}
+    </div>
   )
 }
