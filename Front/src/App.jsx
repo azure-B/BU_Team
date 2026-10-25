@@ -1,14 +1,19 @@
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import LoginPage from './pages/LoginPage'
-import MyPage from './pages/MyPage'
-import SchedulePage from './pages/SchedulePage'
 import Layout from './components/layout/Layout'
 import { ScheduleProvider } from './components/schedule/ScheduleContext'
 import { AssistantPreferencesProvider } from './components/layout/Footer/AssistantPreferences'
 import { NotificationProvider } from './components/layout/Header/NotificationContext'
+import { ensureDemoSession } from './utils/demoSession'
 import './styles/global.css'
+
+const SchedulePage = lazy(() => import('./pages/SchedulePage'))
+const MyPage = lazy(() => import('./pages/MyPage'))
+const CampusPage = lazy(() => import('./pages/CampusPage'))
+const ChatStatsPage = lazy(() => import('./pages/ChatStatsPage'))
 
 function AppRoutes() {
   return (
@@ -24,6 +29,8 @@ function AppRoutes() {
         <Route path="/dashboard" element={<HomePage />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/schedule/:view" element={<SchedulePage />} />
+        <Route path="/campus" element={<CampusPage />} />
+        <Route path="/chat-stats" element={<ChatStatsPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myPage" element={<MyPage />} />
         <Route path="/setting" element={<Navigate to="/mypage" replace />} />
@@ -41,12 +48,28 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const [sessionReady, setSessionReady] = useState(false)
+
+  useEffect(() => {
+    let ignore = false
+    ensureDemoSession()
+      .catch(() => {})
+      .finally(() => {
+        if (!ignore) setSessionReady(true)
+      })
+    return () => { ignore = true }
+  }, [])
+
+  if (!sessionReady) {
+    return <div className="app-boot" aria-busy="true" style={{ minHeight: '40vh' }} />
+  }
+
   return (
     <BrowserRouter>
       <NotificationProvider>
         <ScheduleProvider>
           <AssistantPreferencesProvider>
-            <AppRoutes />
+            <Suspense fallback={<div className="app-boot" aria-busy="true" style={{ minHeight: '40vh' }} />}><AppRoutes /></Suspense>
           </AssistantPreferencesProvider>
         </ScheduleProvider>
       </NotificationProvider>

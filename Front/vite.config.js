@@ -10,6 +10,27 @@ export default defineConfig({
   build: {
     outDir: 'publish',
     emptyOutDir: true,
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        // Vite 8 (rolldown): manualChunks 는 객체 불가 → 함수만 허용
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (id.includes('framer-motion')) return 'motion'
+          if (
+            id.includes('/react/')
+            || id.includes('/react-dom/')
+            || id.includes('/react-router')
+            || id.includes('\\react\\')
+            || id.includes('\\react-dom\\')
+            || id.includes('\\react-router')
+          ) {
+            return 'react'
+          }
+          return undefined
+        },
+      },
+    },
   },
 
   /* @ → src 경로 별칭 */

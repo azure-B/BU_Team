@@ -1,0 +1,686 @@
+{
+  "crawledAt": "2026-10-25T06:53:51.992Z",
+  "targetYear": "2026",
+  "counts": {
+    "첨단IT학부": 55,
+    "컴퓨터공학부": 20
+  },
+  "total": 75,
+  "notices": [
+    {
+      "title": "수시 면접. 실기고사 기간 원격수업 수강 기간 안내",
+      "date": "2026-10-14",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59914/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 백석대학교 교육수요자만족도조사(재학생) 참여 안내",
+      "date": "2026-10-13",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59873/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 창업동아리 모집 공고",
+      "date": "2026-10-12",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59859/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[비교과] 2026 제9회 Hacking Festival 경진대회",
+      "date": "2026-10-12",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/59852/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "예비창업가 특강 안내",
+      "date": "2026-10-02",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59654/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[학생역량관리센터] 백석 다빈치아카데미 인식조사 설문",
+      "date": "2026-09-29",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59545/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "백석 다빈치아카데미 인식조사 설문 참여 협조 요",
+      "date": "2026-09-29",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/59540/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 학부교육실태조사(K-NSSE) 실시 안내",
+      "date": "2026-09-29",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/59559/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[비교과]2026 Smart IT 창작물 경진대회 안내",
+      "date": "2026-09-28",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/59527/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026년도 2차 CKL(그랜드코리아레저) 청년인턴 채용안내",
+      "date": "2026-09-21",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59398/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 자퇴·휴학·병결·조기취업 변경사항 안내",
+      "date": "2026-09-21",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59411/artclView.do",
+      "pinned": true
+    },
+    {
+      "title": "[서울 핀테크 위크 2026]",
+      "date": "2026-09-11",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59160/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "예비창업가 특강",
+      "date": "2026-09-10",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59141/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "지능형 블록체인 웹 개발자 양성 과정 5기 모집 안내",
+      "date": "2026-09-09",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59106/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 학부교육실태조사(K-NSSE) 실시 안내(BU-POINT 지급)",
+      "date": "2026-09-09",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59112/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "「모두의 창업」 2차 참가자 모집",
+      "date": "2026-09-09",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59120/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "지능형 블록체인 웹 개발자 양성 과정 5기 모집 안내",
+      "date": "2026-09-09",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/59105/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도「모두의 창업」 2차 참가자 모집",
+      "date": "2026-09-09",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/59132/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 대학적응검사(4REST) 참여 안내(2학년 대상)",
+      "date": "2026-09-07",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/59063/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "조기취업 안내(2026.09.01이후)",
+      "date": "2026-08-19",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/58563/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-2학기 이수구분 변경 안내(복수,다중,부전공자 해당)",
+      "date": "2026-08-14",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/58521/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "제3회 정보보호 교육·훈련 사이버공격·방어 시나리오 경진대회 ATHENA 2026",
+      "date": "2026-08-07",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/58385/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 2학기 충남앵커공유대학 미래모빌리티 분야 학생 추가모집 안내",
+      "date": "2026-08-05",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/58359/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-2학기 재학생 등록금 수납 및 분할납부 안내",
+      "date": "2026-07-30",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/58278/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[2026 도시지역혁신 산업박람회] 청년 SNS 서포터즈 모집건 홈페이지 및 단톡방 안내",
+      "date": "2026-07-21",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/58162/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[국토교통부 장관상 외 6점] AI 도시·지역혁신 아이디어 공모전 (~8/28)",
+      "date": "2026-07-10",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/58090/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "천안 제조기업 AI 인력양성 사업 교육생 (추가)모집",
+      "date": "2026-06-30",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/57954/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026년 8월 졸업예정자 학사학위취득유예(졸업연기 포함) 신청 안내",
+      "date": "2026-06-16",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57622/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-1학기 비교과프로그램 개인주도활동 신청 안내",
+      "date": "2026-06-16",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57626/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 미래형 대학생 핵심역량 진단 종료 및 BU-POINT 지급처 안내",
+      "date": "2026-06-16",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57627/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-1학기 비교과프로그램 개인주도활동 신청 안내",
+      "date": "2026-06-16",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/57609/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 미래형 대학생 핵심역량 진단 종료 및 BU-POINT 지급처 안내",
+      "date": "2026-06-16",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/57610/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-2학기 재입학 안내",
+      "date": "2026-06-15",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57598/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "천안 제조기업 AI 인력양성 사업 교육생 모집[설명회 자료 추가]",
+      "date": "2026-06-12",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57537/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "천안 제조기업 AI 인력양성 사업 교육생 모집[설명회 자료 추가]",
+      "date": "2026-06-12",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/57536/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[비교과] 비교과프로그램 참여자 필독",
+      "date": "2026-06-08",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/57425/artclView.do",
+      "pinned": true
+    },
+    {
+      "title": "K-디지털 트레이닝 5기 모집",
+      "date": "2026-06-02",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57315/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "K-디지털 트레이닝 5기 모집",
+      "date": "2026-06-02",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/57316/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-2학기 휴학(연장포함)신청 안내",
+      "date": "2026-06-01",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57277/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-2학기 복학신청 안내",
+      "date": "2026-06-01",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57278/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-1학기 군 입대 성적인정 신청 안내",
+      "date": "2026-05-27",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57149/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "한국인터넷교육방송 SPEC UP! 온라인 강의 100% 전액지원 프로모션",
+      "date": "2026-05-26",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/57138/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "첨단X컴공 연합 체육대회 진행중!!!!",
+      "date": "2026-05-14",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56909/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "컴퓨터공학부, 첨단IT학부 체육대회",
+      "date": "2026-05-14",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/56910/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "가디언즈 인프라보안 12기",
+      "date": "2026-05-13",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56859/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "■ 질병으로 인한 출석 인정 관련 사항 안내 ■(2026.09.01이후)",
+      "date": "2026-05-13",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56860/artclView.do",
+      "pinned": true
+    },
+    {
+      "title": "지역혁신가 양성트랙 프로그램",
+      "date": "2026-05-12",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56795/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 충남RISE공유대학 미래모빌리티 분야 인턴십프로그램및 현장실습프로그램 안내",
+      "date": "2026-05-08",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56725/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-2학기 복수(다중·부)전공·전부(과)·모듈과정 신청 안내",
+      "date": "2026-05-07",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56668/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026 날씨 빅데이터 콘테스트",
+      "date": "2026-05-04",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56587/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "KICS 한국통신학회 장학금 지원 대상자 선발 안내",
+      "date": "2026-04-30",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56562/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "재학생 대상 폭력예방교육 참여",
+      "date": "2026-04-30",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56563/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[비교과] 제 9회 C언어 프로그래밍 경진대회 안내",
+      "date": "2026-04-28",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/56511/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[2026학년도 RISE 사업 산학협력 세미나 참석자 신청] 안내",
+      "date": "2026-04-27",
+      "author": "홍성혁",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56482/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 1학기 대학생활과 진로 8주차(04.21~04.27) 특강 관련 자료 및 안",
+      "date": "2026-04-22",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56400/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 1학기 대학생활과 진로 8주차(04.27) 특강 관련 자료 및 안내",
+      "date": "2026-04-22",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/56401/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026 뉴콘텐츠 인턴십 상반기 참가자 모집",
+      "date": "2026-04-16",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/56175/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "신입생 학습법 특강(4월 13일 월, 대학생활과 진로) 안내",
+      "date": "2026-04-10",
+      "author": "최세운",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/56004/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "첨단IT학부 전공진로 설명회 안내",
+      "date": "2026-04-08",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/55949/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "컴퓨터공학부 전공진로설명회 안내",
+      "date": "2026-04-08",
+      "author": "컴퓨터공학부",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/55950/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 창업동아리 추가 신청 및 모집 안내",
+      "date": "2026-03-30",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/55729/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-1학기 농촌봉사활동 모집포스터",
+      "date": "2026-03-24",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/55592/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-1학기 농촌봉사활동 모집포스터",
+      "date": "2026-03-24",
+      "author": "전선일",
+      "category": "학부공지",
+      "source": "컴퓨터공학부",
+      "link": "https://community.bu.ac.kr/bbs/info/897/55593/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026-1학기 이수구분변경 안내(복수,다중,부전공자 해당)",
+      "date": "2026-03-05",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/55112/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "산업체 연계 Skill-up 특강 등록 (Register for industry-linke",
+      "date": "2026-02-20",
+      "author": "홍성혁",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54802/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 편입생 학사안내",
+      "date": "2026-02-19",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54791/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2025학년도 전기 학위수여식 안내",
+      "date": "2026-02-02",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54418/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[필독!] 2026-1학기 수강신청 주의사항",
+      "date": "2026-01-29",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54362/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "의료 AI 개발자 취업 부트 캠프_ 의료 데이터 기반 AI 헬스케어 웹 개발",
+      "date": "2026-01-27",
+      "author": "백순화",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54318/artclView.do",
+      "pinned": true
+    },
+    {
+      "title": "2026-1학기 재학생 등록금 납부 안내",
+      "date": "2026-01-19",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54179/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "2026학년도 디스플레이-반도체소부장융합전공 학생 모집요강",
+      "date": "2026-01-19",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54180/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "데이터유니버스 주최 \"피싱 & 스캠 예방 AI활용 서비스(MVP) 개발\"",
+      "date": "2026-01-15",
+      "author": "백순화",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/54064/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "[채용안내] (주)휴민로보틱스",
+      "date": "2026-01-06",
+      "author": "최세운",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/53879/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "충남RISE공유대학 미래모빌리티융합시스템전공 학생모집 안내",
+      "date": "2026-01-05",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/53862/artclView.do",
+      "pinned": false
+    },
+    {
+      "title": "융합교육전공자 졸업 이수학점 변경 안내",
+      "date": "2026-01-05",
+      "author": "첨단IT학부",
+      "category": "학부공지",
+      "source": "첨단IT학부",
+      "link": "https://community.bu.ac.kr/bbs/smartit/1367/53863/artclView.do",
+      "pinned": false
+    }
+  ]
+}

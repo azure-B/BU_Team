@@ -5,6 +5,9 @@ node_modules/
 .env
 *.env.local
 
+# 비밀·토큰 (저장소에 올리지 않음)
+token.txt
+
 # 빌드 결과 (publish는 git에 포함 — 배포용)
 # Front/publish/  ← 배포용으로 포함
 

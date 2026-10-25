@@ -31,7 +31,7 @@ export function monthDates(value) {
   return Array.from({ length }, (_, index) => shiftDate(dateKey(first), index - first.getDay()))
 }
 
-export function weekDates(value, length = 5) {
+export function weekDates(value, length = 7) {
   const day = parseDate(value).getDay()
   const monday = shiftDate(value, -((day + 6) % 7))
   return Array.from({ length }, (_, index) => shiftDate(monday, index))
@@ -49,7 +49,7 @@ export function readSchedule(storage) {
     return {
       view: saved?.view === 'monthly' ? 'monthly' : 'weekly',
       selectedDate: parseDate(saved?.selectedDate) ? saved.selectedDate : DEFAULT_SCHEDULE.selectedDate,
-      events: Array.isArray(saved?.events) ? saved.events.filter((event) => event && typeof event.id === 'string' && typeof event.title === 'string' && event.title.trim() && parseDate(event.date) && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) && ['task', 'notice', 'recommend'].includes(event.kind)) : [],
+      events: Array.isArray(saved?.events) ? saved.events.filter((event) => event && typeof event.id === 'string' && typeof event.title === 'string' && event.title.trim() && parseDate(event.date) && /^([01]\d|2[0-3]):[0-5]\d$/.test(event.time) && ['task', 'notice', 'recommend', 'personal'].includes(event.kind)) : [],
       courses: Array.isArray(saved?.courses) ? saved.courses.map(normalizeCourse).filter(Boolean) : [],
       removedCourseIds: [],
     }
@@ -66,7 +66,7 @@ function normalizeCourse(course) {
   if (!course || typeof course.id !== 'string' || !course.id || typeof course.title !== 'string' || !course.title.trim() || course.title.trim().length > 100 || !Number.isInteger(course.day) || course.day < 1 || course.day > 7 || !Number.isFinite(course.start) || course.start < 0 || course.start >= 24 || !['major', 'general', 'teaching'].includes(course.kind)) return null
   const end = course.end ?? course.start + 1
   if (!Number.isFinite(end) || end <= course.start || end > 24) return null
-  return { ...course, title: course.title.trim(), end, color: course.kind, location: course.location || '매주 반복' }
+  return { ...course, title: course.title.trim(), end, color: course.kind, location: course.location || '' }
 }
 
 export function createCourse({ id, title, day, time, kind }) {
@@ -120,4 +120,22 @@ export function eventsForDate(value, events = []) {
 export function hourLabel(hour) {
   const minutes = Math.round(hour * 60)
   return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
+}
+
+/** 50분 수업도 시간표 칸에서는 정각 단위로 맞춘다. 예: 09:00–09:50 → 09–10 */
+export function snapCourseHours(course) {
+  const start = Math.floor(course.start)
+  const end = Math.max(start + 1, Math.ceil(course.end))
+  return { start, end }
+}
+
+export const COURSE_COLOR_PALETTE = [
+  'rose', 'amber', 'blue', 'orange', 'emerald', 'indigo', 'teal', 'violet', 'cyan', 'pink', 'slate', 'lime',
+]
+
+export function pickCourseColor(seed, index = 0) {
+  const text = String(seed || '')
+  let hash = 0
+  for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) >>> 0
+  return COURSE_COLOR_PALETTE[(hash + index) % COURSE_COLOR_PALETTE.length]
 }

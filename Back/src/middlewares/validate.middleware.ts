@@ -12,10 +12,11 @@ export const validate = (schema: {
         req.body = await schema.body.parseAsync(req.body);
       }
       if (schema.query) {
-        req.query = await schema.query.parseAsync(req.query) as any;
+        // Express 5에서는 req.query가 읽기 전용이라 검증만 한다.
+        await schema.query.parseAsync(req.query);
       }
       if (schema.params) {
-        req.params = await schema.params.parseAsync(req.params) as any;
+        await schema.params.parseAsync(req.params);
       }
       next();
     } catch (error) {

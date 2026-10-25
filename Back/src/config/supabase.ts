@@ -18,9 +18,18 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 type QueryResult<T> = PromiseLike<{ data: T; error: Pick<PostgrestError, 'message'> | null }>;
 
 export async function unwrap<T>(query: QueryResult<T>): Promise<T> {
-  const { data, error } = await query;
-  if (error) throw new AppError(error.message, 500);
-  return data;
+  try {
+    const { data, error } = await query;
+    if (error) throw new AppError(error.message, 500);
+    return data;
+  } catch (err: any) {
+    if (err instanceof AppError) throw err;
+    console.error('Supabase 통신 오류:', err.message || err);
+    throw new AppError(
+      `데이터베이스 통신 오류: ${err.message || 'Supabase 서버에 연결할 수 없습니다.'}`,
+      503
+    );
+  }
 }
 
 export default supabase;

@@ -2,10 +2,11 @@ import supabase from '../config/supabase';
 import { AppError } from '../utils/app-error';
 
 export const getNotices = async (limit = 8) => {
-  const size = Math.min(Math.max(Number(limit) || 8, 1), 300);
-  const { data, error, count } = await supabase
+  // 목록용: 본문(content) 전체·exact count 는 비용 큼 → 필요한 행·컬럼만
+  const size = Math.min(Math.max(Number(limit) || 8, 1), 50);
+  const { data, error } = await supabase
     .from('Notice')
-    .select('id, title, content, category, tags, createdAt', { count: 'exact' })
+    .select('id, title, category, tags, createdAt, content')
     .order('createdAt', { ascending: false })
     .limit(size);
 
@@ -25,7 +26,7 @@ export const getNotices = async (limit = 8) => {
   });
 
   return {
-    total: count ?? notices.length,
+    total: notices.length,
     notices,
   };
 };

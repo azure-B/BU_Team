@@ -9,6 +9,7 @@ import dashboardRoutes from './routes/dashboard.routes';
 import campusRoutes from './routes/campus.routes';
 import noticeRoutes from './routes/notices.routes';
 import courseRoutes from './routes/courses.routes';
+import chatRoutes from './routes/chat.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app = express();
@@ -23,14 +24,21 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/v1/schedules', scheduleRoutes);
+app.use('/api/schedules', scheduleRoutes);
 app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/tasks', taskRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/v1/campus', campusRoutes);
+app.use('/api/campus', campusRoutes);
 app.use('/api/v1/notices', noticeRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/v1/chat', chatRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.use(errorHandler as any);
 

@@ -1,7 +1,7 @@
 import supabase, { unwrap } from '../config/supabase';
 
 export const getBuildings = async () => {
-  return await unwrap(supabase.from('Building').select('*'));
+  return await unwrap(supabase.from('Building').select('id, name, code, x, y'));
 };
 
 export const getFacilities = async (type?: string) => {

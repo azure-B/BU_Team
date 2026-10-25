@@ -1,9 +1,9 @@
-﻿import { useEffect, useRef } from "react"
-import { useNotificationState } from "./NotificationContext"
-import "./NotificationPanel.css"
+import { useEffect, useRef } from 'react'
+import { useNotificationState, readIds, saveReadIds } from './NotificationContext'
+import './NotificationPanel.css'
 
 function NotifIcon({ type }) {
-  if (type === "recommendation") {
+  if (type === 'recommendation') {
     return (
       <div className="notif-icon notif-icon--star">
         <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -12,7 +12,7 @@ function NotifIcon({ type }) {
       </div>
     )
   }
-  if (type === "deadline") {
+  if (type === 'deadline') {
     return (
       <div className="notif-icon notif-icon--deadline">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -21,7 +21,7 @@ function NotifIcon({ type }) {
       </div>
     )
   }
-  if (type === "class") {
+  if (type === 'class') {
     return (
       <div className="notif-icon notif-icon--class">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -40,42 +40,42 @@ function NotifIcon({ type }) {
 }
 
 export default function NotificationPanel({ isOpen, onClose }) {
-  const { items, setItems, unreadCount } = useNotificationState()
+  const { items, setItems, loading, unreadCount } = useNotificationState()
   const panelRef = useRef(null)
 
   useEffect(() => {
     if (!isOpen) return
     function handleClickOutside(e) {
       if (panelRef.current && !panelRef.current.contains(e.target)) {
-        if (!e.target.closest(".notif-bell-btn")) {
-          onClose()
-        }
+        if (!e.target.closest('.notif-bell-btn')) onClose()
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen, onClose])
 
   function handleRead(id) {
-    setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, unread: false } : n))
-    )
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)))
+    const read = readIds()
+    read.add(id)
+    saveReadIds(read)
   }
 
   function handleReadAll() {
     setItems((prev) => prev.map((n) => ({ ...n, unread: false })))
+    saveReadIds(new Set(items.map((n) => n.id)))
   }
 
   return (
     <>
       <div
-        className={"notif-backdrop" + (isOpen ? " notif-backdrop--visible" : "")}
+        className={'notif-backdrop' + (isOpen ? ' notif-backdrop--visible' : '')}
         aria-hidden="true"
         onClick={onClose}
       />
       <section
         ref={panelRef}
-        className={"notif-panel" + (isOpen ? " notif-panel--open" : "")}
+        className={'notif-panel' + (isOpen ? ' notif-panel--open' : '')}
         aria-label="알림 센터"
         aria-modal="true"
         role="dialog"
@@ -90,20 +90,11 @@ export default function NotificationPanel({ isOpen, onClose }) {
           </div>
           <div className="notif-panel__header-actions">
             {unreadCount > 0 && (
-              <button
-                className="notif-panel__read-all-btn"
-                type="button"
-                onClick={handleReadAll}
-              >
+              <button className="notif-panel__read-all-btn" type="button" onClick={handleReadAll}>
                 모두 읽음
               </button>
             )}
-            <button
-              className="notif-panel__close-btn"
-              type="button"
-              aria-label="알림 닫기"
-              onClick={onClose}
-            >
+            <button className="notif-panel__close-btn" type="button" aria-label="알림 닫기" onClick={onClose}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -111,7 +102,9 @@ export default function NotificationPanel({ isOpen, onClose }) {
           </div>
         </div>
         <div className="notif-panel__list">
-          {items.length === 0 ? (
+          {loading ? (
+            <div className="notif-panel__empty"><p>알림을 불러오는 중…</p></div>
+          ) : items.length === 0 ? (
             <div className="notif-panel__empty">
               <span aria-hidden="true">🔔</span>
               <p>새로운 알림이 없습니다</p>
@@ -120,21 +113,19 @@ export default function NotificationPanel({ isOpen, onClose }) {
             items.map((notif) => (
               <article
                 key={notif.id}
-                className={"notif-item" + (notif.unread ? " notif-item--unread" : "")}
+                className={'notif-item' + (notif.unread ? ' notif-item--unread' : '')}
                 onClick={() => handleRead(notif.id)}
                 tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && handleRead(notif.id)}
+                onKeyDown={(e) => e.key === 'Enter' && handleRead(notif.id)}
                 role="button"
-                aria-label={"알림: " + notif.message + (notif.unread ? " (읽지 않음)" : "")}
+                aria-label={'알림: ' + notif.message + (notif.unread ? ' (읽지 않음)' : '')}
               >
                 <NotifIcon type={notif.type} />
                 <div className="notif-item__body">
                   <p className="notif-item__message">{notif.message}</p>
                   <span className="notif-item__time">{notif.time}</span>
                 </div>
-                {notif.unread && (
-                  <span className="notif-item__dot" aria-hidden="true" />
-                )}
+                {notif.unread && <span className="notif-item__dot" aria-hidden="true" />}
               </article>
             ))
           )}

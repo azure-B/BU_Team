@@ -1,7 +1,7 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-10-13
+> 마지막 갱신: 2026-10-25
 
 ```
 asdasd/
@@ -44,7 +44,7 @@ asdasd/
 │   │   │   ├── schedule/        — ScheduleContext.jsx, ScheduleDetails.jsx, scheduleModel.js, scheduleModel.test.js, CourseSearch.jsx, CourseSearch.css, courseCatalog.js, courseCatalog.test.js (일정·개설 강의 검색·반복 수업·로컬 저장)
 │   │   │   ├── setting/         — 마이페이지에 통합된 프로필·알림·계정 컴포넌트 (SettingSections.jsx, SettingSections.css)
 │   │   │   └── layout/
-│   │   │       ├── Header/      — Header.jsx, Header.css, index.js
+│   │   │       ├── Header/      — Header.jsx, Header.css, NotificationContext.jsx (API 알림·읽음 상태 공유), NotificationPanel.jsx, NotificationPanel.css, index.js
 │   │   │       ├── Footer/      — Footer.jsx, Footer.css, AssistantPreferences.jsx (앱 실행 중 모달 크기 기억), index.js
 │   │   │       └── Layout/      — Layout.jsx, Layout.css, index.js
 │   │   ├── hooks/               — 커스텀 훅
@@ -59,10 +59,12 @@ asdasd/
 │   │   │   ├── SchedulePage.css  — 메인 디자인 토큰 기반 일정 공통 스타일
 │   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
 │   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 영구 반복 수업
+│   │   │   ├── CampusPage.jsx / CampusPage.css — 캠퍼스 탭(학식·카페·학습·활동)
+│   │   │   ├── ChatStatsPage.jsx / ChatStatsPage.css — 비서 처리 통계
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)
-│   │   ├── utils/               — 유틸 함수
+│   │   ├── utils/               — 유틸 (chatStats 등)
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── publish/                 — npm run build 결과 (정적 배포용 HTML)
@@ -82,11 +84,14 @@ asdasd/
 │   │   │   ├── validate.middleware.ts — Zod 요청 유효성 검증 미들웨어
 │   │   │   └── error.middleware.ts    — 전역 에러 핸들러
 │   │   ├── routes/              — auth, schedules, tasks, campus, dashboard
-│   │   ├── services/            — auth, schedule, task, campus, dashboard
+│   │   ├── data/                — faqSeeds, professors, departmentOffices, academicCalendar, campusBuildings, elevatorWaitSlots, shuttleTimetable
+│   │   ├── services/            — auth, schedule, task, campus, dashboard, chat(router/llm/kbStore/scheduleIntent/campusIntent/noticeIntent/shuttleIntent/gapIntent)
 │   │   ├── validations/         — schedule, task, campus Zod 스키마
 │   │   ├── utils/               — app-error, captain-calculator
 │   │   ├── app.ts               — Express 앱 구성
 │   │   └── server.ts            — 서버 진입점
+│   ├── scripts/                 — 시드·크롤 (crawl-dept-notices.mjs, seed-*.mjs 등)
+│   ├── supabase/                — SQL·수집 JSON (kb_chat.sql, dept-notices-2026.json 등)
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -115,4 +120,13 @@ asdasd/
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 VITE_API_URL=
+KAKAO_REST_API_KEY=
+
+# OpenAI (서버 전용)
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5-mini
+EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_API_KEY=
+DAILY_BUDGET_USD=1
+MAX_OUTPUT_TOKENS=800
 ```

@@ -22,7 +22,8 @@
   font-weight: var(--font-weight-extrabold, 800);
   line-height: 1.45;
   letter-spacing: -0.035em;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 .student-greeting h1 strong {
@@ -33,7 +34,8 @@
   margin-top: 1px;
   font-size: var(--font-size-subtext, 11px);
   color: var(--color-muted);
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 @media (min-width: 720px) {
