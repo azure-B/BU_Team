@@ -39,64 +39,80 @@
   flex-shrink: 0;
 }
 
-.demo-controls__time,
-.demo-controls__select {
+/*
+ * Tailwind CDN forms 플러그인·브라우저 기본 스타일보다 우선하도록
+ * .demo-controls 스코프 + appearance 리셋
+ */
+.demo-controls .demo-controls__time,
+.demo-controls .demo-controls__select,
+.demo-controls .demo-controls__chip {
+  box-sizing: border-box;
   height: 32px;
-  padding: 0 8px;
+  margin: 0;
   border-radius: 8px;
   border: 1px solid #d7dee8;
-  background: #fff;
+  background-color: #fff;
+  background-image: none;
+  color: var(--color-text, #0f172a);
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text, #0f172a);
   letter-spacing: -0.02em;
-  box-sizing: border-box;
+  line-height: 1.2;
+  box-shadow: none;
+  outline: none;
   flex-shrink: 0;
 }
 
-/*
- * 한국어 로케일 type=time 은 「오후 12:30」+ 시계 아이콘이라
- * 고정 7.5rem 이면 Netlify/모바일에서 "오후 12:3"처럼 잘림.
- */
-.demo-controls__time {
+.demo-controls .demo-controls__time,
+.demo-controls .demo-controls__select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0 10px;
+}
+
+.demo-controls .demo-controls__time {
+  /* 한국어 「오후 12:30」+ 시계 아이콘 */
   width: auto;
   min-width: 11.5rem;
   max-width: 100%;
   padding-inline: 10px 6px;
-  line-height: 1.2;
+  color-scheme: light;
 }
 
-.demo-controls__time::-webkit-calendar-picker-indicator {
+.demo-controls .demo-controls__time::-webkit-calendar-picker-indicator {
+  display: block;
   margin: 0 0 0 4px;
   padding: 0;
-  flex-shrink: 0;
   cursor: pointer;
   opacity: 0.7;
 }
 
-.demo-controls__select {
+.demo-controls .demo-controls__select {
   min-width: 9rem;
   max-width: min(100%, 14rem);
   flex: 1 1 auto;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
 }
 
-.demo-controls__chip {
-  height: 32px;
+.demo-controls .demo-controls__chip {
+  -webkit-appearance: none;
+  appearance: none;
   padding: 0 10px;
   border-radius: 999px;
-  border: 1px solid #d7dee8;
-  background: #fff;
   font-size: 11px;
   font-weight: 700;
   color: var(--color-muted, #64748b);
   cursor: pointer;
-  flex-shrink: 0;
   white-space: nowrap;
 }
 
-.demo-controls__chip.is-active {
+.demo-controls .demo-controls__chip.is-active {
   border-color: color-mix(in srgb, var(--color-primary, #2563eb) 45%, #fff);
-  background: color-mix(in srgb, var(--color-primary, #2563eb) 12%, #fff);
+  background-color: color-mix(in srgb, var(--color-primary, #2563eb) 12%, #fff);
   color: var(--color-primary, #2563eb);
 }
 
@@ -115,7 +131,7 @@
     width: 100%;
   }
 
-  .demo-controls__time {
+  .demo-controls .demo-controls__time {
     min-width: 0;
     flex: 1 1 auto;
     width: 100%;
