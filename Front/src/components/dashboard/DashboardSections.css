@@ -761,6 +761,34 @@ a.dashboard-button {
   background: var(--color-surface-subtle);
 }
 
+.notice-row--card {
+  align-items: flex-start;
+  cursor: default;
+}
+
+.notice-row--card:hover {
+  background: transparent;
+}
+
+.notice-row__add {
+  flex: 0 0 auto;
+  margin-top: 4px;
+  padding: 6px 10px;
+  font-size: var(--font-size-badge, 10px);
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.notice-row__add:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 .deadline-row > svg,
 .notice-row > svg {
   flex: 0 0 auto;

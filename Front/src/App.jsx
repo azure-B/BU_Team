@@ -11,6 +11,8 @@ import './styles/global.css'
 
 const SchedulePage = lazy(() => import('./pages/SchedulePage'))
 const MyPage = lazy(() => import('./pages/MyPage'))
+const CampusPage = lazy(() => import('./pages/CampusPage'))
+const ChatStatsPage = lazy(() => import('./pages/ChatStatsPage'))
 
 /**
  * AnimatePresence는 현재 location을 key로 사용해야
@@ -30,8 +32,10 @@ function AnimatedRoutes() {
           <Route path="/login"   element={<LoginPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/schedule/:view" element={<SchedulePage />} />
+          <Route path="/campus"  element={<CampusPage />} />
           <Route path="/mypage"  element={<MyPage />} />
           <Route path="/myPage"  element={<MyPage />} />
+          <Route path="/chat-stats" element={<ChatStatsPage />} />
           <Route path="/setting" element={<Navigate to="/mypage" replace />} />
           <Route path="/Setting" element={<Navigate to="/mypage" replace />} />
           <Route path="/settings" element={<Navigate to="/mypage" replace />} />

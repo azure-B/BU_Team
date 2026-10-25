@@ -16,6 +16,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useSchedule } from '../../schedule/ScheduleContext'
 import { postChat } from '../../../api/chatApi'
 import { getCurrentUser } from '../../../api/authApi'
+import { recordChatStat } from '../../../utils/chatStats'
 import { useAssistantPreferences } from './AssistantPreferences'
 import './Footer.css'
 
@@ -205,6 +206,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
       const answer = data?.answer || '답변을 받지 못했습니다.'
       const badge = data?.badge || ''
       const botText = badge ? `[${badge}]\n${answer}` : answer
+      recordChatStat({ route: data?.route, latencyMs: data?.latencyMs })
       setMessages((previous) => [
         ...previous,
         {
@@ -214,6 +216,8 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           route: data?.route,
           choices: data?.choices,
           canEscalateToAi: Boolean(data?.canEscalateToAi),
+          sourceUrl: data?.sourceUrl || null,
+          sentContext: data?.sentContext || null,
         },
       ])
       if (
@@ -332,6 +336,35 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
               <div key={message.id} className={`assistant-history__message${message.role === 'assistant' ? ' assistant-history__message--bot' : ''}`}>
                 <span className="assistant-history__speaker">{message.role === 'assistant' ? '비서' : '나'}</span>
                 <p className="assistant-history__text">{message.text}</p>
+                {message.sourceUrl && (
+                  <a
+                    className="assistant-history__source"
+                    href={message.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    원문·출처 보기
+                  </a>
+                )}
+                {message.sentContext && (
+                  <details className="assistant-history__context">
+                    <summary>내가 비서에게 보낸 정보</summary>
+                    <ul>
+                      {message.sentContext.department && (
+                        <li>학부: {message.sentContext.department}</li>
+                      )}
+                      {message.sentContext.routeHint && (
+                        <li>처리 경로: {message.sentContext.routeHint}</li>
+                      )}
+                      {message.sentContext.todaySummary && (
+                        <li>{message.sentContext.todaySummary}</li>
+                      )}
+                      {Array.isArray(message.sentContext.blocks) && message.sentContext.blocks.slice(0, 4).map((b) => (
+                        <li key={b}>{b}</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
                 {Array.isArray(message.choices) && message.choices.length > 0 && (
                   <div className="assistant-history__choices">
                     {message.choices.slice(0, 8).map((choice) => (
@@ -345,7 +378,9 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
                             message.route === 'schedule'
                             || message.route === 'notice'
                             || message.route === 'campus'
-                            || /일정 등록|일정 삭제|공지|까지|정보/.test(choice)
+                            || message.route === 'shuttle'
+                            || message.route === 'gap'
+                            || /일정 등록|일정 삭제|공지|까지|정보|셔틀|학식/.test(choice)
                           ) {
                             void askAssistant(choice)
                             return
@@ -430,6 +465,7 @@ export default function Footer() {
   const { state } = useSchedule()
   const isHome = path === '/' || path === '/home' || path === '/dashboard'
   const isSchedule = path === '/schedule' || path.startsWith('/schedule')
+  const isCampus = path === '/campus'
   const isMyPage = path === '/mypage'
 
   return (
@@ -464,8 +500,14 @@ export default function Footer() {
             <span aria-hidden="true" />
             <strong>AI 비서</strong>
           </button>
-          <button className="bottom-nav__item" type="button">
-            <Compass size={24} aria-hidden="true" /><span>캠퍼스</span>
+          <button
+            className={`bottom-nav__item ${isCampus ? 'bottom-nav__item--active' : ''}`}
+            type="button"
+            aria-current={isCampus ? 'page' : undefined}
+            onClick={() => window.alert('공사중입니다.')}
+          >
+            <Compass size={24} weight={isCampus ? 'fill' : 'regular'} aria-hidden="true" />
+            <span>캠퍼스</span>
           </button>
           <Link
             className={`bottom-nav__item ${isMyPage ? 'bottom-nav__item--active' : ''}`}

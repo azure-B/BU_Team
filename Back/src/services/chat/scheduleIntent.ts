@@ -322,7 +322,7 @@ function offerCreateChoices(day: Date, title = '약속') {
 }
 
 const NOTICE_RE =
-  /대회|공모|모집|해킹|페스티벌|인턴|채용|특강|설문|창업|비교과|공지|부트\s*캠프|경진|취업|자퇴|병결|조기취업/
+  /대회|공모|모집|해킹|페스티벌|인턴|채용|특강|설문|창업|비교과|공지|부트\s*캠프|경진|취업|조기취업/
 
 /** 수업(CLASS)은 챗봇으로 삭제 불가. 개인·과제·잘못 태그된 개인성 CLASS(스터디 등)만 삭제 */
 function isChatDeletable(item: any) {
@@ -368,6 +368,12 @@ export function looksLikeScheduleCandidate(question: string) {
     return false
   }
   if (/사무실|과사/.test(q) && /어디|위치|몇호|전화/.test(q) && !CREATE_RE.test(q) && !QUERY_RE.test(q) && !DELETE_RE.test(q)) {
+    return false
+  }
+  if (/다음\s*수업\s*전|공강|뭐\s*하지|뭐하지|틈새/.test(q) && !CREATE_RE.test(q) && !DELETE_RE.test(q)) {
+    return false
+  }
+  if (/병결|질병\s*결석|출석\s*인정/.test(q) && !CREATE_RE.test(q) && !KIND_RE.test(q)) {
     return false
   }
   if (/중간고사|기말고사|수강신청|휴학|장학|등록금|개강|종강|학사일정/.test(q)

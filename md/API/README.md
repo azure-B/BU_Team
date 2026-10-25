@@ -239,8 +239,10 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
   ```json
   { "question": "보건학부 사무실 어디야?", "department": "컴퓨터공학부", "forceLlm": false }
   ```
-- **응답 `data`**: `route`, `answer`, `badge`, `choices`, `canEscalateToAi`, `kbSource`(`db`|`seed`), `faqId`, `latencyMs`, `scheduleAction` …
-- **route**: `faq` | `faq_clarify` | `engine` | `rag_llm` | `no_source` | `blocked` | `schedule` | `notice` | `campus`
+- **응답 `data`**: `route`, `answer`, `badge`, `choices`, `canEscalateToAi`, `kbSource`(`db`|`seed`), `faqId`, `latencyMs`, `scheduleAction`, `sourceUrl`, `sentContext` …
+- **route**: `faq` | `faq_clarify` | `engine` | `rag_llm` | `no_source` | `blocked` | `schedule` | `notice` | `campus` | `shuttle` | `gap`
+- **처리 순서**: 캠퍼스 → 셔틀 → 공강(gap) → **FAQ** → 공지/일정 → 교수 → 학사일정 → GPT
+- **sentContext**: 학부·경로·근거 요약 (Front 「내가 GPT에 보낸 정보」)
 - **캠퍼스(`campus`)**: 건물명만(「진리관」) → 층·휴게·시설·붐빔. 「A에서 B까지」→ 도보분. 「뛰어가면」「비 오면」보정. 데이터 `Back/src/data/campusBuildings.ts`
 - **`scheduleAction.status`**: `queried` | `created` | `deleted` | `conflict` | `need_login` | `need_clarify`
 - 챗봇 등록 타입: 개인=`PERSONAL`, 매주 개인=`WEEKLY`(요일 투영·수업 아님), 과제=`TASK`, 수업 명시 시에만 `CLASS`

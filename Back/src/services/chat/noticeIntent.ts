@@ -19,8 +19,9 @@ type NoticeRow = {
   createdAt: string
 }
 
+/** 병결·휴학·자퇴·출석인정은 FAQ 우선 — 공지 키워드에서 제외 */
 const NOTICE_HINT_RE =
-  /대회|공모|모집|해킹|페스티벌|인턴|채용|특강|설문|창업|비교과|공지|부트\s*캠프|경진|부트캠프|취업|포상|수상|자퇴|휴학|병결|조기취업|출석\s*인정|원격수업|만족도|다빈치|핀테크|블록체인/
+  /대회|공모|모집|해킹|페스티벌|인턴|채용|특강|설문|창업|비교과|공지|부트\s*캠프|경진|부트캠프|취업|포상|수상|조기취업|원격수업|만족도|다빈치|핀테크|블록체인/
 
 const STOP = new Set([
   '있는', '있어', '있나요', '있나', '해줘', '알려', '알려줘', '관련', '대한', '해서', '하는',
@@ -48,11 +49,14 @@ function dateLabel(iso: string) {
 
 function scoreNotice(row: NoticeRow, qTokens: string[], department?: string | null) {
   const hay = `${row.title} ${row.tags || ''} ${row.category || ''} ${row.content || ''}`.toLowerCase()
-  let score = 0
+  let tokenScore = 0
   for (const t of qTokens) {
-    if (hay.includes(t)) score += t.length >= 4 ? 3 : 2
+    if (hay.includes(t)) tokenScore += t.length >= 4 ? 3 : 2
   }
-  // 대회·모집 계열 가산
+  // 질문 토큰과 겹치지 않으면 학부·최신만으로 끌어오지 않음
+  if (tokenScore === 0) return 0
+
+  let score = tokenScore
   if (/대회|경진|공모|모집|해킹|페스티벌|인턴|채용|특강|창업/.test(hay) && NOTICE_HINT_RE.test(qTokens.join(' '))) {
     score += 2
   }
@@ -64,7 +68,6 @@ function scoreNotice(row: NoticeRow, qTokens: string[], department?: string | nu
       score += 4
     }
   }
-  // 최신 가중
   const ageDays = (Date.now() - new Date(row.createdAt).getTime()) / 86400000
   if (ageDays >= 0 && ageDays < 45) score += 2
   else if (ageDays < 120) score += 1
@@ -133,12 +136,13 @@ export async function tryHandleNoticeIntent(input: {
       intentCode: 4,
       badge: '공지 안내',
       answer:
-        '지금 쌓아 둔 학부·학교 공지에서는 딱 맞는 글을 못 찾았어요. '
-        + '첨단IT·컴퓨터공학부 학부공지 게시판을 한번 훑어보셔도 좋아요.\n'
+        '관련 공지 없음\n\n'
+        + '질문과 맞는 학부·학교 공지를 찾지 못했어요. '
+        + '게시판에서 직접 확인해 주세요.\n'
         + '첨단IT: https://community.bu.ac.kr/smartit/6301/subview.do\n'
         + '컴퓨터공학부: https://community.bu.ac.kr/info/1788/subview.do',
       sourceUrl: 'https://community.bu.ac.kr/info/1788/subview.do',
-      choices: ['최근 학부 공지 보여줘', '대회·모집 공지 알려줘'],
+      choices: ['대회·모집 공지 알려줘', '인턴 채용 공지'],
     }
   }
 

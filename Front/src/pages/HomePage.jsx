@@ -6,6 +6,7 @@ import {
   DueTodayCard,
   GapActivityCard,
   NextClassCard,
+  NoticeList,
   TodaySchedule,
 } from '../components/dashboard/DashboardSections'
 import DemoControls from '../components/dashboard/DemoControls'
@@ -51,6 +52,7 @@ export default function HomePage() {
         <NextClassCard />
         <TodaySchedule />
         <DeadlineList />
+        <NoticeList limit={2} />
       </div>
     </Layout>
   )

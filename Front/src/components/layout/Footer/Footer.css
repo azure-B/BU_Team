@@ -201,6 +201,31 @@
   cursor: pointer;
 }
 
+.assistant-history__source {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: var(--font-size-badge, 10px);
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.assistant-history__context {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--color-surface-subtle, #f1f5f9);
+  font-size: var(--font-size-badge, 10px);
+  color: var(--color-muted);
+}
+.assistant-history__context summary {
+  cursor: pointer;
+  color: var(--color-text);
+  font-weight: 600;
+}
+.assistant-history__context ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+}
 .assistant-history__ai-link {
   display: block;
   width: 100%;

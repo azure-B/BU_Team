@@ -197,14 +197,14 @@
 }
 .weekly-timetable--weekend .timetable-column--weekend { pointer-events: auto; }
 .timetable-column--selected { background-color: color-mix(in srgb, var(--color-primary-soft) 45%, transparent); }
-/* 주말 표시와 동시에 블록 글씨 페이드아웃 (너비 축소와 동기) */
-.weekly-timetable .timetable-course strong,
-.weekly-timetable .timetable-event strong {
-  opacity: calc(1 - var(--weekend-grow));
+/* 주말 열만 글씨 페이드 — 평일 과목명은 주말 펼쳐도 유지 */
+.timetable-column--weekend .timetable-course strong,
+.timetable-column--weekend .timetable-event strong {
+  opacity: calc(0.35 + var(--weekend-grow) * 0.65);
 }
-.weekly-timetable .timetable-course small,
-.weekly-timetable .timetable-event small {
-  opacity: calc((1 - var(--weekend-grow)) * 0.95);
+.timetable-column--weekend .timetable-course small,
+.timetable-column--weekend .timetable-event small {
+  opacity: calc(0.35 + var(--weekend-grow) * 0.6);
 }
 @media (prefers-reduced-motion: reduce) {
   .weekly-timetable { transition: none; }

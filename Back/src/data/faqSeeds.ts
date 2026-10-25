@@ -164,6 +164,22 @@ export let FAQ_SEEDS: FaqSeed[] = [
     priority: 9,
   },
   {
+    id: 'cafeteria-guide',
+    title: '학식·구내식당 안내',
+    keywords: ['학식', '급식', '구내식당', '식당 메뉴', '오늘 메뉴', '밥집'],
+    required_any: [['학식', '급식', '구내식당', '식당', '메뉴']],
+    answer_template:
+      '캠퍼스 학식·구내식당 안내\n'
+      + '- 밀겨울 백석대점 (복지관 인근)\n'
+      + '- 교수회관 식당 (캠퍼스 안쪽 백반)\n'
+      + '- 안골 (외식글로벌학습관 1층)\n'
+      + '- 기숙사식당 (생활관)\n'
+      + '점심 피크는 보통 11:00~13:30입니다. 당일 메뉴는 식당 현장·생활관 안내를 확인해 주세요.\n'
+      + '캠퍼스 탭에서도 학식·카페 위치를 볼 수 있어요.',
+    source_url: 'https://www.bu.ac.kr/web/3443/subview.do',
+    priority: 14,
+  },
+  {
     id: 'contact-general',
     title: '주요 부서 연락처',
     keywords: ['교무처', '학생처', '재무처', '장학문의', '문의처'],

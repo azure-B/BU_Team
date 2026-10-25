@@ -41,6 +41,8 @@ import {
 import { buildDueTodayPrompt } from '../../utils/dueToday'
 import { fetchGapRouteTimes, resolveRouteOrigin } from '../../utils/campusRouteTimes'
 import { DEMO_GPS_EVENT, getDemoGpsOverride } from '../../utils/demoGps'
+import { getCurrentUser } from '../../api/authApi'
+import { useSchedule } from '../schedule/ScheduleContext'
 import './DashboardSections.css'
 
 /** 데모 GPS 오버라이드 우선, 없으면 브라우저 GPS — 거부/실패 시 null */
@@ -54,10 +56,24 @@ function readCurrentPosition() {
       resolve(null)
       return
     }
+    let done = false
+    const finish = (value) => {
+      if (done) return
+      done = true
+      resolve(value)
+    }
+    // 권한 팝업·거부·지연 시에도 로딩이 멈추도록 하드 타임아웃
+    const hard = setTimeout(() => finish(null), 2500)
     navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60_000 },
+      (pos) => {
+        clearTimeout(hard)
+        finish({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+      },
+      () => {
+        clearTimeout(hard)
+        finish(null)
+      },
+      { enableHighAccuracy: false, timeout: 2000, maximumAge: 60_000 },
     )
   })
 }
@@ -692,7 +708,14 @@ export function NextClassCard() {
   let tipLevel = routeInfo?.latenessLevel || 'SAFE'
   let tipHighlight = routeInfo?.tipHighlight
     || (tipLevel === 'DANGER' ? '지금 바로 출발하세요' : tipLevel === 'WARNING' ? '조금 서두르는 게 좋아요' : '여유 있게 걸어가도 돼요')
-  let tipSub = routeInfo?.tipSub || routeInfo?.message || '이동 시간을 계산하고 있습니다.'
+  let tipSub = routeInfo?.tipSub || routeInfo?.message
+    || (routeOrigin?.lat == null
+      ? '위치 권한이 없어 직전·현재 수업 건물 기준으로 안내해요.'
+      : '이동 시간을 계산하고 있습니다.')
+
+  if (!walkLabel && routeOrigin?.lat == null && !classOngoing) {
+    walkLabel = '위치 없이 시간표 기준'
+  }
 
   if (classOngoing && presence === 'in') {
     walkLabel = `지금 ${buildingName || '이 건물'}에서 수업 중이에요`
@@ -774,11 +797,13 @@ export function NextClassCard() {
           <div>
             <p>오늘의 캠퍼스 이동 &amp; 강의 안내</p>
             <small>
-              {lookingAhead
-                ? '곧 이어질 다음 수업 기준 동선'
-                : classOngoing
-                  ? '지금 진행 중인 수업 기준'
-                  : '실시간 백석대 동선 계산 모듈 연동'}
+              {routeOrigin?.lat == null
+                ? '위치 없이 시간표 기준'
+                : lookingAhead
+                  ? '곧 이어질 다음 수업 기준 동선'
+                  : classOngoing
+                    ? '지금 진행 중인 수업 기준'
+                    : '실시간 백석대 동선 계산 모듈 연동'}
             </small>
           </div>
         </div>
@@ -799,7 +824,12 @@ export function NextClassCard() {
         <p className="location-line">
           <MapPin size={16} weight="fill" aria-hidden="true" />
           <strong>{place}</strong>
-          <span title={walkLabel || undefined}>{walkLabel || '위치·이동 시간 확인 중…'}</span>
+          <span title={walkLabel || undefined}>
+            {walkLabel
+              || (routeOrigin?.lat != null
+                ? '이동 시간을 계산하고 있어요…'
+                : '위치 없이 시간표 기준')}
+          </span>
         </p>
 
         <div className={`class-tip class-tip--${tipTone}`}>
@@ -986,64 +1016,111 @@ export function DeadlineList() {
   )
 }
 
+function noticeMatchesUser(notice, department, grade) {
+  const hay = `${notice.title || ''} ${notice.tags || ''} ${notice.category || ''} ${notice.content || ''}`.replace(/\s/g, '')
+  const dep = String(department || '').replace(/\s/g, '')
+  let score = 0
+  if (dep) {
+    if (dep.includes('컴퓨터') && /컴퓨터|정보보호|소프트웨어|컴공/.test(hay)) score += 3
+    if (dep.includes('첨단') && /첨단|IT|스마트/.test(hay)) score += 3
+    if (hay.includes(dep.slice(0, 4))) score += 2
+  }
+  if (grade && new RegExp(`${grade}\\s*학년|0?${grade}학년`).test(`${notice.title}${notice.content || ''}`)) {
+    score += 2
+  }
+  if (/마감|신청|모집|장학|비교과|인턴|채용|대회/.test(hay)) score += 1
+  return score
+}
+
 /**
- * 주요 공지사항
+ * 학부·학년 맞춤 공지 + 마감 일정 추가
  */
 export function NoticeList({ limit = 5 } = {}) {
   const [notices, setNotices] = useState([])
-  const [total, setTotal] = useState(0)
+  const [addingId, setAddingId] = useState(null)
+  const { addServerSchedule } = useSchedule()
+  const user = getCurrentUser() || null
 
   useEffect(() => {
     let ignore = false
-    getNotices(limit)
+    getNotices(Math.max(limit * 4, 20))
       .then((data) => {
         if (ignore) return
-        const list = Array.isArray(data?.notices) ? data.notices.slice(0, limit) : []
-        setNotices(list)
-        setTotal(data?.total || 0)
+        const raw = Array.isArray(data?.notices) ? data.notices : []
+        const scored = raw
+          .map((n) => ({ ...n, _score: noticeMatchesUser(n, user?.department, user?.grade) }))
+          .filter((n) => n._score > 0)
+          .sort((a, b) => b._score - a._score || String(b.createdAt).localeCompare(String(a.createdAt)))
+        const picked = (scored.length ? scored : raw).slice(0, limit)
+        setNotices(picked)
       })
       .catch(() => {
         if (!ignore) setNotices([])
       })
     return () => { ignore = true }
-  }, [limit])
+  }, [limit, user?.department, user?.grade])
 
-  const recentCount = notices.filter((notice) => isRecentNotice(notice.createdAt)).length
+  const addDeadline = async (notice) => {
+    if (!addServerSchedule || addingId) return
+    setAddingId(notice.id)
+    try {
+      const startAt = new Date()
+      startAt.setDate(startAt.getDate() + 7)
+      startAt.setHours(23, 0, 0, 0)
+      const endAt = new Date(startAt.getTime() + 59 * 60 * 1000)
+      await addServerSchedule({
+        title: `[공지] ${String(notice.title || '공지 마감').slice(0, 40)}`,
+        type: 'PERSONAL',
+        startAt: startAt.toISOString(),
+        endAt: endAt.toISOString(),
+      })
+    } catch (err) {
+      console.warn('공지 일정 추가 실패:', err?.message)
+    } finally {
+      setAddingId(null)
+    }
+  }
 
   return (
     <SectionCard className="dashboard-section">
       <SectionHeading
         icon={Megaphone}
-        title="주요 공지사항"
-        badge={total ? `${total}건` : recentCount ? `${recentCount}건 새글` : undefined}
+        title="너한테 해당되는 공지"
+        badge={notices.length ? `${notices.length}건` : undefined}
         action="전체보기"
         actionTo="https://www.bu.ac.kr/web/3483/subview.do"
       />
       <div className="notice-list">
         {notices.length ? notices.map((notice) => (
-          <a
-            className="notice-row"
-            key={notice.id}
-            href={notice.link || 'https://www.bu.ac.kr/web/3483/subview.do'}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span className="notice-row__content">
+          <div className="notice-row notice-row--card" key={notice.id}>
+            <a
+              className="notice-row__content"
+              href={notice.link || 'https://www.bu.ac.kr/web/3483/subview.do'}
+              target="_blank"
+              rel="noreferrer"
+            >
               <span className="notice-row__meta">
-                <span className="category-chip">{notice.category}</span>
+                <span className="category-chip">{notice.category || '학부'}</span>
                 {isRecentNotice(notice.createdAt) && <span className="notice-badge notice-badge--new">NEW</span>}
-                <span>{notice.source || notice.tags}</span>
+                <span>{notice.source || notice.tags || '맞춤'}</span>
               </span>
               <strong>{notice.title}</strong>
               <small>{noticeMeta(notice.createdAt)}</small>
-            </span>
-            <CaretRight size={17} aria-hidden="true" />
-          </a>
+            </a>
+            <button
+              type="button"
+              className="notice-row__add"
+              disabled={addingId === notice.id}
+              onClick={() => addDeadline(notice)}
+            >
+              {addingId === notice.id ? '추가 중…' : '일정 추가'}
+            </button>
+          </div>
         )) : (
           <div className="deadline-row" style={{ cursor: 'default' }}>
             <span className="deadline-row__content">
-              <strong>표시할 공지가 없습니다.</strong>
-              <small>공지 API에서 불러온 목록이 비어 있습니다.</small>
+              <strong>맞춤 공지가 없어요</strong>
+              <small>학부·관심 키워드에 맞는 글을 찾지 못했어요.</small>
             </span>
           </div>
         )}

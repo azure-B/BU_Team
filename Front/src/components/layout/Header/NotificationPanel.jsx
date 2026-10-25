@@ -1,39 +1,14 @@
-import { useEffect, useRef, useState } from "react"
-import "./NotificationPanel.css"
+import { useEffect, useRef, useState } from 'react'
+import { getNotices, getSchedules, getTasks } from '../../../api/dashboardApi'
+import { getCurrentUser } from '../../../api/authApi'
+import { getDashboardNow, projectSchedulesOntoDay } from '../../../utils/todaySchedules'
+import './NotificationPanel.css'
 
-const MOCK_NOTIFICATIONS = [
-  {
-    id: 1,
-    type: "recommendation",
-    message: "오늘 당신을 위한 추천 카드가 도착했습니다.",
-    time: "8분 전",
-    unread: true,
-  },
-  {
-    id: 2,
-    type: "deadline",
-    message: "남은 과제 마감 기한이 임박했습니다. 등록 서류를 확인하세요.",
-    time: "35분 전",
-    unread: true,
-  },
-  {
-    id: 3,
-    type: "class",
-    message: "15:00 [인공지능기초] 본부동 강의실로 이동할 시간입니다.",
-    time: "2시간 전",
-    unread: false,
-  },
-  {
-    id: 4,
-    type: "notice",
-    message: "2024년 2학기 수강신청 확인 및 변경 기간 안내입니다.",
-    time: "1년 전",
-    unread: false,
-  },
-]
+const STORAGE_KEY = 'baekseok_ai_notifications_v2'
+const READ_KEY = 'baekseok_ai_notifications_read_v2'
 
 function NotifIcon({ type }) {
-  if (type === "recommendation") {
+  if (type === 'recommendation') {
     return (
       <div className="notif-icon notif-icon--star">
         <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -42,7 +17,7 @@ function NotifIcon({ type }) {
       </div>
     )
   }
-  if (type === "deadline") {
+  if (type === 'deadline') {
     return (
       <div className="notif-icon notif-icon--deadline">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -51,7 +26,7 @@ function NotifIcon({ type }) {
       </div>
     )
   }
-  if (type === "class") {
+  if (type === 'class') {
     return (
       <div className="notif-icon notif-icon--class">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -69,59 +44,175 @@ function NotifIcon({ type }) {
   )
 }
 
-const STORAGE_KEY = 'baekseok_ai_notifications_v1'
+function pad2(n) {
+  return String(n).padStart(2, '0')
+}
 
-function getInitialNotifications() {
-  if (typeof window === 'undefined') return MOCK_NOTIFICATIONS
+function timeLabel(date) {
+  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`
+}
+
+function relativeTime(from, now) {
+  const diff = Math.round((now.getTime() - from.getTime()) / 60000)
+  if (diff < 1) return '방금'
+  if (diff < 60) return `${diff}분 전`
+  if (diff < 1440) return `${Math.floor(diff / 60)}시간 전`
+  return `${Math.floor(diff / 1440)}일 전`
+}
+
+function titleOf(item) {
+  return String(item?.displayTitle || item?.title || '일정').replace(/^\[.*?\]\s*/, '')
+}
+
+function readIds() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed
-      }
-    }
-  } catch (e) {
-    console.error('Failed to load notifications from localStorage', e)
+    return new Set(JSON.parse(localStorage.getItem(READ_KEY) || '[]'))
+  } catch {
+    return new Set()
   }
-  return MOCK_NOTIFICATIONS
+}
+
+function saveReadIds(ids) {
+  try {
+    localStorage.setItem(READ_KEY, JSON.stringify([...ids]))
+  } catch { /* ignore */ }
+}
+
+async function buildLiveNotifications() {
+  const now = getDashboardNow()
+  const user = getCurrentUser()
+  const department = user?.department || ''
+  const items = []
+
+  const [schedules, tasks, noticeRes] = await Promise.all([
+    getSchedules().catch(() => []),
+    getTasks().catch(() => []),
+    getNotices(12).catch(() => ({ notices: [] })),
+  ])
+
+  const list = Array.isArray(schedules) ? schedules : []
+  const today = projectSchedulesOntoDay(list, now)
+  const upcoming = today
+    .filter((s) => new Date(s.startAt) > now && (s.type === 'CLASS' || !s.type))
+    .sort((a, b) => new Date(a.startAt) - new Date(b.startAt))
+
+  const next = upcoming[0]
+  if (next) {
+    const start = new Date(next.startAt)
+    const leaveMin = next.buildingId ? 20 : 15
+    const leaveAt = new Date(start.getTime() - leaveMin * 60000)
+    items.push({
+      id: `leave-${next.id}`,
+      type: 'class',
+      message: `다음 수업 출발 시각 ${timeLabel(leaveAt)} · ${titleOf(next)} (${timeLabel(start)})`,
+      time: relativeTime(leaveAt < now ? leaveAt : now, now),
+      sortAt: leaveAt.getTime(),
+    })
+  }
+
+  const taskList = Array.isArray(tasks) ? tasks : (tasks?.tasks || [])
+  for (const task of taskList.slice(0, 20)) {
+    const due = new Date(task.dueAt || task.deadline || task.endAt)
+    if (Number.isNaN(due.getTime())) continue
+    const days = Math.ceil((due.getTime() - now.getTime()) / 86400000)
+    if (days < 0 || days > 3) continue
+    const dLabel = days === 0 ? 'D-Day' : `D-${days}`
+    items.push({
+      id: `task-${task.id}`,
+      type: 'deadline',
+      message: `과제 ${dLabel} · ${task.title || '과제'}`,
+      time: relativeTime(due, now),
+      sortAt: due.getTime(),
+    })
+  }
+
+  const notices = Array.isArray(noticeRes?.notices) ? noticeRes.notices : []
+  const depKey = department.replace(/\s/g, '')
+  const filtered = notices.filter((n) => {
+    const hay = `${n.title || ''} ${n.tags || ''} ${n.category || ''}`.replace(/\s/g, '')
+    if (!depKey) return true
+    if (depKey.includes('컴퓨터') && /컴퓨터|정보보호|소프트웨어/.test(hay)) return true
+    if (depKey.includes('첨단') && /첨단|IT|스마트/.test(hay)) return true
+    return /마감|신청|모집/.test(hay)
+  }).slice(0, 3)
+
+  for (const n of filtered) {
+    const created = new Date(n.createdAt || Date.now())
+    items.push({
+      id: `notice-${n.id}`,
+      type: 'notice',
+      message: `내 학부 대상 공지 · ${n.title}`,
+      time: relativeTime(created, now),
+      sortAt: created.getTime(),
+    })
+  }
+
+  if (!items.length) {
+    items.push({
+      id: 'empty-1',
+      type: 'recommendation',
+      message: '오늘은 급한 알림이 없어요. 홈의 공강 추천을 확인해 보세요.',
+      time: '방금',
+      sortAt: now.getTime(),
+    })
+  }
+
+  const read = readIds()
+  return items
+    .sort((a, b) => b.sortAt - a.sortAt)
+    .slice(0, 12)
+    .map((n) => ({ ...n, unread: !read.has(n.id) }))
 }
 
 export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange }) {
-  const [items, setItems] = useState(getInitialNotifications)
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
   const panelRef = useRef(null)
+
+  useEffect(() => {
+    let ignore = false
+    ;(async () => {
+      try {
+        const live = await buildLiveNotifications()
+        if (!ignore) setItems(live)
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(live.map(({ unread, ...rest }) => rest)))
+        } catch { /* ignore */ }
+      } catch {
+        if (!ignore) setItems([])
+      } finally {
+        if (!ignore) setLoading(false)
+      }
+    })()
+    return () => { ignore = true }
+  }, [])
 
   useEffect(() => {
     if (!isOpen) return
     function handleClickOutside(e) {
       if (panelRef.current && !panelRef.current.contains(e.target)) {
-        if (!e.target.closest(".notif-bell-btn")) {
-          onClose()
-        }
+        if (!e.target.closest('.notif-bell-btn')) onClose()
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen, onClose])
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-    } catch (e) {
-      console.error('Failed to save notifications to localStorage', e)
-    }
     const count = items.filter((n) => n.unread).length
     onUnreadCountChange?.(count)
   }, [items, onUnreadCountChange])
 
   function handleRead(id) {
-    setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, unread: false } : n))
-    )
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)))
+    const read = readIds()
+    read.add(id)
+    saveReadIds(read)
   }
 
   function handleReadAll() {
     setItems((prev) => prev.map((n) => ({ ...n, unread: false })))
+    saveReadIds(new Set(items.map((n) => n.id)))
   }
 
   const unreadCount = items.filter((n) => n.unread).length
@@ -129,13 +220,13 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
   return (
     <>
       <div
-        className={"notif-backdrop" + (isOpen ? " notif-backdrop--visible" : "")}
+        className={'notif-backdrop' + (isOpen ? ' notif-backdrop--visible' : '')}
         aria-hidden="true"
         onClick={onClose}
       />
       <section
         ref={panelRef}
-        className={"notif-panel" + (isOpen ? " notif-panel--open" : "")}
+        className={'notif-panel' + (isOpen ? ' notif-panel--open' : '')}
         aria-label="알림 센터"
         aria-modal="true"
         role="dialog"
@@ -150,20 +241,11 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
           </div>
           <div className="notif-panel__header-actions">
             {unreadCount > 0 && (
-              <button
-                className="notif-panel__read-all-btn"
-                type="button"
-                onClick={handleReadAll}
-              >
+              <button className="notif-panel__read-all-btn" type="button" onClick={handleReadAll}>
                 모두 읽음
               </button>
             )}
-            <button
-              className="notif-panel__close-btn"
-              type="button"
-              aria-label="알림 닫기"
-              onClick={onClose}
-            >
+            <button className="notif-panel__close-btn" type="button" aria-label="알림 닫기" onClick={onClose}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -171,7 +253,9 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
           </div>
         </div>
         <div className="notif-panel__list">
-          {items.length === 0 ? (
+          {loading ? (
+            <div className="notif-panel__empty"><p>알림을 불러오는 중…</p></div>
+          ) : items.length === 0 ? (
             <div className="notif-panel__empty">
               <span aria-hidden="true">🔔</span>
               <p>새로운 알림이 없습니다</p>
@@ -180,21 +264,19 @@ export default function NotificationPanel({ isOpen, onClose, onUnreadCountChange
             items.map((notif) => (
               <article
                 key={notif.id}
-                className={"notif-item" + (notif.unread ? " notif-item--unread" : "")}
+                className={'notif-item' + (notif.unread ? ' notif-item--unread' : '')}
                 onClick={() => handleRead(notif.id)}
                 tabIndex={0}
-                onKeyDown={(e) => e.key === "Enter" && handleRead(notif.id)}
+                onKeyDown={(e) => e.key === 'Enter' && handleRead(notif.id)}
                 role="button"
-                aria-label={"알림: " + notif.message + (notif.unread ? " (읽지 않음)" : "")}
+                aria-label={'알림: ' + notif.message + (notif.unread ? ' (읽지 않음)' : '')}
               >
                 <NotifIcon type={notif.type} />
                 <div className="notif-item__body">
                   <p className="notif-item__message">{notif.message}</p>
                   <span className="notif-item__time">{notif.time}</span>
                 </div>
-                {notif.unread && (
-                  <span className="notif-item__dot" aria-hidden="true" />
-                )}
+                {notif.unread && <span className="notif-item__dot" aria-hidden="true" />}
               </article>
             ))
           )}

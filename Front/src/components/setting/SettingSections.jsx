@@ -6,28 +6,62 @@ import {
   NavigationArrow,
   ShieldCheck,
 } from '@phosphor-icons/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import SectionCard from '../common/SectionCard'
+import { getCurrentUser } from '../../api/authApi'
+import { DEMO_ACCOUNTS } from '../../data/demoAccounts'
 import './SettingSections.css'
 
 const PROFILE_AVATAR =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC7bq76F-IIQaZYUY_LwRfTT1W2ZGsFo7RTz-bWTsLD_dit8j15K9_GTK06hVhaBububojMzrdVnugQTlbeM7IWlmT2XrsFvyeA_H9N8LVaxMkjCcu0Jtcj2jazG3btt75lV4jg0a_QQK1_WPHexjTKohS6lwzk1jXKzTqUBjAUQr0OMincgu6kCv4K3mSxqVqAZzYDuUmaucu725bSz7Lva7DOZlmVA63jOqLnYIj7x7V9LYroa890mA'
 
 const PROFILE_STORAGE_KEY = 'baekseok.profile.v1'
-const DEFAULT_PROFILE = { department: '컴퓨터공학부 (소프트웨어학)', grade: '3', studentId: '20221340', avatar: PROFILE_AVATAR }
+const DEFAULT_PROFILE = {
+  name: '학우',
+  department: '컴퓨터공학부',
+  grade: '3',
+  studentId: '20221001',
+  avatar: PROFILE_AVATAR,
+}
+
+function profileFromSession() {
+  const user = getCurrentUser()
+  if (!user?.studentId) return null
+  const demo = DEMO_ACCOUNTS.find((a) => a.studentId === String(user.studentId))
+  return {
+    name: user.name || demo?.name || DEFAULT_PROFILE.name,
+    department: user.department || DEFAULT_PROFILE.department,
+    grade: String(user.grade || DEFAULT_PROFILE.grade),
+    studentId: String(user.studentId),
+    avatar: PROFILE_AVATAR,
+  }
+}
 
 function readProfile() {
+  const session = profileFromSession()
   try {
     const saved = JSON.parse(window.localStorage.getItem(PROFILE_STORAGE_KEY) || 'null')
-    if (!saved || typeof saved !== 'object') return DEFAULT_PROFILE
+    if (!saved || typeof saved !== 'object') {
+      return session || DEFAULT_PROFILE
+    }
+    const customAvatar = typeof saved.avatar === 'string'
+      && saved.avatar.startsWith('data:image/jpeg;base64,')
+      && saved.avatar.length <= 250_000
+      ? saved.avatar
+      : null
+    // 데모 계정 전환 시 학번이 바뀌면 세션 기준으로 맞춤 (사진만 로컬 유지)
+    if (session && saved.studentId !== session.studentId) {
+      return { ...session, avatar: customAvatar || session.avatar }
+    }
     return {
-      department: typeof saved.department === 'string' ? saved.department : DEFAULT_PROFILE.department,
-      grade: /^[1-6]$/.test(String(saved.grade)) ? String(saved.grade) : DEFAULT_PROFILE.grade,
-      studentId: /^\d{6,12}$/.test(saved.studentId) ? saved.studentId : DEFAULT_PROFILE.studentId,
-      avatar: typeof saved.avatar === 'string' && saved.avatar.startsWith('data:image/jpeg;base64,') && saved.avatar.length <= 250_000 ? saved.avatar : DEFAULT_PROFILE.avatar,
+      name: session?.name || saved.name || DEFAULT_PROFILE.name,
+      department: typeof saved.department === 'string' ? saved.department : (session?.department || DEFAULT_PROFILE.department),
+      grade: /^[1-6]$/.test(String(saved.grade)) ? String(saved.grade) : (session?.grade || DEFAULT_PROFILE.grade),
+      studentId: session?.studentId || (/^\d{6,12}$/.test(saved.studentId) ? saved.studentId : DEFAULT_PROFILE.studentId),
+      avatar: customAvatar || PROFILE_AVATAR,
     }
   } catch {
-    return DEFAULT_PROFILE
+    return session || DEFAULT_PROFILE
   }
 }
 
@@ -70,6 +104,17 @@ export function ProfileSettingCard() {
   const [draft, setDraft] = useState(profile)
   const [photoError, setPhotoError] = useState('')
 
+  useEffect(() => {
+    const sync = () => setProfile(readProfile())
+    sync()
+    window.addEventListener('storage', sync)
+    window.addEventListener('bu-demo-account', sync)
+    return () => {
+      window.removeEventListener('storage', sync)
+      window.removeEventListener('bu-demo-account', sync)
+    }
+  }, [])
+
   const openProfileEditor = () => {
     setDraft(profile)
     setPhotoError('')
@@ -87,7 +132,7 @@ export function ProfileSettingCard() {
       setPhotoError('학번은 숫자 6~12자리로 입력해 주세요.')
       return
     }
-    const nextProfile = { ...draft, department: trimmed }
+    const nextProfile = { ...draft, department: trimmed, name: profile.name }
     try {
       window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(nextProfile))
       setProfile(nextProfile)
@@ -132,12 +177,12 @@ export function ProfileSettingCard() {
       <SectionCard className="setting-card">
         <div className="profile-setting">
           <div className="profile-setting__avatar-wrap">
-            <img src={profile.avatar} alt="홍길동 학우 프로필" className="profile-setting__avatar" />
+            <img src={profile.avatar} alt={`${profile.name || '학우'} 프로필`} className="profile-setting__avatar" />
           </div>
 
           <div className="profile-setting__info">
             <div className="profile-setting__name-row">
-              <span className="profile-setting__name">홍길동 학우</span>
+              <span className="profile-setting__name">{profile.name || '학우'} 학우</span>
               <span className="setting-role-badge">학부생</span>
             </div>
             <div className="profile-setting__details">

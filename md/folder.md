@@ -59,10 +59,12 @@ asdasd/
 │   │   │   ├── SchedulePage.css  — 메인 디자인 토큰 기반 일정 공통 스타일
 │   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
 │   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 영구 반복 수업
+│   │   │   ├── CampusPage.jsx / CampusPage.css — 캠퍼스 탭(학식·카페·학습·활동)
+│   │   │   ├── ChatStatsPage.jsx / ChatStatsPage.css — 비서 처리 통계
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)
-│   │   ├── utils/               — 유틸 함수
+│   │   ├── utils/               — 유틸 (chatStats 등)
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── publish/                 — npm run build 결과 (정적 배포용 HTML)
@@ -82,8 +84,8 @@ asdasd/
 │   │   │   ├── validate.middleware.ts — Zod 요청 유효성 검증 미들웨어
 │   │   │   └── error.middleware.ts    — 전역 에러 핸들러
 │   │   ├── routes/              — auth, schedules, tasks, campus, dashboard
-│   │   ├── data/                — faqSeeds, professors, departmentOffices, academicCalendar, campusBuildings, elevatorWaitSlots
-│   │   ├── services/            — auth, schedule, task, campus, dashboard, chat(router/llm/kbStore/scheduleIntent/campusIntent/noticeIntent)
+│   │   ├── data/                — faqSeeds, professors, departmentOffices, academicCalendar, campusBuildings, elevatorWaitSlots, shuttleTimetable
+│   │   ├── services/            — auth, schedule, task, campus, dashboard, chat(router/llm/kbStore/scheduleIntent/campusIntent/noticeIntent/shuttleIntent/gapIntent)
 │   │   ├── validations/         — schedule, task, campus Zod 스키마
 │   │   ├── utils/               — app-error, captain-calculator
 │   │   ├── app.ts               — Express 앱 구성
