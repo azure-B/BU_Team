@@ -205,26 +205,23 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 - **설명**: 날짜별 학식 메뉴 조회
 
 ### POST /api/v1/campus/route/lateness
-- **설명**: 이동 동선 및 지각 위험도/추천 시설 계산 (조장님 모듈 연동 및 Zod 검증)
-- **요청 Body**:
+- **설명**: GPS·카카오 도보(서버 전용, 지도 UI 없음)·CampusEdge·엘리베이터 슬롯을 합쳐 지각 위험도·권장 도착 시각·상황별 멘트를 반환
+- **요청 Body** (`currentBuildingId` **또는** `lat`+`lng` 중 하나 필수):
   ```json
   {
-    "currentBuildingId": "uuid",
-    "nextClassBuildingId": "uuid",
-    "nextClassStartAt": "2026-10-11T14:00:00.000Z"
+    "currentBuildingId": "bldg-stu",
+    "lat": 36.8385,
+    "lng": 127.184,
+    "nextClassBuildingId": "bldg-hq",
+    "nextClassStartAt": "2026-10-26T04:00:00.000Z",
+    "nowAt": "2026-10-26T03:30:00.000Z"
   }
   ```
-- **응답**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "walkingMinutes": 6,
-      "minutesLeft": 10,
-      "latenessRisk": 50,
-      "latenessLevel": "WARNING",
-      "recommendedFacilities": [ {...} ],
-      "message": "서두르는 것이 좋습니다."
-    }
-  }
-  ```
+- **도보 분**: 캠퍼스 스냅(≈180m)이면 `CampusEdge` 우선, 아니면 카카오 도보 API(`KAKAO_REST_API_KEY`). 키 없거나 실패 시 직선거리 추정
+- **대중교통 전환**: 도보 **30분 이상**이면 `travelMode=transit`. 카카오 대중교통 통합 API 시도(제휴 필요), 실패 시 도보·거리 기반 추정. 표기: `현재 위치에서 대중교통 이용시 약 N분` (`travelLabel`)
+- **보행 속도**: 캠퍼스 언덕 맑은 날 **50 m/min**(≈3.0 km/h, 평지 67 대비 하향). Open-Meteo 현재 강수로 배율 적용 — 이슬비 0.9 / 비 0.8 / 폭우 0.7 (Chang 2011·Deng/Lam 강수-속도 연구 참고). `CampusEdge`는 비만 보정, 카카오 ETA는 언덕+비 보정
+- **엘리베이터**: `elevatorWaitSlots`에서 수업 요일·시각 슬롯 조회 → 권장 도착 = 수업 시작 − 엘리베이터 분
+- **상황(`situation`)**: `LATE` | `CRITICAL` | `URGENT` | `HURRY` | `STEADY` | `RELAXED` — `tipHighlight` / `tipSub` 멘트로 내려감
+- **응답 주요 필드**: `walkingMinutes`, `walkLabel`, `walkSpeedMPerMin`, `weather`, `elevatorMinutes`, `elevatorPeak`, `totalMinutes`, `recommendArriveLabel`, `situation`, `tipHighlight`, `tipSub`, `latenessLevel`
+- **관련**: `Back/src/utils/captain-route-calculator.ts`, `Back/src/utils/kakao-walking.ts`, `Back/src/utils/walk-speed.ts`
+

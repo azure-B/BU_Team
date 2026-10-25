@@ -38,11 +38,10 @@ export const getClassrooms = async (req: Request, res: Response, next: NextFunct
   } catch (error) { next(error); }
 };
 
-// 동선 계산 및 지각 위험도 반환 (조장님 모듈 연동)
+// 동선 계산 및 지각 위험도 반환 (GPS + Kakao 도보 + CampusEdge + 엘리베이터)
 export const getRouteAndLateness = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { currentBuildingId, nextClassBuildingId, nextClassStartAt } = req.body;
-    const data = await calculateRouteAndLateness(currentBuildingId, nextClassBuildingId, nextClassStartAt);
+    const data = await calculateRouteAndLateness(req.body);
     res.json({ success: true, data });
   } catch (error) { next(error); }
 };

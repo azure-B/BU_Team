@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import HomePage from './pages/HomePage'
@@ -7,6 +8,7 @@ import MyPage from './pages/MyPage'
 import SchedulePage from './pages/SchedulePage'
 import { ScheduleProvider } from './components/schedule/ScheduleContext'
 import { AssistantPreferencesProvider } from './components/layout/Footer/AssistantPreferences'
+import { ensureDemoSession } from './utils/demoSession'
 import './styles/global.css'
 
 /**
@@ -39,6 +41,22 @@ function AnimatedRoutes() {
 }
 
 export default function App() {
+  const [sessionReady, setSessionReady] = useState(false)
+
+  useEffect(() => {
+    let ignore = false
+    ensureDemoSession()
+      .catch(() => {})
+      .finally(() => {
+        if (!ignore) setSessionReady(true)
+      })
+    return () => { ignore = true }
+  }, [])
+
+  if (!sessionReady) {
+    return <div className="app-boot" aria-busy="true" style={{ minHeight: '40vh' }} />
+  }
+
   return (
     <BrowserRouter>
       <ScheduleProvider>

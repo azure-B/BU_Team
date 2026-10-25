@@ -84,12 +84,35 @@ export const getScheduleTasks = async (scheduleId) => {
 
 /**
  * 캠퍼스 동선 및 지각 위험도 계산
+ * GPS(lat/lng) 우선 — 카카오 도보(서버) + CampusEdge + 엘리베이터 반영
  */
-export const getRouteAndLateness = async (currentBuildingId, nextClassBuildingId, nextClassStartAt) => {
-  const res = await api.post('/campus/route/lateness', {
-    currentBuildingId,
-    nextClassBuildingId,
-    nextClassStartAt,
-  })
+export const getRouteAndLateness = async ({
+  currentBuildingId,
+  lat,
+  lng,
+  nextClassBuildingId,
+  nextClassStartAt,
+  nowAt,
+} = {}) => {
+  const body = { nextClassBuildingId, nextClassStartAt }
+  if (currentBuildingId) body.currentBuildingId = currentBuildingId
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    body.lat = lat
+    body.lng = lng
+  }
+  if (nowAt) body.nowAt = nowAt
+  const res = await api.post('/campus/route/lateness', body)
   return res.data
+}
+
+/** 건물 목록 */
+export const getBuildings = async () => {
+  const res = await api.get('/campus/buildings')
+  return Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
+}
+
+/** 캠퍼스 시설 (학식·카페 등) */
+export const getFacilities = async (type) => {
+  const res = await api.get('/campus/facilities', { params: type ? { type } : {} })
+  return Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
 }
