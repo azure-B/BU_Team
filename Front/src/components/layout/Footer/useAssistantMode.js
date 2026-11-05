@@ -33,6 +33,9 @@ export function useAssistantMode({ sheetRef, open, expanded, reducedMotion, onMo
     const radius = Math.hypot(Math.max(x, rect.width - x), Math.max(y, rect.height - y)) + 8
     const snapshot = sheet.cloneNode(true)
     snapshot.classList.add('assistant-mode-snapshot')
+    // Allocate the masked layer while the original screen is still unchanged.
+    snapshot.style.maskImage = 'linear-gradient(#000, #000)'
+    snapshot.style.webkitMaskImage = 'linear-gradient(#000, #000)'
     snapshot.inert = true
     snapshot.setAttribute('aria-hidden', 'true')
     for (const element of [snapshot, ...snapshot.querySelectorAll('[id], [role], [aria-live]')]) {
@@ -72,9 +75,7 @@ export function useAssistantMode({ sheetRef, open, expanded, reducedMotion, onMo
       snapshot.style.webkitMaskImage = mask
       wave.style.background = `radial-gradient(circle at ${x}px ${y}px, transparent ${Math.max(0, r - 12)}px, rgba(${color}, ${0.2 * (1 - progress)}) ${r}px, transparent ${r + 5}px)`
     }
-    paint(0)
-    flushSync(() => setLanguageMode((current) => !current))
-    const start = performance.now()
+    let start
     const tick = (now) => {
       const progress = Math.min((now - start) / 780, 1)
       paint(progress)
@@ -84,7 +85,17 @@ export function useAssistantMode({ sheetRef, open, expanded, reducedMotion, onMo
         onModeChange?.(!languageMode)
       }
     }
-    frame = requestAnimationFrame(tick)
+    // Leave one paint opportunity between mounting the snapshot and changing
+    // the live screen. Android Chrome can otherwise expose the new screen
+    // before the large snapshot's first rasterization has completed.
+    frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        paint(0)
+        flushSync(() => setLanguageMode((current) => !current))
+        start = performance.now()
+        frame = requestAnimationFrame(tick)
+      })
+    })
   }
 
   return { languageMode, toggleMode }

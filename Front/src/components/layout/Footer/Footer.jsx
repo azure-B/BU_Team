@@ -203,7 +203,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
 
   useLayoutEffect(() => {
     if (isExpanded && historyRef.current) {
-      historyRef.current.scrollTop = languageMode && !messages.at(-1)?.practice ? 0 : historyRef.current.scrollHeight
+      historyRef.current.scrollTop = historyRef.current.scrollHeight
     }
   }, [messages, isExpanded, geometry?.panel.height, languageMode])
 
@@ -292,12 +292,20 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   const submitQuery = async (event) => {
     event.preventDefault()
     const text = query.trim()
-    if (!text || sending || languageMode) return
+    if (!text || (sending && !languageMode)) return
     setQuery('')
     if (window.matchMedia('(pointer: coarse)').matches) {
       inputRef.current?.blur()
     } else {
       inputRef.current?.focus({ preventScroll: true })
+    }
+    if (languageMode) {
+      setHistoryVisible(true)
+      onExpand()
+      setLanguageMessages((previous) => [...previous, {
+        id: `language-u-${Date.now()}`, role: 'user', text,
+      }])
+      return
     }
     await askAssistant(text, { forceLlm: aiLinked })
   }
@@ -494,12 +502,12 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
             onChange={(event) => setQuery(event.target.value)}
             placeholder="무엇이든 물어보세요"
             aria-label={languageMode ? '언어 트레이닝 질문' : 'AI 비서 질문'}
-            disabled={sending || languageMode}
+            disabled={sending && !languageMode}
           />
           <button className="assistant-input__voice" type="button" aria-label="음성 명령" disabled={languageMode}>
             <Microphone size={19} weight="fill" aria-hidden="true" />
           </button>
-          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={sending || languageMode || !query.trim()}>
+          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={(sending && !languageMode) || !query.trim()}>
             <PaperPlaneTilt size={17} weight="fill" aria-hidden="true" />
           </button>
         </form>
