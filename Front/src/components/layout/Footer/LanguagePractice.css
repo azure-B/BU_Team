@@ -1,0 +1,122 @@
+.language-practice {
+  align-self: stretch;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+
+.language-practice__sentence {
+  padding: 14px 12px;
+  text-align: center;
+  background: var(--color-primary-soft);
+}
+
+.language-practice__sentence p {
+  margin: 0 0 6px;
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.language-practice__sentence h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-section-title, 14px);
+  font-weight: 800;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.language-practice__speaking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px;
+  background: var(--color-surface-subtle);
+}
+
+.language-practice__timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-body, 12px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.language-practice__timer > span:first-child {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-muted);
+}
+
+.language-practice__timer > span:last-child {
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.language-practice__waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 34px;
+}
+
+.language-practice__waveform span {
+  width: 4px;
+  border-radius: 999px;
+  background: #4c84e8;
+}
+
+.language-practice__waveform span:nth-child(3n + 1) {
+  opacity: 0.55;
+}
+
+.language-practice__feedback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-subtext, 11px);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.language-practice__feedback > span {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #00236f, #2563eb);
+  color: #fff;
+  box-shadow: 0 4px 12px rgb(37 99 235 / 0.2);
+}
+
+.language-practice__feedback:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+.language-practice__note {
+  margin: 0;
+  font-size: var(--font-size-badge, 10px);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.assistant-history__message--practice {
+  align-self: stretch;
+  max-width: 100%;
+}
