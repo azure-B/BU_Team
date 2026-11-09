@@ -1,4 +1,5 @@
 import {
+  Brain,
   CalendarBlank,
   Compass,
   House,
@@ -18,6 +19,8 @@ import { postChat } from '../../../api/chatApi'
 import { getCurrentUser } from '../../../api/authApi'
 import { recordChatStat } from '../../../utils/chatStats'
 import { useAssistantPreferences } from './AssistantPreferences'
+import { useAssistantMode } from './useAssistantMode'
+import LanguagePractice, { PRACTICE_LANGUAGES } from './LanguagePractice'
 import './Footer.css'
 
 /** 추천 질문 풀 — 열 때마다 3개 랜덤 */
@@ -50,6 +53,7 @@ function pickQuickQuestions(count = 3) {
 
 const PROFESSOR_NAME_HINT = /교수|님$/
 const ASSISTANT_CHAT_KEY = 'baekseok.assistant.chat.v1'
+const LANGUAGE_CHAT_KEY = 'baekseok.assistant.language.v1'
 const ASSISTANT_CHAT_MAX = 80
 
 function loadAssistantChat() {
@@ -57,7 +61,7 @@ function loadAssistantChat() {
     const raw = JSON.parse(window.localStorage.getItem(ASSISTANT_CHAT_KEY) || 'null')
     if (!raw || typeof raw !== 'object') return { messages: [], aiLinked: false }
     const messages = Array.isArray(raw.messages)
-      ? raw.messages.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.text === 'string').slice(-ASSISTANT_CHAT_MAX)
+      ? raw.messages.filter((m) => m && !m.practice && (m.role === 'user' || m.role === 'assistant') && typeof m.text === 'string').slice(-ASSISTANT_CHAT_MAX)
       : []
     return { messages, aiLinked: Boolean(raw.aiLinked) }
   } catch {
@@ -65,17 +69,37 @@ function loadAssistantChat() {
   }
 }
 
+function loadLanguageChat() {
+  try {
+    const raw = JSON.parse(window.localStorage.getItem(LANGUAGE_CHAT_KEY) || 'null')
+    // Preserve practice previews created before the two histories were separated.
+    const legacy = raw === null ? JSON.parse(window.localStorage.getItem(ASSISTANT_CHAT_KEY) || 'null') : null
+    const messages = Array.isArray(raw?.messages) ? raw.messages : legacy?.messages?.filter((m) => m?.practice)
+    return Array.isArray(messages)
+      ? messages.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.text === 'string').slice(-ASSISTANT_CHAT_MAX)
+      : []
+  } catch {
+    return []
+  }
+}
+
 function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef }) {
-  const isExpanded = mode === 'expanded'
-  const [query, setQuery] = useState('')
-  const [messages, setMessages] = useState(() => loadAssistantChat().messages)
+  const isExpanded = mode !== 'collapsed'
+  const [chatQuery, setChatQuery] = useState('')
+  const [languageQuery, setLanguageQuery] = useState('')
+  const [chatMessages, setChatMessages] = useState(() => loadAssistantChat().messages)
+  const [languageMessages, setLanguageMessages] = useState(loadLanguageChat)
+  const [practiceLanguage, setPracticeLanguage] = useState('en')
+  const [practiceIndex, setPracticeIndex] = useState(0)
+  const activeLanguage = PRACTICE_LANGUAGES.find((item) => item.code === practiceLanguage)
+  const practiceSentence = activeLanguage.sentences[practiceIndex]
   const [sending, setSending] = useState(false)
   /** 즉시 응답 불만 시 이후(또는 재질문) GPT 우선 */
   const [aiLinked, setAiLinked] = useState(() => loadAssistantChat().aiLinked)
   const [quickQuestions, setQuickQuestions] = useState(() => pickQuickQuestions(3))
   const { syncServerSchedules } = useSchedule() || {}
   const lastUserQuestionRef = useRef('')
-  const [historyVisible, setHistoryVisible] = useState(() => mode === 'expanded')
+  const [historyVisible, setHistoryVisible] = useState(() => mode !== 'collapsed')
   const inputRef = useRef(null)
   const handleRef = useRef(null)
   const historyRef = useRef(null)
@@ -84,6 +108,18 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   const sheetRef = useRef(null)
   const hasOpenedRef = useRef(false)
   const reducedMotion = useReducedMotion()
+  const { languageMode, toggleMode } = useAssistantMode({
+    sheetRef, open, expanded: isExpanded, reducedMotion,
+    onModeChange: (nextLanguageMode) => {
+      if (nextLanguageMode && !isExpanded) {
+        setHistoryVisible(true)
+        onExpand()
+      }
+    },
+  })
+  const query = languageMode ? languageQuery : chatQuery
+  const setQuery = languageMode ? setLanguageQuery : setChatQuery
+  const messages = languageMode ? languageMessages : chatMessages
   const [geometry, setGeometry] = useState(null)
 
   useLayoutEffect(() => {
@@ -98,6 +134,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
       const safeBottom = parseFloat(getComputedStyle(sheetRef.current).scrollMarginBottom) || 10
       const viewportHeight = viewport?.height ?? window.innerHeight
       const availableHeight = Math.max(0, viewportHeight - safeBottom - 10)
+      const fullHeight = Math.max(0, viewportHeight - safeBottom * 2)
       const contentStyle = getComputedStyle(contentRef.current)
       const compactHeight = [...contentRef.current.children]
         .filter((child) => child !== historyRef.current)
@@ -106,7 +143,9 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           return total + child.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom)
         }, parseFloat(contentStyle.paddingTop) + parseFloat(contentStyle.paddingBottom) + 12 + 14)
       // Expanded height depends only on the viewport, never the message count.
-      const height = Math.min(isExpanded ? 600 : compactHeight, availableHeight)
+      const height = mode === 'full'
+        ? fullHeight
+        : Math.min(isExpanded ? 600 : compactHeight, availableHeight, fullHeight)
       setGeometry({
         button: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
         panel: {
@@ -132,7 +171,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
       window.visualViewport?.removeEventListener('resize', measure)
       window.visualViewport?.removeEventListener('scroll', measure)
     }
-  }, [triggerRef, isExpanded])
+  }, [triggerRef, isExpanded, mode])
 
   useEffect(() => {
     if (!open) return undefined
@@ -163,8 +202,10 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   }, [open, onClose])
 
   useLayoutEffect(() => {
-    if (isExpanded && historyRef.current) historyRef.current.scrollTop = historyRef.current.scrollHeight
-  }, [messages, isExpanded, geometry?.panel.height])
+    if (isExpanded && historyRef.current) {
+      historyRef.current.scrollTop = historyRef.current.scrollHeight
+    }
+  }, [messages, isExpanded, geometry?.panel.height, languageMode])
 
   useLayoutEffect(() => {
     if (open && isExpanded) setHistoryVisible(true)
@@ -174,12 +215,20 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
     try {
       window.localStorage.setItem(
         ASSISTANT_CHAT_KEY,
-        JSON.stringify({ messages: messages.slice(-ASSISTANT_CHAT_MAX), aiLinked }),
+        JSON.stringify({ messages: chatMessages.slice(-ASSISTANT_CHAT_MAX), aiLinked }),
       )
     } catch {
       /* ignore quota */
     }
-  }, [messages, aiLinked])
+  }, [chatMessages, aiLinked])
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(LANGUAGE_CHAT_KEY, JSON.stringify({ messages: languageMessages.slice(-ASSISTANT_CHAT_MAX) }))
+    } catch {
+      /* ignore quota */
+    }
+  }, [languageMessages])
 
   const toggleExpanded = () => {
     if (!isExpanded) setHistoryVisible(true)
@@ -187,12 +236,12 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   }
 
   const askAssistant = async (text, { forceLlm = false, showUser = true } = {}) => {
-    if (!text || sending) return
+    if (!text || sending || languageMode) return
     setHistoryVisible(true)
     onExpand()
     lastUserQuestionRef.current = text
     if (showUser) {
-      setMessages((previous) => [...previous, { id: `u-${Date.now()}`, role: 'user', text }])
+      setChatMessages((previous) => [...previous, { id: `u-${Date.now()}`, role: 'user', text }])
     }
     setSending(true)
     try {
@@ -207,7 +256,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
       const badge = data?.badge || ''
       const botText = badge ? `[${badge}]\n${answer}` : answer
       recordChatStat({ route: data?.route, latencyMs: data?.latencyMs })
-      setMessages((previous) => [
+      setChatMessages((previous) => [
         ...previous,
         {
           id: `a-${Date.now()}`,
@@ -227,7 +276,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
         syncServerSchedules()
       }
     } catch {
-      setMessages((previous) => [
+      setChatMessages((previous) => [
         ...previous,
         {
           id: `a-${Date.now()}`,
@@ -243,21 +292,44 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   const submitQuery = async (event) => {
     event.preventDefault()
     const text = query.trim()
-    if (!text || sending) return
+    if (!text || (sending && !languageMode)) return
     setQuery('')
     if (window.matchMedia('(pointer: coarse)').matches) {
       inputRef.current?.blur()
     } else {
       inputRef.current?.focus({ preventScroll: true })
     }
+    if (languageMode) {
+      setHistoryVisible(true)
+      onExpand()
+      setLanguageMessages((previous) => [...previous, {
+        id: `language-u-${Date.now()}`, role: 'user', text,
+      }])
+      return
+    }
     await askAssistant(text, { forceLlm: aiLinked })
   }
 
   const connectAi = async () => {
     const prev = lastUserQuestionRef.current
-    if (!prev || sending) return
+    if (!prev || sending || languageMode) return
     setAiLinked(true)
     await askAssistant(prev, { forceLlm: true, showUser: true })
+  }
+
+  const previewLanguageFeedback = () => {
+    const id = `practice-${Date.now()}`
+    setHistoryVisible(true)
+    onExpand()
+    setLanguageMessages((previous) => [...previous,
+      { id: `${id}-user`, role: 'user', text: practiceSentence, practice: true },
+      {
+        id: `${id}-feedback`, role: 'assistant', practice: true,
+        text: practiceLanguage === 'en' && practiceIndex === 0
+          ? '피드백 예시\n“I am still hungry.”는 문법에 맞는 표현이에요.\n\nI am을 I’m으로 줄여 “I’m still hungry.”라고 말할 수도 있어요.\n\n실제 발음과 유창성 평가는 음성·AI 연결 후 제공돼요.'
+          : `피드백 예시\n오늘의 ${activeLanguage.label} 문장은 “${practiceSentence}”예요.\n\n실제 발음과 유창성 평가는 음성·AI 연결 후 제공돼요.`,
+      },
+    ])
   }
 
   return (
@@ -266,6 +338,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
         tabIndex={-1} aria-hidden={!open} initial={false}
         animate={{ opacity: open ? 1 : 0 }} transition={{ duration: reducedMotion ? 0 : 0.25 }} />
       <motion.section ref={sheetRef} id="assistant-dialog" className="assistant-sheet"
+        data-assistant-mode={languageMode ? 'language' : 'chat'}
         data-state={open ? mode : 'off'}
         role={open ? 'dialog' : undefined} aria-modal={open ? true : undefined}
         aria-labelledby={open ? 'assistant-title' : undefined} aria-hidden={!open}
@@ -293,32 +366,34 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           animate={{ opacity: open ? 1 : 0, filter: open ? 'blur(0px)' : 'blur(4px)', y: open ? 0 : 6 }}
           transition={{ duration: reducedMotion ? 0 : open ? 0.2 : 0.09, delay: open && !reducedMotion ? 0.18 : 0 }}>
         <button ref={handleRef} className="assistant-sheet__handle" type="button"
-          aria-label={isExpanded ? 'AI 비서 접기' : 'AI 비서 펼치기'}
+          aria-label={mode === 'collapsed' ? 'AI 비서 펼치기' : mode === 'expanded' ? 'AI 비서 최대 크기로 펼치기' : 'AI 비서 접기'}
           aria-expanded={isExpanded} aria-controls="assistant-history" onClick={toggleExpanded}>
           <span aria-hidden="true" />
         </button>
         <div className="assistant-sheet__header">
           <div className="assistant-sheet__title">
-            <span><Sparkle size={19} weight="fill" aria-hidden="true" /></span>
+            <span>{languageMode ? <Brain size={19} weight="regular" aria-hidden="true" /> : <Sparkle size={19} weight="fill" aria-hidden="true" />}</span>
             <div>
               <div className="assistant-sheet__title-line">
-                <h2 id="assistant-title">백석AI 비서</h2>
+                <h2 id="assistant-title">{languageMode ? '백석AI 언어 트레이닝' : '백석AI 비서'}</h2>
               </div>
-              <p>캠퍼스 일정, 학사일정, 과제 질의가 가능해요</p>
+              <p>{languageMode ? '언어 공부, 언어 발음 연습, 질의가 가능해요.' : '캠퍼스 일정, 학사일정, 과제 질의가 가능해요.'}</p>
             </div>
           </div>
           {messages.length > 0 && (
             <button
-              className="sheet-close"
+              className="sheet-close sheet-close--trash"
               type="button"
               aria-label="대화 내역 지우기"
               title="대화 내역 지우기"
               onClick={() => {
-                setMessages([])
-                setAiLinked(false)
-                try { window.localStorage.removeItem(ASSISTANT_CHAT_KEY) } catch { /* ignore */ }
+                if (languageMode) {
+                  setLanguageMessages([])
+                } else {
+                  setChatMessages([])
+                  setAiLinked(false)
+                }
               }}
-              style={{ marginRight: 4 }}
             >
               <Trash size={16} weight="bold" aria-hidden="true" />
             </button>
@@ -328,13 +403,14 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           </button>
         </div>
 
-        <div ref={historyRef} id="assistant-history" className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''} ${historyVisible ? 'assistant-history--visible' : ''}`}
-          role="log" aria-label="AI 비서 대화 내역" aria-live="polite" aria-hidden={!isExpanded}
+        <div key={languageMode ? 'language-history' : 'chat-history'} ref={historyRef} id="assistant-history" className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''} ${historyVisible ? 'assistant-history--visible' : ''}`}
+          role="log" aria-label={languageMode ? '언어 트레이닝 대화 내역' : 'AI 비서 대화 내역'} aria-live="polite" aria-hidden={!isExpanded}
           inert={!isExpanded} tabIndex={isExpanded ? 0 : -1}>
           <div ref={historyContentRef} className="assistant-history__messages">
+            {languageMode && <LanguagePractice onPreview={previewLanguageFeedback} language={activeLanguage} sentence={practiceSentence} />}
             {messages.map((message) => (
-              <div key={message.id} className={`assistant-history__message${message.role === 'assistant' ? ' assistant-history__message--bot' : ''}`}>
-                <span className="assistant-history__speaker">{message.role === 'assistant' ? '비서' : '나'}</span>
+              <div key={message.id} className={`assistant-history__message${message.role === 'assistant' ? ' assistant-history__message--bot' : ''}${message.practice && message.role === 'assistant' ? ' assistant-history__message--practice' : ''}`}>
+                <span className="assistant-history__speaker">{message.role === 'assistant' ? (message.practice ? '언어 트레이닝 · 예시' : '비서') : (message.practice ? '연습 문장 · 예시' : '나')}</span>
                 <p className="assistant-history__text">{message.text}</p>
                 {message.sourceUrl && (
                   <a
@@ -412,38 +488,59 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
                 )}
               </div>
             ))}
-            {messages.length === 0 && <p className="assistant-history__hint">메세지를 입력하고 전송해 주세요.</p>}
-            {aiLinked && <p className="assistant-history__ai-badge">AI 연결됨</p>}
-            {sending && <p className="assistant-history__hint">답변 준비 중…</p>}
+            {messages.length === 0 && !languageMode && <p className="assistant-history__hint">메세지를 입력하고 전송해 주세요.</p>}
+            {aiLinked && !languageMode && <p className="assistant-history__ai-badge">AI 연결됨</p>}
+            {sending && !languageMode && <p className="assistant-history__hint">답변 준비 중…</p>}
           </div>
         </div>
 
-        <form className="assistant-input" onSubmit={submitQuery}>
+        <form key={languageMode ? 'language-input' : 'chat-input'} className="assistant-input" onSubmit={submitQuery}>
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="무엇이든 물어보세요"
-            aria-label="AI 비서 질문"
-            disabled={sending}
+            aria-label={languageMode ? '언어 트레이닝 질문' : 'AI 비서 질문'}
+            disabled={sending && !languageMode}
           />
-          <button className="assistant-input__voice" type="button" aria-label="음성 명령">
+          <button className="assistant-input__voice" type="button" aria-label="음성 명령" disabled={languageMode}>
             <Microphone size={19} weight="fill" aria-hidden="true" />
           </button>
-          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={sending || !query.trim()}>
+          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={(sending && !languageMode) || !query.trim()}>
             <PaperPlaneTilt size={17} weight="fill" aria-hidden="true" />
           </button>
         </form>
 
         <div className="quick-questions">
-          <p><Sparkle size={14} weight="fill" aria-hidden="true" /> 추천 질문</p>
-          <div className="quick-questions__track">
-            {quickQuestions.map(({ label, icon: Icon }) => (
-              <button type="button" key={label} onClick={() => setQuery(label)}>
-                <Icon size={14} weight="fill" aria-hidden="true" /> {label}
-              </button>
-            ))}
+          <div className="quick-questions__heading">
+            <p><Sparkle size={14} weight="fill" aria-hidden="true" /> {languageMode ? '언어 변경' : '추천 질문'}</p>
+            {languageMode && <button className="language-next" type="button" onClick={() => {
+              setPracticeIndex((current) => (current + 1) % activeLanguage.sentences.length)
+              if (historyRef.current) historyRef.current.scrollTop = 0
+            }}>다음 문제 →</button>}
+          </div>
+          <div className="quick-questions__row">
+            <div className="quick-questions__track" role={languageMode ? 'group' : undefined} aria-label={languageMode ? '연습 언어 선택' : undefined}>
+              {languageMode ? PRACTICE_LANGUAGES.map(({ code, label }) => (
+                <button key={code} type="button" aria-pressed={practiceLanguage === code} onClick={() => {
+                  setPracticeLanguage(code)
+                  setPracticeIndex(0)
+                  if (historyRef.current) historyRef.current.scrollTop = 0
+                }}>{label}</button>
+              )) : quickQuestions.map(({ label, icon: Icon }) => (
+                <button type="button" key={label} disabled={languageMode} onClick={() => setQuery(label)}>
+                  <Icon size={14} weight="fill" aria-hidden="true" /> {label}
+                </button>
+              ))}
+            </div>
+            <button className="assistant-mode-toggle" type="button" onClick={toggleMode}
+              aria-label={languageMode ? '백석AI 비서 모드로 전환' : '언어 트레이닝 모드로 전환'}
+              title={languageMode ? '백석AI 비서 모드로 전환' : '언어 트레이닝 모드로 전환'}>
+              <span className={`assistant-mode-toggle__icon ${languageMode ? '' : 'assistant-mode-toggle__icon--language'}`}>
+                {languageMode ? <Sparkle size={18} weight="fill" aria-hidden="true" /> : <Brain size={18} weight="regular" aria-hidden="true" />}
+              </span>
+            </button>
           </div>
         </div>
         </motion.div>
@@ -520,8 +617,8 @@ export default function Footer() {
         </nav>
       </footer>
       <AssistantSheet open={assistantOpen} mode={assistantMode} onClose={closeAssistant}
-        onToggle={() => setAssistantMode((current) => current === 'expanded' ? 'collapsed' : 'expanded')}
-        onExpand={() => setAssistantMode('expanded')} triggerRef={triggerRef} />
+        onToggle={() => setAssistantMode((current) => current === 'collapsed' ? 'expanded' : current === 'expanded' ? 'full' : 'collapsed')}
+        onExpand={() => setAssistantMode((current) => current === 'collapsed' ? 'expanded' : current)} triggerRef={triggerRef} />
     </>
   )
 }
