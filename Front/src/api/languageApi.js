@@ -27,9 +27,11 @@ export const postLanguageEval = async ({
     const res = await api.post(
       '/language/eval',
       { tool, refText, audioBase64, mimeType, locale },
-      { timeout: 60000 },
+      { timeout: 120000 },
     )
-    return res?.data || res
+    // axios 인터셉터: { success, data, message }
+    if (res?.data && typeof res.data === 'object') return res.data
+    return res
   } catch (err) {
     return {
       ok: false,

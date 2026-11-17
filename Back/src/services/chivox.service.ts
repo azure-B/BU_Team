@@ -2,7 +2,9 @@
  * Chivox MCP / Function-Calling 프록시
  * - 키: .env 의 CHIVOX 또는 CHIVOX_API_KEY / MCP_API_KEY (Bearer)
  * - 문서: https://www.chivox.com/en/docs/mcp
+ * - 점수 JSON → askPronunciationCoach 2차 패스 (LLM 코칭 문장)
  */
+import { askPronunciationCoach } from './chat/llm'
 
 export type ChivoxEvalInput = {
   /** Chivox FC/MCP 툴 이름 (예: en_sentence_eval, en_open_eval) */
@@ -24,6 +26,8 @@ export type ChivoxEvalResult = {
   details?: unknown[]
   raw?: unknown
   feedbackKo: string
+  /** llm = GPT 코칭, template = 규칙 기반 폴백 */
+  feedbackSource?: 'llm' | 'template'
   error?: string
 }
 
@@ -108,46 +112,102 @@ function stripDataUrl(b64: string) {
   return m ? m[1] : raw
 }
 
+/** WAV PCM 만 초 단위로 안전하게 자르기 (base64 중간 절단 금지) */
+function trimWavBase64(b64: string, maxSeconds = 12): string {
+  let buf: Buffer
+  try {
+    buf = Buffer.from(b64, 'base64')
+  } catch {
+    return b64
+  }
+  if (buf.length < 44 || buf.toString('ascii', 0, 4) !== 'RIFF') return b64
+  const sampleRate = buf.readUInt32LE(24) || 16000
+  const channels = buf.readUInt16LE(22) || 1
+  const bits = buf.readUInt16LE(34) || 16
+  const bytesPerFrame = Math.max(1, (bits / 8) * channels)
+  const maxData = Math.floor(sampleRate * maxSeconds) * bytesPerFrame
+  const dataSize = buf.readUInt32LE(40)
+  if (!Number.isFinite(dataSize) || dataSize <= maxData) return b64
+  const trimmed = Buffer.alloc(44 + maxData)
+  buf.copy(trimmed, 0, 0, 44)
+  buf.copy(trimmed, 44, 44, 44 + maxData)
+  trimmed.writeUInt32LE(36 + maxData, 4)
+  trimmed.writeUInt32LE(maxData, 40)
+  return trimmed.toString('base64')
+}
+
 function asNum(v: unknown): number | undefined {
   const n = Number(v)
   return Number.isFinite(n) ? n : undefined
 }
 
-/** FC 응답은 `{ name, result: { result: { overall, ... } } }` 형태 */
+function providerErrorText(payload: any): string {
+  if (!payload) return ''
+  if (payload?.isError) {
+    const parts = Array.isArray(payload.content)
+      ? payload.content.map((c: any) => c?.text).filter(Boolean)
+      : []
+    return parts.join(' ') || 'tool error'
+  }
+  if (typeof payload === 'string') return payload
+  return String(payload?.error?.message || payload?.message || '')
+}
+
+function feedbackFromProviderError(detail: string) {
+  if (/api key disabled|authentication_error|401|403/i.test(detail)) {
+    return '말하기 평가 서비스에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.'
+  }
+  if (/53000|core is timeout|timeout|AbortError/i.test(detail)) {
+    return '평가가 시간 초과됐어요. 문장을 5초 안으로 짧게 다시 녹음해 주세요.'
+  }
+  if (/评测失败|request error|empty result/i.test(detail)) {
+    return '음성을 처리하지 못했어요. 조금 더 크게, 짧게 다시 녹음해 주세요.'
+  }
+  return '말하기 평가 요청이 실패했어요. 잠시 후 다시 시도해 주세요.'
+}
+
+/** FC: `{ name, result: { result: { overall } } }` / MCP: `{ content:[{ text: "{...}" }] }` */
 function unwrapScoreRoot(payload: any): any {
-  let cur: any = payload
-  for (let i = 0; i < 6; i += 1) {
-    if (cur == null) return null
+  const queue: any[] = [payload]
+  const seen = new Set<any>()
+
+  while (queue.length) {
+    let cur = queue.shift()
+    if (cur == null || seen.has(cur)) continue
+    if (typeof cur === 'object') seen.add(cur)
+
     if (typeof cur === 'string') {
+      const trimmed = cur.trim()
+      if (!trimmed) continue
       try {
-        cur = JSON.parse(cur)
-        continue
+        queue.push(JSON.parse(trimmed))
       } catch {
-        return null
+        /* ignore non-json text */
+      }
+      continue
+    }
+    if (typeof cur !== 'object') continue
+
+    if (asNum((cur as any).overall) != null) return cur
+
+    if (Array.isArray((cur as any).content)) {
+      for (const part of (cur as any).content) {
+        if (part?.text) queue.push(part.text)
+        else queue.push(part)
       }
     }
-    if (typeof cur !== 'object') return null
-    if (asNum(cur.overall) != null) return cur
-    if (Array.isArray(cur.content) && cur.content[0]?.text) {
-      cur = cur.content[0].text
-      continue
-    }
-    if (cur.result != null) {
-      cur = cur.result
-      continue
-    }
-    if (cur.data != null) {
-      cur = cur.data
-      continue
-    }
-    break
+    if ((cur as any).result != null) queue.push((cur as any).result)
+    if ((cur as any).data != null) queue.push((cur as any).data)
+    if ((cur as any).structuredContent != null) queue.push((cur as any).structuredContent)
   }
-  return cur
+  return null
 }
 
 function normalizePayload(payload: any): Partial<ChivoxEvalResult> & { tip?: string } {
   const root = unwrapScoreRoot(payload)
-  if (!root || typeof root !== 'object') return { raw: payload }
+  if (!root || typeof root !== 'object') {
+    return { raw: payload }
+  }
 
   const fluency = root?.fluency
   const tip = String(root?.info?.tips || root?.info?.tip || root?.tips || '').trim()
@@ -229,6 +289,43 @@ function buildFeedbackKo(
   return lines.join('\n')
 }
 
+function compactScoresForLlm(
+  refText: string,
+  scores: Partial<ChivoxEvalResult> & { tip?: string },
+) {
+  const weakWords = Array.isArray(scores.details)
+    ? scores.details
+      .map((d: any) => ({
+        word: String(d?.char || d?.word || ''),
+        score: asNum(d?.score),
+        phones: Array.isArray(d?.phone)
+          ? d.phone
+            .map((p: any) => ({
+              phoneme: p?.phoneme || p?.char,
+              score: asNum(p?.score),
+              dp_type: p?.dp_type,
+              error: p?.phoneme_error || undefined,
+            }))
+            .filter((p: any) => p.phoneme && p.score != null && p.score < 75)
+            .slice(0, 4)
+          : [],
+      }))
+      .filter((d) => d.word && d.score != null && (d.score < 75 || d.phones.length))
+      .slice(0, 8)
+    : []
+
+  return {
+    refText,
+    overall: scores.overall,
+    accuracy: scores.accuracy,
+    pron: scores.pron,
+    integrity: scores.integrity,
+    fluency: scores.fluency,
+    tip: scores.tip || undefined,
+    weakWords,
+  }
+}
+
 async function callViaFc(tool: string, args: Record<string, unknown>, key: string) {
   const res = await fetch('https://fc-global.cloud.chivox.com/v1/call', {
     method: 'POST',
@@ -238,12 +335,16 @@ async function callViaFc(tool: string, args: Record<string, unknown>, key: strin
       Accept: 'application/json',
     },
     body: JSON.stringify({ name: tool, arguments: args }),
-    signal: AbortSignal.timeout(45000),
+    signal: AbortSignal.timeout(90000),
   })
   const json: any = await res.json().catch(() => ({}))
   if (!res.ok) {
     const msg = json?.error?.message || json?.message || (typeof json?.error === 'string' ? json.error : null)
     throw new Error(msg || `Chivox FC HTTP ${res.status}`)
+  }
+  // 빈 result 는 파싱 실패로 간주 → 상위에서 MCP 재시도
+  if (json?.result == null && asNum(json?.overall) == null) {
+    throw new Error('Chivox FC empty result')
   }
   return json
 }
@@ -284,22 +385,38 @@ async function callViaMcp(tool: string, args: Record<string, unknown>, key: stri
       method: 'tools/call',
       params: { name: tool, arguments: args },
     }),
-    signal: AbortSignal.timeout(45000),
+    signal: AbortSignal.timeout(90000),
   })
   const text = await callRes.text()
   let json: any = null
   try {
     json = JSON.parse(text)
   } catch {
-    const line = text.split(/\r?\n/).find((l) => l.startsWith('data:'))
-    if (line) json = JSON.parse(line.slice(5).trim())
+    const dataLines = text
+      .split(/\r?\n/)
+      .filter((l) => l.startsWith('data:'))
+      .map((l) => l.slice(5).trim())
+      .filter(Boolean)
+    for (const line of dataLines.reverse()) {
+      try {
+        json = JSON.parse(line)
+        if (json) break
+      } catch {
+        /* try previous data line */
+      }
+    }
   }
   const errMsg = json?.error?.message || (typeof json?.error === 'string' ? json.error : null)
   if (!callRes.ok) {
     throw new Error(errMsg || `Chivox MCP HTTP ${callRes.status}`)
   }
   if (json?.error) throw new Error(errMsg || 'Chivox MCP error')
-  return json?.result ?? json
+  const result = json?.result ?? json
+  const toolErr = providerErrorText(result)
+  if (result?.isError || /评测失败|53000|core is timeout/i.test(toolErr)) {
+    throw new Error(toolErr || 'Chivox MCP tool error')
+  }
+  return result
 }
 
 export async function evaluateSentence(input: ChivoxEvalInput): Promise<ChivoxEvalResult> {
@@ -323,7 +440,7 @@ export async function evaluateSentence(input: ChivoxEvalInput): Promise<ChivoxEv
     }
   }
 
-  const audio_base64 = stripDataUrl(input.audioBase64)
+  let audio_base64 = stripDataUrl(input.audioBase64)
   if (!audio_base64 || audio_base64.length < 80) {
     return {
       ok: false,
@@ -332,6 +449,8 @@ export async function evaluateSentence(input: ChivoxEvalInput): Promise<ChivoxEv
       error: 'audio too short',
     }
   }
+  // 긴 녹음은 WAV PCM 기준으로만 안전하게 자름 (base64 중간 절단 금지 — core timeout 유발)
+  audio_base64 = trimWavBase64(audio_base64, 12)
 
   const ref_text = String(input.refText || '').trim()
   if (!ref_text) {
@@ -342,27 +461,68 @@ export async function evaluateSentence(input: ChivoxEvalInput): Promise<ChivoxEv
 
   let payload: any
   let mode = 'fc'
+  let lastErr = ''
   try {
     payload = await callViaFc(tool, args, key)
   } catch (fcErr: any) {
+    lastErr = String(fcErr?.message || fcErr)
     mode = 'mcp'
     try {
       payload = await callViaMcp(tool, args, key)
     } catch (mcpErr: any) {
-      const detail = `${fcErr?.message || fcErr} | ${mcpErr?.message || mcpErr}`
-      const disabled = /api key disabled|authentication_error|401|403/i.test(detail)
+      const detail = `${lastErr} | ${mcpErr?.message || mcpErr}`
       return {
         ok: false,
         tool,
-        feedbackKo: disabled
-          ? '말하기 평가 서비스에 연결하지 못했어요. 잠시 후 다시 시도해 주세요.'
-          : '말하기 평가 요청이 실패했어요. 잠시 후 다시 시도해 주세요.',
+        feedbackKo: feedbackFromProviderError(detail),
         error: detail,
       }
     }
   }
 
-  const scores = normalizePayload(payload)
+  let scores = normalizePayload(payload)
+  const earlyErr = providerErrorText(payload)
+  if (scores.overall == null && mode === 'fc') {
+    try {
+      payload = await callViaMcp(tool, args, key)
+      mode = 'mcp-fallback'
+      scores = normalizePayload(payload)
+    } catch (mcpErr: any) {
+      lastErr = `${lastErr} | ${mcpErr?.message || mcpErr}`
+      console.warn('[language/eval] mcp fallback failed', mcpErr?.message || mcpErr)
+    }
+  }
+
+  if (scores.overall == null) {
+    const detail = earlyErr || lastErr || providerErrorText(payload) || 'score unwrap failed'
+    console.warn('[language/eval] score unwrap failed', mode, detail, JSON.stringify(payload)?.slice(0, 800))
+    return {
+      ok: false,
+      tool: `${tool}@${mode}`,
+      feedbackKo: feedbackFromProviderError(detail),
+      error: detail,
+      raw: scores.raw ?? payload,
+    }
+  }
+
+  const templateFeedback = buildFeedbackKo(ref_text, scores)
+  let feedbackKo = templateFeedback
+  let feedbackSource: 'llm' | 'template' = 'template'
+
+  // 2차 패스: 점수 JSON → LLM 코칭 문장 (실패 시 템플릿 유지)
+  try {
+    const coach = await askPronunciationCoach({
+      refText: ref_text,
+      scores: compactScoresForLlm(ref_text, scores),
+    })
+    if (coach.ok && coach.text.trim().length >= 20) {
+      feedbackKo = coach.text.trim()
+      feedbackSource = 'llm'
+    }
+  } catch (err: any) {
+    console.warn('[language/eval] llm coach failed', err?.message || err)
+  }
+
   return {
     ok: true,
     tool: `${tool}@${mode}`,
@@ -373,7 +533,8 @@ export async function evaluateSentence(input: ChivoxEvalInput): Promise<ChivoxEv
     fluency: scores.fluency,
     details: scores.details,
     raw: scores.raw,
-    feedbackKo: buildFeedbackKo(ref_text, scores),
+    feedbackKo,
+    feedbackSource,
   }
 }
 

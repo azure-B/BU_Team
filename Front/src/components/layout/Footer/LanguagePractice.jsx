@@ -1,8 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { Microphone, Stop } from '@phosphor-icons/react'
 import { postLanguageEval } from '../../../api/languageApi'
-import { blobToWavBase64 } from '../../../utils/audioWav'
 import './LanguagePractice.css'
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = String(reader.result || '')
+      const i = result.indexOf(',')
+      resolve(i >= 0 ? result.slice(i + 1) : result)
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(blob)
+  })
+}
 
 /** UI 모드 → 평가 툴 매핑 (화면에는 한글 라벨만 노출) */
 export const PRACTICE_MODES = [
@@ -79,12 +91,13 @@ export default function LanguagePractice({ onFeedback, evalReady = false }) {
 
     setBusy(true)
     try {
-      const { base64: audioBase64, mimeType } = await blobToWavBase64(blob)
+      // 브라우저 변환 없이 MediaRecorder 원본(webm/ogg 등) 그대로 전송
+      const audioBase64 = await blobToBase64(blob)
       const result = await postLanguageEval({
         tool: mode.tool,
         refText: mode.prompt,
         audioBase64,
-        mimeType,
+        mimeType: blob.type || 'audio/webm',
       })
       onFeedback?.({
         assistantText: result.feedbackKo || '평가 결과를 받지 못했어요.',
@@ -134,7 +147,8 @@ export default function LanguagePractice({ onFeedback, evalReady = false }) {
       timerRef.current = window.setInterval(() => {
         const ms = Date.now() - startedAtRef.current
         setElapsed(ms)
-        if (ms >= 60_000) {
+        // 문장 평가는 짧게 — 엔진 timeout 방지
+        if (ms >= 12_000) {
           window.clearInterval(timerRef.current)
           finishRecording()
         }
@@ -190,9 +204,9 @@ export default function LanguagePractice({ onFeedback, evalReady = false }) {
       <div className="language-practice__speaking">
         <p
           className={`language-practice__timer ${recording ? 'language-practice__timer--live' : ''}`}
-          aria-label={recording ? '녹음 중' : '녹음 대기, 최대 1분'}
+          aria-label={recording ? '녹음 중' : '녹음 대기, 최대 12초'}
         >
-          <span aria-hidden="true" /> {formatMs(elapsed)} <span>/ 01:00</span>
+          <span aria-hidden="true" /> {formatMs(elapsed)} <span>/ 00:12</span>
         </p>
         <div className={`language-practice__waveform ${recording ? 'language-practice__waveform--live' : ''}`} aria-hidden="true">
           {waveHeights.map((height, index) => (

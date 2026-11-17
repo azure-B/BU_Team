@@ -9,6 +9,76 @@ export type LlmResult = {
   error?: string
 }
 
+const PRONUNCIATION_COACH_PROMPT = `당신은 영어 말하기 코치입니다. 평가 점수 JSON만 근거로 한국어 피드백을 씁니다.
+규칙:
+- 제공사·엔진·API·툴 이름은 절대 언급하지 마세요.
+- 점수표를 나열하지 마세요. 종합 점수 정도는 한 번만 자연스럽게 언급해도 됩니다.
+- 잘한 점 1가지 + 고칠 점 1~2가지만. 음소/단어 문제는 발음 힌트를 주세요.
+- 마지막에 짧은 재시도 제안 1문장.
+- 전체 5~8문장, 120단어 이내. 마크다운·이모지·불릿 남발 금지.
+- 점수가 전부 0이거나 음성 미인식이면 다시 크게·또박또박 녹음하라고만 안내하세요.`
+
+/** 발음 평가 JSON → 자연어 코칭 (Chivox secondary LLM pass) */
+export async function askPronunciationCoach(input: {
+  refText: string
+  scores: Record<string, unknown>
+}): Promise<LlmResult> {
+  const key = process.env.OPENAI_API_KEY?.trim()
+  const model = process.env.OPENAI_MODEL?.trim() || 'gpt-5-mini'
+  const maxOut = Math.min(Number(process.env.MAX_OUTPUT_TOKENS || 500), 500)
+
+  if (!key) {
+    return { ok: false, text: '', model, error: 'OPENAI_API_KEY missing' }
+  }
+
+  const payload = {
+    refText: input.refText,
+    scores: input.scores,
+  }
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        instructions: PRONUNCIATION_COACH_PROMPT,
+        input: `아래 평가 JSON을 읽고 학습자에게 피드백을 작성하세요.\n\n${JSON.stringify(payload)}`,
+        max_output_tokens: Math.max(maxOut, 280),
+        reasoning: { effort: 'low' },
+      }),
+      signal: AbortSignal.timeout(45000),
+    })
+    const json: any = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      return {
+        ok: false,
+        text: '',
+        model,
+        error: json?.error?.message || `HTTP ${res.status}`,
+      }
+    }
+    const text = extractResponseText(json)
+    return {
+      ok: Boolean(text),
+      text: text || '',
+      model,
+      inputTokens: json?.usage?.input_tokens,
+      outputTokens: json?.usage?.output_tokens,
+    }
+  } catch (err: any) {
+    return {
+      ok: false,
+      text: '',
+      model,
+      error: err?.message || String(err),
+    }
+  }
+}
+
 export async function askGpt(question: string, contextBlocks: string[] = []): Promise<LlmResult> {
   const key = process.env.OPENAI_API_KEY?.trim()
   const model = process.env.OPENAI_MODEL?.trim() || 'gpt-5-mini'

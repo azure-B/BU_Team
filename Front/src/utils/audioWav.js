@@ -1,4 +1,7 @@
-/** MediaRecorder blob(webm 등) → 16kHz mono PCM WAV ArrayBuffer */
+/** MediaRecorder blob(webm 등) → 16kHz mono PCM WAV (최대 15초) */
+
+const TARGET_RATE = 16000
+const MAX_SECONDS = 12
 
 function writeString(view, offset, str) {
   for (let i = 0; i < str.length; i += 1) view.setUint8(offset + i, str.charCodeAt(i))
@@ -12,7 +15,6 @@ function floatTo16BitPCM(output, offset, input) {
 }
 
 function encodeWavMono16k(float32) {
-  const sampleRate = 16000
   const buffer = new ArrayBuffer(44 + float32.length * 2)
   const view = new DataView(buffer)
   writeString(view, 0, 'RIFF')
@@ -22,8 +24,8 @@ function encodeWavMono16k(float32) {
   view.setUint32(16, 16, true)
   view.setUint16(20, 1, true)
   view.setUint16(22, 1, true)
-  view.setUint32(24, sampleRate, true)
-  view.setUint32(28, sampleRate * 2, true)
+  view.setUint32(24, TARGET_RATE, true)
+  view.setUint32(28, TARGET_RATE * 2, true)
   view.setUint16(32, 2, true)
   view.setUint16(34, 16, true)
   writeString(view, 36, 'data')
@@ -60,10 +62,11 @@ function resampleLinear(input, fromRate, toRate) {
 
 function arrayBufferToBase64(buffer) {
   const bytes = new Uint8Array(buffer)
+  const chunk = 0x2000
   let binary = ''
-  const chunk = 0x8000
   for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunk))
+    const end = Math.min(i + chunk, bytes.length)
+    for (let j = i; j < end; j += 1) binary += String.fromCharCode(bytes[j])
   }
   return btoa(binary)
 }
@@ -77,8 +80,12 @@ export async function blobToWavBase64(blob) {
   const ctx = new AudioContext()
   try {
     const decoded = await ctx.decodeAudioData(ab.slice(0))
-    const mono = mixToMono(decoded)
-    const resampled = resampleLinear(mono, decoded.sampleRate, 16000)
+    let mono = mixToMono(decoded)
+    let resampled = resampleLinear(mono, decoded.sampleRate, TARGET_RATE)
+    const maxSamples = TARGET_RATE * MAX_SECONDS
+    if (resampled.length > maxSamples) {
+      resampled = resampled.slice(0, maxSamples)
+    }
     const wav = encodeWavMono16k(resampled)
     return { base64: arrayBufferToBase64(wav), mimeType: 'audio/wav' }
   } finally {

@@ -278,7 +278,8 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
   }
   ```
 - **하위 호환**: `tool` 생략 시 `locale`(`en`|`zh`)으로 `en_sentence_eval` / `cn_sentence_eval` 선택
-- **응답 `data`**: `ok`, `overall`, `accuracy`, `pron`, `integrity`, `fluency`, `details`, `feedbackKo`, `tool`, `error`
-- **환경변수**: `CHIVOX` (또는 `CHIVOX_API_KEY` / `MCP_API_KEY`) — Bearer API key
-- **관련**: `chivox.service.ts`, Footer `LanguagePractice`
+- **응답 `data`**: `ok`, `overall`, `accuracy`, `pron`, `integrity`, `fluency`, `details`, `feedbackKo`, `feedbackSource`(`llm`|`template`), `tool`, `error`
+- **2차 패스**: 점수 JSON → `askPronunciationCoach` (OpenAI) 자연어 코칭. 실패 시 규칙 템플릿 `feedbackKo`
+- **환경변수**: `CHIVOX` (또는 `CHIVOX_API_KEY` / `MCP_API_KEY`), `OPENAI_API_KEY` (코칭용)
+- **관련**: `chivox.service.ts`, `chat/llm.ts`, Footer `LanguagePractice`
 

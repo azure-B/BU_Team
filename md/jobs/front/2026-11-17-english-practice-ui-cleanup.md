@@ -6,3 +6,4 @@
 - 평가 후 비서 메시지로 결과만 표시 (사용자 채팅 미추가)
 - 변경 파일: `Footer.jsx`, `LanguagePractice.jsx`, `LanguagePractice.css`
 - 사용 API: `GET /language/status`, `POST /language/eval`
+- 녹음: 브라우저 WAV 변환 제거 → MediaRecorder 원본 base64 그대로 전송
