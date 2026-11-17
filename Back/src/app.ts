@@ -10,13 +10,15 @@ import campusRoutes from './routes/campus.routes';
 import noticeRoutes from './routes/notices.routes';
 import courseRoutes from './routes/courses.routes';
 import chatRoutes from './routes/chat.routes';
+import languageRoutes from './routes/language.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app = express();
 
 app.use(helmet());
 app.use(cors());
-app.use(express.json());
+// 언어 평가: base64 음성 포함 → 본문 한도 확대
+app.use(express.json({ limit: '12mb' }));
 app.use(morgan('dev'));
 
 app.get('/health', (req, res) => {
@@ -39,6 +41,8 @@ app.use('/api/v1/courses', courseRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/v1/chat', chatRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/v1/language', languageRoutes);
+app.use('/api/language', languageRoutes);
 
 app.use(errorHandler as any);
 

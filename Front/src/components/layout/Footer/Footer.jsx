@@ -16,11 +16,12 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { useSchedule } from '../../schedule/ScheduleContext'
 import { postChat } from '../../../api/chatApi'
+import { getLanguageStatus } from '../../../api/languageApi'
 import { getCurrentUser } from '../../../api/authApi'
 import { recordChatStat } from '../../../utils/chatStats'
 import { useAssistantPreferences } from './AssistantPreferences'
 import { useAssistantMode } from './useAssistantMode'
-import LanguagePractice, { PRACTICE_LANGUAGES } from './LanguagePractice'
+import LanguagePractice from './LanguagePractice'
 import './Footer.css'
 
 /** 추천 질문 풀 — 열 때마다 3개 랜덤 */
@@ -89,10 +90,7 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
   const [languageQuery, setLanguageQuery] = useState('')
   const [chatMessages, setChatMessages] = useState(() => loadAssistantChat().messages)
   const [languageMessages, setLanguageMessages] = useState(loadLanguageChat)
-  const [practiceLanguage, setPracticeLanguage] = useState('en')
-  const [practiceIndex, setPracticeIndex] = useState(0)
-  const activeLanguage = PRACTICE_LANGUAGES.find((item) => item.code === practiceLanguage)
-  const practiceSentence = activeLanguage.sentences[practiceIndex]
+  const [evalReady, setEvalReady] = useState(false)
   const [sending, setSending] = useState(false)
   /** 즉시 응답 불만 시 이후(또는 재질문) GPT 우선 */
   const [aiLinked, setAiLinked] = useState(() => loadAssistantChat().aiLinked)
@@ -317,19 +315,29 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
     await askAssistant(prev, { forceLlm: true, showUser: true })
   }
 
-  const previewLanguageFeedback = () => {
+  useEffect(() => {
+    if (!languageMode) return
+    let cancelled = false
+    getLanguageStatus()
+      .then((data) => {
+        if (!cancelled) setEvalReady(Boolean(data?.chivox ?? data?.data?.chivox))
+      })
+      .catch(() => {
+        if (!cancelled) setEvalReady(false)
+      })
+    return () => { cancelled = true }
+  }, [languageMode])
+
+  const handleLanguageFeedback = ({ assistantText }) => {
     const id = `practice-${Date.now()}`
     setHistoryVisible(true)
     onExpand()
-    setLanguageMessages((previous) => [...previous,
-      { id: `${id}-user`, role: 'user', text: practiceSentence, practice: true },
-      {
-        id: `${id}-feedback`, role: 'assistant', practice: true,
-        text: practiceLanguage === 'en' && practiceIndex === 0
-          ? '피드백 예시\n“I am still hungry.”는 문법에 맞는 표현이에요.\n\nI am을 I’m으로 줄여 “I’m still hungry.”라고 말할 수도 있어요.\n\n실제 발음과 유창성 평가는 음성·AI 연결 후 제공돼요.'
-          : `피드백 예시\n오늘의 ${activeLanguage.label} 문장은 “${practiceSentence}”예요.\n\n실제 발음과 유창성 평가는 음성·AI 연결 후 제공돼요.`,
-      },
-    ])
+    setLanguageMessages((previous) => [...previous, {
+      id: `${id}-feedback`,
+      role: 'assistant',
+      practice: true,
+      text: assistantText,
+    }])
   }
 
   return (
@@ -375,9 +383,9 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
             <span>{languageMode ? <Brain size={19} weight="regular" aria-hidden="true" /> : <Sparkle size={19} weight="fill" aria-hidden="true" />}</span>
             <div>
               <div className="assistant-sheet__title-line">
-                <h2 id="assistant-title">{languageMode ? '백석AI 언어 트레이닝' : '백석AI 비서'}</h2>
+                <h2 id="assistant-title">{languageMode ? '백석 영어 말하기 연습' : '백석AI 비서'}</h2>
               </div>
-              <p>{languageMode ? '언어 공부, 언어 발음 연습, 질의가 가능해요.' : '캠퍼스 일정, 학사일정, 과제 질의가 가능해요.'}</p>
+              <p>{languageMode ? '따라 읽기 또는 자유 발화로 말하기를 연습해 보세요.' : '캠퍼스 일정, 학사일정, 과제 질의가 가능해요.'}</p>
             </div>
           </div>
           {messages.length > 0 && (
@@ -404,13 +412,18 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
         </div>
 
         <div key={languageMode ? 'language-history' : 'chat-history'} ref={historyRef} id="assistant-history" className={`assistant-history ${isExpanded ? 'assistant-history--active' : ''} ${historyVisible ? 'assistant-history--visible' : ''}`}
-          role="log" aria-label={languageMode ? '언어 트레이닝 대화 내역' : 'AI 비서 대화 내역'} aria-live="polite" aria-hidden={!isExpanded}
+          role="log" aria-label={languageMode ? '영어 말하기 연습 결과' : 'AI 비서 대화 내역'} aria-live="polite" aria-hidden={!isExpanded}
           inert={!isExpanded} tabIndex={isExpanded ? 0 : -1}>
           <div ref={historyContentRef} className="assistant-history__messages">
-            {languageMode && <LanguagePractice onPreview={previewLanguageFeedback} language={activeLanguage} sentence={practiceSentence} />}
+            {languageMode && (
+              <LanguagePractice
+                evalReady={evalReady}
+                onFeedback={handleLanguageFeedback}
+              />
+            )}
             {messages.map((message) => (
               <div key={message.id} className={`assistant-history__message${message.role === 'assistant' ? ' assistant-history__message--bot' : ''}${message.practice && message.role === 'assistant' ? ' assistant-history__message--practice' : ''}`}>
-                <span className="assistant-history__speaker">{message.role === 'assistant' ? (message.practice ? '언어 트레이닝 · 예시' : '비서') : (message.practice ? '연습 문장 · 예시' : '나')}</span>
+                <span className="assistant-history__speaker">{message.role === 'assistant' ? '비서' : '나'}</span>
                 <p className="assistant-history__text">{message.text}</p>
                 {message.sourceUrl && (
                   <a
@@ -494,49 +507,43 @@ function AssistantSheet({ open, mode, onClose, onToggle, onExpand, triggerRef })
           </div>
         </div>
 
-        <form key={languageMode ? 'language-input' : 'chat-input'} className="assistant-input" onSubmit={submitQuery}>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="무엇이든 물어보세요"
-            aria-label={languageMode ? '언어 트레이닝 질문' : 'AI 비서 질문'}
-            disabled={sending && !languageMode}
-          />
-          <button className="assistant-input__voice" type="button" aria-label="음성 명령" disabled={languageMode}>
-            <Microphone size={19} weight="fill" aria-hidden="true" />
-          </button>
-          <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={(sending && !languageMode) || !query.trim()}>
-            <PaperPlaneTilt size={17} weight="fill" aria-hidden="true" />
-          </button>
-        </form>
+        {!languageMode && (
+          <form key="chat-input" className="assistant-input" onSubmit={submitQuery}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="무엇이든 물어보세요"
+              aria-label="AI 비서 질문"
+              disabled={sending}
+            />
+            <button className="assistant-input__voice" type="button" aria-label="음성 명령">
+              <Microphone size={19} weight="fill" aria-hidden="true" />
+            </button>
+            <button className="assistant-input__send" type="submit" aria-label="질문 전송" disabled={sending || !query.trim()}>
+              <PaperPlaneTilt size={17} weight="fill" aria-hidden="true" />
+            </button>
+          </form>
+        )}
 
         <div className="quick-questions">
-          <div className="quick-questions__heading">
-            <p><Sparkle size={14} weight="fill" aria-hidden="true" /> {languageMode ? '언어 변경' : '추천 질문'}</p>
-            {languageMode && <button className="language-next" type="button" onClick={() => {
-              setPracticeIndex((current) => (current + 1) % activeLanguage.sentences.length)
-              if (historyRef.current) historyRef.current.scrollTop = 0
-            }}>다음 문제 →</button>}
-          </div>
+          {!languageMode && (
+            <div className="quick-questions__heading">
+              <p><Sparkle size={14} weight="fill" aria-hidden="true" /> 추천 질문</p>
+            </div>
+          )}
           <div className="quick-questions__row">
-            <div className="quick-questions__track" role={languageMode ? 'group' : undefined} aria-label={languageMode ? '연습 언어 선택' : undefined}>
-              {languageMode ? PRACTICE_LANGUAGES.map(({ code, label }) => (
-                <button key={code} type="button" aria-pressed={practiceLanguage === code} onClick={() => {
-                  setPracticeLanguage(code)
-                  setPracticeIndex(0)
-                  if (historyRef.current) historyRef.current.scrollTop = 0
-                }}>{label}</button>
-              )) : quickQuestions.map(({ label, icon: Icon }) => (
-                <button type="button" key={label} disabled={languageMode} onClick={() => setQuery(label)}>
+            <div className="quick-questions__track" aria-hidden={languageMode || undefined}>
+              {!languageMode && quickQuestions.map(({ label, icon: Icon }) => (
+                <button type="button" key={label} onClick={() => setQuery(label)}>
                   <Icon size={14} weight="fill" aria-hidden="true" /> {label}
                 </button>
               ))}
             </div>
             <button className="assistant-mode-toggle" type="button" onClick={toggleMode}
-              aria-label={languageMode ? '백석AI 비서 모드로 전환' : '언어 트레이닝 모드로 전환'}
-              title={languageMode ? '백석AI 비서 모드로 전환' : '언어 트레이닝 모드로 전환'}>
+              aria-label={languageMode ? '백석AI 비서 모드로 전환' : '영어 말하기 연습으로 전환'}
+              title={languageMode ? '백석AI 비서 모드로 전환' : '영어 말하기 연습으로 전환'}>
               <span className={`assistant-mode-toggle__icon ${languageMode ? '' : 'assistant-mode-toggle__icon--language'}`}>
                 {languageMode ? <Sparkle size={18} weight="fill" aria-hidden="true" /> : <Brain size={18} weight="regular" aria-hidden="true" />}
               </span>

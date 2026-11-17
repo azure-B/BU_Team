@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "chivox-speech-eval": {
+      "type": "streamable-http",
+      "url": "https://mcp-global.cloud.chivox.com",
+      "headers": {
+        "Authorization": "Bearer <YOUR_CHIVOX_API_KEY>"
+      }
+    }
+  }
+}

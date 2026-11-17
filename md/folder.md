@@ -45,7 +45,7 @@ asdasd/
 │   │   │   ├── setting/         — 마이페이지에 통합된 프로필·알림·계정 컴포넌트 (SettingSections.jsx, SettingSections.css)
 │   │   │   └── layout/
 │   │   │       ├── Header/      — Header.jsx, Header.css, NotificationContext.jsx (API 알림·읽음 상태 공유), NotificationPanel.jsx, NotificationPanel.css, index.js
-│   │   │       ├── Footer/      — Footer.jsx, Footer.css (모드별 독립 대화·입력·저장), AssistantPreferences.jsx (앱 실행 중 모달 크기 기억), useAssistantMode.js (버튼 중심 파동 전환), LanguagePractice.jsx / LanguagePractice.css (문장·마이크·채팅 피드백 미리보기), index.js
+│   │   │       ├── Footer/      — Footer.jsx, Footer.css (모드별 독립 대화·입력·저장), AssistantPreferences.jsx (앱 실행 중 모달 크기 기억), useAssistantMode.js (버튼 중심 파동 전환), LanguagePractice.jsx / LanguagePractice.css (Chivox 툴 선택·녹음 평가), index.js
 │   │   │       └── Layout/      — Layout.jsx, Layout.css, index.js
 │   │   ├── hooks/               — 커스텀 훅
 │   │   ├── pages/
