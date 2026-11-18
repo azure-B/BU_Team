@@ -1,7 +1,7 @@
 const KST_MS = 9 * 3600000
 
-// 한국 시각 오늘의 종료되지 않은 수업만 반환한다.
-export function getNextClassMoves(courses = [], buildings = [], now = new Date(), removedIds = []) {
+// 한국 시각의 오늘에 해당하는 수업만 투영한다.
+function getTodayClasses(courses = [], buildings = [], now = new Date(), removedIds = []) {
   const shifted = new Date(now.getTime() + KST_MS)
   const today = new Date(Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate()))
   return courses.filter((course) => !removedIds.includes(course.id) && course.day % 7 === today.getUTCDay()
@@ -10,7 +10,15 @@ export function getNextClassMoves(courses = [], buildings = [], now = new Date()
       startAt: new Date(today.getTime() - KST_MS + Math.round(course.start * 3600000)),
       endAt: new Date(today.getTime() - KST_MS + Math.round(course.end * 3600000)),
       building: resolveClassBuilding(course, buildings), online: /온라인|사이버|비대면/.test(`${course.title || ''} ${course.location || ''}`),
-    })).filter((item) => item.endAt > now).sort((a, b) => a.startAt - b.startAt)
+    })).sort((a, b) => a.startAt - b.startAt)
+}
+
+export function getNextClassMoves(courses = [], buildings = [], now = new Date(), removedIds = []) {
+  return getTodayClasses(courses, buildings, now, removedIds).filter((item) => item.endAt > now)
+}
+
+export function getTodayEndedClasses(courses = [], buildings = [], now = new Date(), removedIds = []) {
+  return getTodayClasses(courses, buildings, now, removedIds).filter((item) => item.endAt <= now)
 }
 
 export function resolveClassBuilding(course, buildings) {

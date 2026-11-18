@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { getNextClassMoves, resolveClassBuilding } from './campusNextClasses.js'
+import { getNextClassMoves, getTodayEndedClasses, resolveClassBuilding } from './campusNextClasses.js'
 
 const buildings = [{ id: 'hq', name: '본부동' }, { id: 'lib', name: '도서관' }]
 const course = { id: 'one', title: '자료구조', day: 3, start: 10, end: 12, location: '본부510', buildingId: 'hq' }
@@ -36,4 +36,17 @@ test('matches building IDs and aliases without fabricating locations', () => {
   assert.equal(resolveClassBuilding({ location: '학술정보관 201' }, buildings)?.id, 'lib')
   assert.equal(resolveClassBuilding({ location: '알수없음' }, buildings), null)
   assert.equal(resolveClassBuilding({ ...course, title: '온라인 수업' }, buildings), null)
+})
+
+test('ended list includes today finished classes in time order, excludes ongoing, removed and tomorrow', () => {
+  const now = new Date('2026-11-18T03:00Z') // 수 12:00 KST
+  const rows = getTodayEndedClasses([course, { ...course, id: 'early', start: 8, end: 9 }, { ...course, id: 'ongoing', start: 11, end: 13 }, { ...course, id: 'removed' }, { ...course, id: 'tomorrow', day: 4 }], buildings, now, ['removed'])
+  assert.deepEqual(rows.map(r => r.id), ['early', 'one'])
+  assert.equal(rows[1].endAt.toISOString(), '2026-11-18T03:00:00.000Z')
+  assert.equal(rows[1].building.id, 'hq')
+})
+
+test('ended list stays empty for no classes or at KST midnight rather than showing yesterday', () => {
+  assert.deepEqual(getTodayEndedClasses([], buildings), [])
+  assert.deepEqual(getTodayEndedClasses([course], buildings, new Date('2026-11-18T15:00Z')), [])
 })
