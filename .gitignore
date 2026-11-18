@@ -26,3 +26,11 @@ Thumbs.db
 # 개인 Codex 설정
 /AGENTS.override.md
 /.codex-local/
+
+# 건물 혼잡도 원본 wav·캐시 (다운: py -3 others/crowd-audio/download_crowdioset_subset.py)
+others/crowd-audio/_raw/
+others/crowd-audio/label_*/**/*.wav
+others/crowd-audio/crowdioset_metadata_full.csv
+
+# 기능 추출 작업용 (별도 git으로 push) — 원본 저장소에 커밋하지 않음
+dummy/

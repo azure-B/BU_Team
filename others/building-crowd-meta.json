@@ -1,0 +1,135 @@
+{
+  "generatedAt": "2026-11-03T10:24:11.793Z",
+  "source": "Course.capacity sum by building + weekday + start hour",
+  "note": "estimated_people = 해당 시각에 시작하는 수업 정원(capacity) 합. 실제 출석·이동 중이 아님.",
+  "courseRows": 2963,
+  "coursesSkippedNoBuilding": 223,
+  "meetingSlotsMapped": 2752,
+  "buildings": [
+    "글로벌관",
+    "목양관",
+    "백석홀",
+    "본부동",
+    "승리관",
+    "예술대학동",
+    "음악관",
+    "자유관",
+    "조형관",
+    "지혜관",
+    "진리관",
+    "체육관"
+  ],
+  "maxByBuilding": {
+    "글로벌관": 210,
+    "목양관": 777,
+    "백석홀": 2082,
+    "본부동": 3211,
+    "승리관": 40,
+    "예술대학동": 211,
+    "음악관": 95,
+    "자유관": 25,
+    "조형관": 1257,
+    "지혜관": 613,
+    "진리관": 1005,
+    "체육관": 480
+  },
+  "skippedRoomTop": [
+    {
+      "room": "(empty)",
+      "count": 189
+    },
+    {
+      "room": "1학년",
+      "count": 4
+    },
+    {
+      "room": "목8",
+      "count": 3
+    },
+    {
+      "room": "화5",
+      "count": 2
+    },
+    {
+      "room": "금1,2,3,4",
+      "count": 2
+    },
+    {
+      "room": "금5,6,7,8",
+      "count": 2
+    },
+    {
+      "room": "4학년만",
+      "count": 2
+    },
+    {
+      "room": "화3",
+      "count": 2
+    },
+    {
+      "room": "화6",
+      "count": 2
+    },
+    {
+      "room": "화8",
+      "count": 2
+    },
+    {
+      "room": "목5",
+      "count": 1
+    },
+    {
+      "room": "목3",
+      "count": 1
+    },
+    {
+      "room": "금4,5",
+      "count": 1
+    },
+    {
+      "room": "화7,8",
+      "count": 1
+    },
+    {
+      "room": "화5,6",
+      "count": 1
+    },
+    {
+      "room": "화8,9",
+      "count": 1
+    },
+    {
+      "room": "월3",
+      "count": 1
+    },
+    {
+      "room": "월6",
+      "count": 1
+    },
+    {
+      "room": "월9",
+      "count": 1
+    },
+    {
+      "room": "수3",
+      "count": 1
+    },
+    {
+      "room": "화9",
+      "count": 1
+    },
+    {
+      "room": "수4",
+      "count": 1
+    },
+    {
+      "room": "목5,6",
+      "count": 1
+    }
+  ],
+  "outputs": [
+    "others/building-crowd-by-hour.csv",
+    "others/building-crowd-peaks.csv",
+    "others/building-crowd-meta.json"
+  ]
+}

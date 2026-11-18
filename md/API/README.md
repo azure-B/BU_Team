@@ -254,3 +254,32 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 - **환경변수**: `OPENAI_API_KEY`, `OPENAI_MODEL`, `MAX_OUTPUT_TOKENS`
 - **관련**: `router.ts`, `kbStore.ts`, `Back/src/data/*`
 
+---
+
+## 10. 언어 트레이닝 · Chivox 툴 평가
+
+### GET /api/v1/language/status  (별칭 `/api/language/status`)
+- **설명**: Chivox MCP API 키 설정 여부 + 사용 가능 툴 목록
+- **응답 `data`**: `{ chivox: boolean, provider: "chivox-mcp", supportedLocales: ["en","zh"], tools: [...] }`
+
+### GET /api/v1/language/tools  (별칭 `/api/language/tools`)
+- **설명**: Chivox FC/MCP 툴 카탈로그 (`en_sentence_eval`, `en_open_eval`, `en_semi_open_eval`, `cn_sentence_eval`, `cn_aitalk_eval`)
+- **응답 `data`**: `{ tools: [{ id, locale, kind, labelKo, hintKo, samples }] }`
+
+### POST /api/v1/language/eval  (별칭 `/api/language/eval`)
+- **설명**: 선택한 Chivox 툴 + `ref_text` + 녹음(base64) 평가. 서버가 FC→MCP 순으로 호출
+- **요청 Body**:
+  ```json
+  {
+    "tool": "en_open_eval",
+    "refText": "Please introduce yourself briefly.",
+    "audioBase64": "<base64 without data-url prefix ok>",
+    "mimeType": "audio/webm"
+  }
+  ```
+- **하위 호환**: `tool` 생략 시 `locale`(`en`|`zh`)으로 `en_sentence_eval` / `cn_sentence_eval` 선택
+- **응답 `data`**: `ok`, `overall`, `accuracy`, `pron`, `integrity`, `fluency`, `details`, `feedbackKo`, `feedbackSource`(`llm`|`template`), `tool`, `error`
+- **2차 패스**: 점수 JSON → `askPronunciationCoach` (OpenAI) 자연어 코칭. 실패 시 규칙 템플릿 `feedbackKo`
+- **환경변수**: `CHIVOX` (또는 `CHIVOX_API_KEY` / `MCP_API_KEY`), `OPENAI_API_KEY` (코칭용)
+- **관련**: `chivox.service.ts`, `chat/llm.ts`, Footer `LanguagePractice`
+

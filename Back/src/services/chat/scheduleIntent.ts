@@ -38,13 +38,27 @@ const WEEKDAY_CHAR: Record<string, number> = { 일: 0, 월: 1, 화: 2, 수: 3, �
 const WEEKDAY_RE = /[월화수목금토일](요일)?/
 const TIME_RE =
   /(\d{1,2}\s*시(?:\s*(?:반|\d{1,2}\s*분))?|\d{1,2}\s*[:：]\s*\d{2}|\d{1,2}\s*[~-]\s*\d{1,2}|부터|까지|오전|오후|점심|저녁)/
+/** 명시적 등록 명령만 (「잡을 수 있어?」는 여기 안 걸림) */
 const CREATE_RE =
-  /등록|넣어|추가|잡아|잡을게|넣어줘|잡아줘|하기로|약속\s*잡|만나|먹기로|잡았|할거야|할게|할께|가자|가기로/
+  /등록해|등록할|등록\s*해|넣어\s*줘|넣어줘|추가해|추가해\s*줘|잡아줘|잡을게|잡기로|하기로|먹기로|잡았|할거야|할게|할께|가기로|스케줄에\s*넣|일정에\s*넣|시간표에\s*넣|약속\s*잡아줘|약속\s*등록/
+/** 「잡을 수 있어?」「가능해?」→ 가능 여부 조회 (등록 아님) */
+const AVAIL_RE =
+  /잡을\s*수\s*(있|없)|할\s*수\s*(있|없)|가능한가|가능해|가능할까|가능하냐|될까\??|괜찮을까|괜찮\s*아|시간\s*(돼|되나|되니|돼\??)|비어\s*(있|있니|있나)|한가\s*(해|하|하냐)|여유\s*(있|있니)|빈\s*시간|비나\??/
 const DELETE_RE =
   /삭제|지워|없애|취소|제거|빼\s*줘|빼줘|지워\s*줘|없애\s*줘|삭제해|취소해|삭제할|지울/
 const QUERY_RE =
-  /있(어|나|나요|습니까)|없(어|나|나요)(?!애|애줘|애주세요)|뭐\s*있|비어|한가|스케줄|알려줘|보여줘|확인|일정\s*있|수업\s*있/
+  /있(어|나|나요|습니까)|없(어|나|나요)(?!애|애줘|애주세요)|뭐\s*있|뭐야|뭐지|비어|한가|스케줄|알려줘|보여줘|확인|일정\s*있|수업\s*있|첫\s*수업|다음\s*수업|마지막\s*수업|몇\s*교시|몇\s*시에\s*시작|시간표/
 const KIND_RE = /스터디|공부|모임|알바|미팅|동아리|상담|약속|밥|식사|연습|회의|밥약|카페|영화/
+const OFF_TOPIC_RE = /뉴스|날씨|주식|환율|스포츠|연예|헤드라인|이슈\s*정리|시사/
+
+function isAvailabilityQuestion(q: string) {
+  return AVAIL_RE.test(q)
+}
+
+function isCreateIntent(q: string) {
+  if (isAvailabilityQuestion(q)) return false
+  return CREATE_RE.test(q)
+}
 
 const TIME_CHOICE_PRESETS: Array<{ label: string; start: string; end: string }> = [
   { label: '점심 12시', start: '12:00', end: '13:00' },
@@ -339,23 +353,29 @@ function isProtectedClass(item: any) {
 /** 로컬 폴백 분류 (GPT 실패 시) */
 export function classifyScheduleCodeLocal(question: string): ScheduleIntentCode {
   const q = String(question || '')
+  if (OFF_TOPIC_RE.test(q) && !/일정|스케줄|수업|시간표/.test(q)) return 0
   if (DELETE_RE.test(q) && (WEEKDAY_RE.test(q) || TIME_RE.test(q) || KIND_RE.test(q) || /일정|스케줄/.test(q))) {
     return 5
   }
-  if (NOTICE_RE.test(q) && !CREATE_RE.test(q) && !(QUERY_RE.test(q) && /오늘|내일|모레|시/.test(q) && /일정|스케줄/.test(q))) {
+  if (NOTICE_RE.test(q) && !isCreateIntent(q) && !(QUERY_RE.test(q) && /오늘|내일|모레|시/.test(q) && /일정|스케줄/.test(q))) {
     return 4
   }
   if (/교수|교원|사무실|과사|중간고사|기말고사|수강신청|장학|등록금|개강|종강|학사일정/.test(q)
-    && !QUERY_RE.test(q) && !CREATE_RE.test(q) && !KIND_RE.test(q) && !DELETE_RE.test(q)) {
+    && !QUERY_RE.test(q) && !isCreateIntent(q) && !KIND_RE.test(q) && !DELETE_RE.test(q)) {
     return 0
   }
-  if (QUERY_RE.test(q) && !CREATE_RE.test(q) && !DELETE_RE.test(q)) return 1
-  if (CREATE_RE.test(q) || (KIND_RE.test(q) && !DELETE_RE.test(q))) return 2
-  if ((WEEKDAY_RE.test(q) || /오늘|내일|모레/.test(q)) && TIME_RE.test(q) && /일정|수업|스케줄/.test(q)) {
+  // 가능 여부·첫/다음 수업 → 조회
+  if (isAvailabilityQuestion(q) || /첫\s*수업|다음\s*수업|마지막\s*수업|몇\s*교시/.test(q)) return 1
+  if (QUERY_RE.test(q) && !isCreateIntent(q) && !DELETE_RE.test(q)) return 1
+  if (isCreateIntent(q)) return 2
+  // KIND만 있고 등록 명령·가능 질문이 아니면 애매(확인) — 자동 등록 금지
+  if (KIND_RE.test(q) && (WEEKDAY_RE.test(q) || TIME_RE.test(q) || /오늘|내일|모레|이번\s*주/.test(q)) && !DELETE_RE.test(q)) {
+    return 3
+  }
+  if ((WEEKDAY_RE.test(q) || /오늘|내일|모레/.test(q)) && TIME_RE.test(q) && /일정|수업|스케줄|시간표/.test(q)) {
     return 1
   }
-  if (WEEKDAY_RE.test(q) && KIND_RE.test(q)) return 2
-  if (/일정|스케줄|수업/.test(q) && (TIME_RE.test(q) || /오늘|내일|모레/.test(q) || WEEKDAY_RE.test(q))) {
+  if (/일정|스케줄|수업|시간표/.test(q) && (TIME_RE.test(q) || /오늘|내일|모레/.test(q) || WEEKDAY_RE.test(q))) {
     return 3
   }
   return 0
@@ -364,29 +384,38 @@ export function classifyScheduleCodeLocal(question: string): ScheduleIntentCode 
 /** FAQ와 안 섞이게 일정 후보만 */
 export function looksLikeScheduleCandidate(question: string) {
   const q = String(question || '')
+  if (OFF_TOPIC_RE.test(q) && !/일정|스케줄|수업|시간표/.test(q)) {
+    return false
+  }
   if (/교수|교원|선생님/.test(q) && /전화|이메일|메일|연락처|번호|목록/.test(q) && !TIME_RE.test(q)) {
     return false
   }
-  if (/사무실|과사/.test(q) && /어디|위치|몇호|전화/.test(q) && !CREATE_RE.test(q) && !QUERY_RE.test(q) && !DELETE_RE.test(q)) {
+  if (/사무실|과사/.test(q) && /어디|위치|몇호|전화/.test(q) && !isCreateIntent(q) && !QUERY_RE.test(q) && !DELETE_RE.test(q)) {
     return false
   }
   if (/다음\s*수업\s*전|공강|뭐\s*하지|뭐하지|틈새|추천|붕\s*뜨|시간\s*짜|어디서|하면\s*좋|할\s*과제/.test(q)
-    && !/등록해|넣어\s*줘|넣어줘|추가해|스케줄에\s*넣|일정에\s*넣/.test(q)
+    && !isCreateIntent(q)
     && !DELETE_RE.test(q)) {
     return false
   }
-  if (/병결|질병\s*결석|출석\s*인정/.test(q) && !CREATE_RE.test(q) && !KIND_RE.test(q)) {
+  if (/병결|질병\s*결석|출석\s*인정/.test(q) && !isCreateIntent(q) && !KIND_RE.test(q)) {
     return false
   }
   if (/중간고사|기말고사|수강신청|휴학|장학|등록금|개강|종강|학사일정/.test(q)
-    && !CREATE_RE.test(q) && !KIND_RE.test(q) && !QUERY_RE.test(q) && !DELETE_RE.test(q)) {
+    && !isCreateIntent(q) && !KIND_RE.test(q) && !QUERY_RE.test(q) && !DELETE_RE.test(q)) {
     return false
   }
+  if (/첫\s*수업|다음\s*수업|마지막\s*수업|몇\s*교시/.test(q)) return true
+  if (isAvailabilityQuestion(q) && (WEEKDAY_RE.test(q) || TIME_RE.test(q) || KIND_RE.test(q) || /이번\s*주|오늘|내일/.test(q))) {
+    return true
+  }
   let score = 0
-  if (WEEKDAY_RE.test(q) || /오늘|내일|모레/.test(q)) score += 1
+  if (WEEKDAY_RE.test(q) || /오늘|내일|모레|이번\s*주/.test(q)) score += 1
   if (TIME_RE.test(q)) score += 1
   if (/매주|주마다/.test(q)) score += 1
-  if (CREATE_RE.test(q) || DELETE_RE.test(q) || QUERY_RE.test(q) || /일정|스케줄|시간표/.test(q)) score += 1
+  // 「있어?」만으로는 +1 금지 — 일정/수업/KIND와 같이 있을 때만
+  if (isCreateIntent(q) || DELETE_RE.test(q) || /일정|스케줄|시간표|수업/.test(q)) score += 1
+  else if (QUERY_RE.test(q) && (KIND_RE.test(q) || /일정|스케줄|시간표|수업|공강/.test(q) || TIME_RE.test(q))) score += 1
   if (KIND_RE.test(q)) score += 1
   return score >= 2
 }
@@ -427,9 +456,117 @@ async function handleQuery(input: {
     })
   }
 
+  const q = input.question
   const listLine = (items: any[]) => items
     .map((it) => `· ${hmLabel(it.startAt)}~${hmLabel(it.endAt)} 「${classTitle(it.title)}」`)
     .join('\n')
+
+  const wantFirst = /첫\s*수업|맨\s*앞\s*수업|제일\s*처음\s*수업/.test(q)
+  const wantNext = /다음\s*수업|곧\s*있는\s*수업/.test(q)
+  const wantLast = /마지막\s*수업|끝\s*수업/.test(q)
+  const classes = dayItems.filter((it) => isProtectedClass(it) || it?.type === 'CLASS' || !it?.type)
+
+  if (wantFirst || wantNext || wantLast) {
+    const pool = classes.length ? classes : dayItems
+    if (!pool.length) {
+      return {
+        handled: true,
+        intentCode: input.intentCode,
+        answer: `${dayLabel}에는 등록된 수업이 없어요.`,
+        badge: '일정 조회',
+        scheduleAction: { status: 'queried', weekday: targetDay.getDay() },
+      }
+    }
+    let pick = pool[0]
+    if (wantLast) pick = pool[pool.length - 1]
+    if (wantNext) {
+      const nowMin = input.now.getHours() * 60 + input.now.getMinutes()
+      const sameDay = targetDay.toDateString() === input.now.toDateString()
+      pick = sameDay
+        ? (pool.find((it) => {
+          const s = new Date(it.startAt)
+          return s.getHours() * 60 + s.getMinutes() >= nowMin
+        }) || pool[pool.length - 1])
+        : pool[0]
+    }
+    const label = wantFirst ? '첫 수업' : wantLast ? '마지막 수업' : '다음 수업'
+    return {
+      handled: true,
+      intentCode: input.intentCode,
+      answer: `${dayLabel} ${label}은 ${hmLabel(pick.startAt)}~${hmLabel(pick.endAt)} 「${classTitle(pick.title)}」이에요.`,
+      badge: '일정 조회',
+      choices: [`${dayLabel} 전체 일정 알려줘`, '공강에 뭐 하지?'],
+      scheduleAction: { status: 'queried', weekday: targetDay.getDay(), start: hmLabel(pick.startAt), end: hmLabel(pick.endAt) },
+    }
+  }
+
+  // 가능 여부: 비면 가능, 겹치면 불가 + 목록
+  if (isAvailabilityQuestion(q)) {
+    const window = time || (/저녁/.test(q)
+      ? { start: '18:00', end: '20:00' }
+      : /점심/.test(q)
+        ? { start: '12:00', end: '13:30' }
+        : null)
+    const checkHits = window
+      ? dayItems.filter((item) => {
+        const s = new Date(item.startAt)
+        const e = new Date(item.endAt || item.startAt)
+        const b0 = s.getHours() * 60 + s.getMinutes()
+        let b1 = e.getHours() * 60 + e.getMinutes()
+        if (b1 <= b0) b1 = b0 + 60
+        return overlapMins(toMin(window.start), toMin(window.end), b0, b1)
+      })
+      : []
+    if (!window) {
+      return {
+        handled: true,
+        intentCode: input.intentCode,
+        answer: dayItems.length
+          ? `${dayLabel} 일정이에요.\n${listLine(dayItems)}\n\n비는 구간에 약속 가능한지 알려면 「금요일 저녁에 약속 잡을 수 있어?」처럼 시간대를 말해 주세요. (아직은 조회만 했어요.)`
+          : `${dayLabel}에는 등록된 일정이 없어 보여요. 저녁·점심 등 시간대를 말하면 가능 여부를 봐 드릴게요.`,
+        badge: '일정 조회',
+        choices: [
+          `${WEEKDAY_LABEL[targetDay.getDay()]} 저녁에 약속 잡을 수 있어?`,
+          `${WEEKDAY_LABEL[targetDay.getDay()]} 일정 알려줘`,
+        ],
+        scheduleAction: { status: 'queried', weekday: targetDay.getDay() },
+      }
+    }
+    if (checkHits.length === 0) {
+      return {
+        handled: true,
+        intentCode: input.intentCode,
+        answer:
+          `${dayLabel} ${window.start}~${window.end}쯤은 비어 있어요. 약속 잡아도 괜찮아 보입니다.\n`
+          + `등록하려면 「${WEEKDAY_LABEL[targetDay.getDay()]} ${window.start}에 약속 등록해줘」라고 말해 주세요. (지금은 조회만 했어요.)`,
+        badge: '일정 조회',
+        choices: [
+          `${WEEKDAY_LABEL[targetDay.getDay()]} ${window.start}~${window.end} 「약속」 일정 등록`,
+          `${dayLabel} 전체 일정 알려줘`,
+        ],
+        scheduleAction: {
+          status: 'queried',
+          weekday: targetDay.getDay(),
+          start: window.start,
+          end: window.end,
+        },
+      }
+    }
+    return {
+      handled: true,
+      intentCode: input.intentCode,
+      answer:
+        `${dayLabel} ${window.start}~${window.end}에는 일정이 있어요.\n${listLine(checkHits)}\n\n다른 시간대를 골라 볼까요?`,
+      badge: '일정 조회',
+      choices: offerCreateChoices(targetDay).slice(0, 3),
+      scheduleAction: {
+        status: 'queried',
+        weekday: targetDay.getDay(),
+        start: window.start,
+        end: window.end,
+      },
+    }
+  }
 
   if (time && hits.length === 0) {
     const when = `${dayLabel} ${time.start}`
@@ -752,6 +889,14 @@ export async function tryHandleScheduleIntent(input: {
     return { handled: false, intentCode: code }
   }
 
+  // GPT가 등록(2)으로 오분류해도 가능 여부·첫 수업은 조회로
+  if (
+    isAvailabilityQuestion(input.question)
+    || /첫\s*수업|다음\s*수업|마지막\s*수업|몇\s*교시/.test(input.question)
+  ) {
+    return handleQuery({ ...input, intentCode: 1 })
+  }
+
   if (code === 1) {
     return handleQuery({ ...input, intentCode: 1 })
   }
@@ -772,6 +917,23 @@ export async function tryHandleScheduleIntent(input: {
     }
   }
 
-  // code === 2
+  // code === 2 — 명시적 등록 명령 없으면 확인만 (자동 등록 금지)
+  if (!isCreateIntent(input.question)) {
+    const day = resolveTargetDay(input.question, input.now)
+    const title = guessTitle(input.question)
+    return {
+      handled: true,
+      intentCode: 3,
+      answer:
+        `「${title}」 일정을 등록할까요, 아니면 그날 시간표만 확인할까요? 등록하려면 「등록해줘」라고 말해 주세요.`,
+      badge: '일정 안내',
+      choices: [
+        `${WEEKDAY_LABEL[day.getDay()]} 일정 알려줘`,
+        ...offerCreateChoices(day, title).slice(0, 2),
+      ],
+      scheduleAction: { status: 'need_clarify', title, weekday: day.getDay() },
+    }
+  }
+
   return handleCreate({ ...input, intentCode: 2 })
 }
