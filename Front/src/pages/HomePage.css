@@ -20,6 +20,7 @@
 .student-greeting h1 {
   font-size: var(--font-size-page-title, 19px);
   font-weight: var(--font-weight-extrabold, 800);
+  color: var(--color-text);
   line-height: 1.45;
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;

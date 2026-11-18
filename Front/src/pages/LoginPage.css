@@ -20,3 +20,244 @@
   font-size: var(--font-size-badge);
   font-weight: var(--font-weight-extrabold);
 }
+
+/* ========================================
+   다크 모드: LoginPage Tailwind 고정색 오버라이드
+   LoginPage는 Tailwind 클래스(text-slate-*, bg-slate-*) 사용으로
+   다크 모드에서 라이트 전용 색상이 그대로 적용되는 문제 수정
+   ======================================== */
+:root[data-theme='dark'] .login-page,
+:root.dark .login-page,
+html.dark .login-page,
+body.dark .login-page {
+  /* 페이지 배경 */
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* 다크모드에서 라이트 고정색(slate-50, slate-900 등) 전역 오버라이드 */
+:root[data-theme='dark'] .login-page h1,
+:root.dark .login-page h1,
+html.dark .login-page h1,
+body.dark .login-page h1 {
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] .login-page .text-slate-900,
+:root.dark .login-page .text-slate-900,
+html.dark .login-page .text-slate-900,
+body.dark .login-page .text-slate-900 {
+  color: var(--color-text) !important;
+}
+
+:root[data-theme='dark'] .login-page .text-slate-700,
+:root.dark .login-page .text-slate-700,
+html.dark .login-page .text-slate-700,
+body.dark .login-page .text-slate-700 {
+  color: var(--color-text-subtle) !important;
+}
+
+:root[data-theme='dark'] .login-page .text-slate-600,
+:root.dark .login-page .text-slate-600,
+html.dark .login-page .text-slate-600,
+body.dark .login-page .text-slate-600 {
+  color: var(--color-muted) !important;
+}
+
+:root[data-theme='dark'] .login-page .text-slate-500,
+:root.dark .login-page .text-slate-500,
+html.dark .login-page .text-slate-500,
+body.dark .login-page .text-slate-500 {
+  color: var(--color-muted) !important;
+}
+
+:root[data-theme='dark'] .login-page .text-slate-400,
+:root.dark .login-page .text-slate-400,
+html.dark .login-page .text-slate-400,
+body.dark .login-page .text-slate-400 {
+  color: var(--color-muted) !important;
+}
+
+:root[data-theme='dark'] .login-page .text-slate-800,
+:root.dark .login-page .text-slate-800,
+html.dark .login-page .text-slate-800,
+body.dark .login-page .text-slate-800 {
+  color: var(--color-text) !important;
+}
+
+/* 탭 버튼 - 라이트 전용 배경 오버라이드 */
+:root[data-theme='dark'] .login-page .bg-slate-200\/70,
+:root.dark .login-page .bg-slate-200\/70,
+html.dark .login-page .bg-slate-200\/70,
+body.dark .login-page .bg-slate-200\/70 {
+  background: var(--color-surface-subtle) !important;
+}
+
+/* 활성 탭 - 라이트 전용 배경 오버라이드 */
+:root[data-theme='dark'] .login-page .bg-white,
+:root.dark .login-page .bg-white,
+html.dark .login-page .bg-white,
+body.dark .login-page .bg-white {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+/* 입력창 - bg-slate-50 오버라이드 */
+:root[data-theme='dark'] .login-page .bg-slate-50,
+:root.dark .login-page .bg-slate-50,
+html.dark .login-page .bg-slate-50,
+body.dark .login-page .bg-slate-50 {
+  background: var(--color-surface-subtle) !important;
+  color: var(--color-text) !important;
+}
+
+:root[data-theme='dark'] .login-page input,
+:root.dark .login-page input,
+html.dark .login-page input,
+body.dark .login-page input {
+  background: color-mix(in srgb, var(--color-surface-subtle) 95%, transparent) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+
+:root[data-theme='dark'] .login-page input::placeholder,
+:root.dark .login-page input::placeholder,
+html.dark .login-page input::placeholder,
+body.dark .login-page input::placeholder {
+  color: var(--color-muted) !important;
+}
+
+/* Auth 카드 배경 (유리 효과 - 반투명) */
+:root[data-theme='dark'] .login-page .border-slate-200\/80,
+:root.dark .login-page .border-slate-200\/80,
+html.dark .login-page .border-slate-200\/80,
+body.dark .login-page .border-slate-200\/80 {
+  border-color: var(--color-border) !important;
+  background: rgba(23, 32, 51, 0.75) !important;
+}
+
+/* 힌트 박스 - bg-blue-50 */
+:root[data-theme='dark'] .login-page .bg-blue-50\/70,
+:root.dark .login-page .bg-blue-50\/70,
+html.dark .login-page .bg-blue-50\/70,
+body.dark .login-page .bg-blue-50\/70 {
+  background: rgba(37, 99, 235, 0.18) !important;
+  border-color: rgba(96, 165, 250, 0.35) !important;
+  color: #bfdbfe !important;
+}
+
+/* emerald 뱃지 - 학번 확인됨 */
+:root[data-theme='dark'] .login-page .bg-emerald-50,
+:root.dark .login-page .bg-emerald-50,
+html.dark .login-page .bg-emerald-50,
+body.dark .login-page .bg-emerald-50 {
+  background: rgba(5, 150, 105, 0.22) !important;
+  border-color: rgba(52, 211, 153, 0.4) !important;
+}
+
+:root[data-theme='dark'] .login-page .text-emerald-600,
+:root.dark .login-page .text-emerald-600,
+html.dark .login-page .text-emerald-600,
+body.dark .login-page .text-emerald-600 {
+  color: #a7f3d0 !important;
+}
+
+/* 예시 학번 버튼 */
+:root[data-theme='dark'] .login-page .bg-blue-50,
+:root.dark .login-page .bg-blue-50,
+html.dark .login-page .bg-blue-50,
+body.dark .login-page .bg-blue-50 {
+  background: rgba(37, 99, 235, 0.25) !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
+  color: #bfdbfe !important;
+}
+
+/* 로그인/계정 생성 시작 버튼 */
+:root[data-theme='dark'] .login-page .bg-baekseok-600,
+:root.dark .login-page .bg-baekseok-600,
+html.dark .login-page .bg-baekseok-600,
+body.dark .login-page .bg-baekseok-600 {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme='dark'] .login-page .bg-baekseok-600:hover,
+:root.dark .login-page .bg-baekseok-600:hover,
+html.dark .login-page .bg-baekseok-600:hover,
+body.dark .login-page .bg-baekseok-600:hover {
+  background: #1d4ed8 !important;
+}
+
+/* 포털 계정 안내 박스 */
+:root[data-theme='dark'] .login-page .bg-slate-50\/90,
+:root.dark .login-page .bg-slate-50\/90,
+html.dark .login-page .bg-slate-50\/90,
+body.dark .login-page .bg-slate-50\/90 {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* 회원가입 폼 라벨 */
+:root[data-theme='dark'] .login-page label,
+:root.dark .login-page label,
+html.dark .login-page label,
+body.dark .login-page label {
+  color: var(--color-text) !important;
+}
+
+/* 체크박스 레이블 텍스트 */
+:root[data-theme='dark'] .login-page .text-slate-600,
+:root.dark .login-page .text-slate-600,
+html.dark .login-page .text-slate-600,
+body.dark .login-page .text-slate-600 {
+  color: var(--color-text-subtle) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not(.light) .login-page {
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+  :root:not([data-theme='light']):not(.light) .login-page h1 { color: var(--color-text); }
+  :root:not([data-theme='light']):not(.light) .login-page .text-slate-900 { color: var(--color-text) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .text-slate-700 { color: var(--color-text-subtle) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .text-slate-600 { color: var(--color-muted) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .text-slate-500 { color: var(--color-muted) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .text-slate-400 { color: var(--color-muted) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .text-slate-800 { color: var(--color-text) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-slate-200\/70 { background: var(--color-surface-subtle) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-white { background: var(--color-surface) !important; color: var(--color-text) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-slate-50 { background: var(--color-surface-subtle) !important; color: var(--color-text) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page input {
+    background: color-mix(in srgb, var(--color-surface-subtle) 95%, transparent) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+  }
+  :root:not([data-theme='light']):not(.light) .login-page input::placeholder { color: var(--color-muted) !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .border-slate-200\/80 {
+    border-color: var(--color-border) !important;
+    background: rgba(23, 32, 51, 0.75) !important;
+  }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-blue-50\/70 {
+    background: rgba(37, 99, 235, 0.18) !important;
+    border-color: rgba(96, 165, 250, 0.35) !important;
+    color: #bfdbfe !important;
+  }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-emerald-50 {
+    background: rgba(5, 150, 105, 0.22) !important;
+    border-color: rgba(52, 211, 153, 0.4) !important;
+  }
+  :root:not([data-theme='light']):not(.light) .login-page .text-emerald-600 { color: #a7f3d0 !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-blue-50 {
+    background: rgba(37, 99, 235, 0.25) !important;
+    border-color: rgba(96, 165, 250, 0.4) !important;
+    color: #bfdbfe !important;
+  }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-baekseok-600 { background: #2563eb !important; color: #ffffff !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-baekseok-600:hover { background: #1d4ed8 !important; }
+  :root:not([data-theme='light']):not(.light) .login-page .bg-slate-50\/90 {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-color: var(--color-border) !important;
+  }
+  :root:not([data-theme='light']):not(.light) .login-page label { color: var(--color-text) !important; }
+}

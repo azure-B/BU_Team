@@ -241,6 +241,7 @@
   margin: 0;
   font-size: var(--font-size-section-title, 14px);
   font-weight: var(--font-weight-extrabold, 800);
+  color: var(--color-text);
   letter-spacing: -0.02em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -340,6 +341,7 @@
   overflow: hidden;
   font-size: var(--font-size-body, 12px);
   font-weight: var(--font-weight-extrabold, 800);
+  color: var(--color-text);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -432,6 +434,7 @@ a.dashboard-button {
   font-size: var(--font-size-feature-title, 26px);
   line-height: 1.1;
   letter-spacing: -0.04em;
+  color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -609,6 +612,12 @@ a.dashboard-button {
   color: var(--color-text);
   background: var(--color-surface-subtle);
   border-color: var(--color-border);
+}
+
+.dashboard-button--secondary:hover {
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-surface-subtle) 85%, var(--color-primary));
+  border-color: var(--color-primary);
 }
 
 .schedule-list,
@@ -941,9 +950,48 @@ a.dashboard-button {
 }
 
 @media (prefers-color-scheme: dark) {
-  .schedule-row--lunch .schedule-row__icon,
-  .schedule-row--lunch .schedule-row__status {
+  :root:not([data-theme='light']):not(.light) .schedule-row--lunch .schedule-row__icon,
+  :root:not([data-theme='light']):not(.light) .schedule-row--lunch .schedule-row__status {
     color: #fbbf24;
     background: #422006;
   }
+
+  :root:not([data-theme='light']):not(.light) .dashboard-button--primary {
+    color: #ffffff;
+    background: #2563eb;
+    border-color: #3b82f6;
+  }
+
+  :root:not([data-theme='light']):not(.light) .dashboard-button--primary:hover {
+    background: #1d4ed8;
+  }
+}
+
+/* ── 다크 모드: 점심시간 일정 및 주요 버튼 스타일 ── */
+:root[data-theme='dark'] .schedule-row--lunch .schedule-row__icon,
+:root[data-theme='dark'] .schedule-row--lunch .schedule-row__status,
+:root.dark .schedule-row--lunch .schedule-row__icon,
+:root.dark .schedule-row--lunch .schedule-row__status,
+html.dark .schedule-row--lunch .schedule-row__icon,
+html.dark .schedule-row--lunch .schedule-row__status,
+body.dark .schedule-row--lunch .schedule-row__icon,
+body.dark .schedule-row--lunch .schedule-row__status {
+  color: #fbbf24;
+  background: #422006;
+}
+
+:root[data-theme='dark'] .dashboard-button--primary,
+:root.dark .dashboard-button--primary,
+html.dark .dashboard-button--primary,
+body.dark .dashboard-button--primary {
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #3b82f6;
+}
+
+:root[data-theme='dark'] .dashboard-button--primary:hover,
+:root.dark .dashboard-button--primary:hover,
+html.dark .dashboard-button--primary:hover,
+body.dark .dashboard-button--primary:hover {
+  background: #1d4ed8;
 }

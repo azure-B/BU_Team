@@ -26,6 +26,7 @@
   gap: 9px;
   font-size: var(--font-size-brand, 18px);
   font-weight: var(--font-weight-extrabold, 800);
+  color: var(--color-text);
   letter-spacing: -0.03em;
   white-space: nowrap;
 }
