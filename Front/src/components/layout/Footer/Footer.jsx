@@ -569,7 +569,7 @@ export default function Footer() {
   const { state } = useSchedule()
   const isHome = path === '/' || path === '/home' || path === '/dashboard'
   const isSchedule = path === '/schedule' || path.startsWith('/schedule')
-  const isCampus = path === '/campus' || (import.meta.env.DEV && path === '/campus/map-preview')
+  const isCampus = path === '/campus' || path === '/campus/map-preview'
   const isMyPage = path === '/mypage'
 
   return (
@@ -606,7 +606,7 @@ export default function Footer() {
           </button>
           <Link
             className={`bottom-nav__item ${isCampus ? 'bottom-nav__item--active' : ''}`}
-            to={import.meta.env.DEV ? '/campus/map-preview' : '/campus'}
+            to="/campus"
             aria-current={isCampus ? 'page' : undefined}
           >
             <Compass size={24} weight={isCampus ? 'fill' : 'regular'} aria-hidden="true" />

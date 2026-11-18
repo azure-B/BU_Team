@@ -12,10 +12,7 @@ import './styles/global.css'
 
 const SchedulePage = lazy(() => import('./pages/SchedulePage'))
 const MyPage = lazy(() => import('./pages/MyPage'))
-const CampusPage = lazy(() => import('./pages/CampusPage'))
-const CampusMapPreviewPage = import.meta.env.DEV
-  ? lazy(() => import('./pages/CampusMapPreviewPage'))
-  : null
+const CampusMapPage = lazy(() => import('./pages/CampusMapPreviewPage'))
 const ChatStatsPage = lazy(() => import('./pages/ChatStatsPage'))
 
 function AppRoutes() {
@@ -32,8 +29,8 @@ function AppRoutes() {
         <Route path="/dashboard" element={<HomePage />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/schedule/:view" element={<SchedulePage />} />
-        <Route path="/campus" element={<CampusPage />} />
-        {import.meta.env.DEV && <Route path="/campus/map-preview" element={<CampusMapPreviewPage />} />}
+        <Route path="/campus" element={<CampusMapPage />} />
+        <Route path="/campus/map-preview" element={<Navigate to="/campus" replace />} />
         <Route path="/chat-stats" element={<ChatStatsPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myPage" element={<MyPage />} />
