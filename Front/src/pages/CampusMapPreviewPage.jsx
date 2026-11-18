@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowsDownUp, ArrowUpRight, CaretDown, Clock, Footprints, MapPin, NavigationArrow, ArrowCounterClockwise } from '@phosphor-icons/react'
 import SectionCard from '../components/common/SectionCard'
 import KakaoCampusMap from '../components/common/KakaoCampusMap'
+import CampusNextMoves from '../components/common/CampusNextMoves'
 import { getMapConfig, getMapBuildings, getWalkingRoute } from '../api/campusMapApi'
 import './CampusMapPreviewPage.css'
 
@@ -172,6 +173,11 @@ export default function CampusMapPreviewPage() {
         </div>
         <div className="campus-journey__detail"><ArrowUpRight size={19} /><p>{route ? <><strong>{pointName(route.from, '출발')}</strong>에서 <strong>{pointName(route.to, '도착')}</strong>까지의 도보 경로입니다.</> : '위치를 선택하고 경로를 확인해 주세요.'}</p></div>
       </SectionCard>
+      <CampusNextMoves buildings={buildings} buildingsLoading={loadingData} fromLabel={pointName(from, '출발')} onChoose={(building, title) => {
+        selectLocation('to', building.id)
+        setMessage(`${title} 수업의 ${building.name}을 도착지로 설정했습니다.`)
+        destinationSelectRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }} />
     </form>
   </div>
 }

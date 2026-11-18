@@ -38,6 +38,7 @@ asdasd/
 │   │   ├── components/
 │   │   │   ├── common/
 │   │   │   │   ├── KakaoCampusMap.jsx — 카카오 지도 SDK·지점 선택·마커·경로 표시
+│   │   │   │   ├── CampusNextMoves.jsx — 시간표 연동 다음 이동 일정과 도착지 선택
 │   │   │   │   ├── Button/      — Button.jsx, Button.css, index.js
 │   │   │   │   ├── Card/        — Card.jsx, Card.css, index.js
 │   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
@@ -68,7 +69,8 @@ asdasd/
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)
 │   │   ├── utils/               — 유틸 (chatStats 등)
-│   │   │   └── loadKakaoMap.js  — 카카오 지도 SDK 비동기 로더
+│   │   │   ├── loadKakaoMap.js  — 카카오 지도 SDK 비동기 로더
+│   │   │   └── campusNextClasses.js / campusNextClasses.test.js — 한국 시각 기준 다음 수업·건물 연결 및 검증
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── publish/                 — npm run build 결과 (정적 배포용 HTML)
