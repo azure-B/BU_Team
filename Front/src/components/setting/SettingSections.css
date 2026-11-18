@@ -224,6 +224,11 @@
   cursor: pointer;
   place-items: center;
   font-size: 20px;
+  transition: color var(--transition);
+}
+
+.profile-edit-dialog__close:hover {
+  color: var(--color-text);
 }
 
 .profile-edit-photo {
@@ -311,6 +316,16 @@
   font: inherit;
 }
 
+.profile-edit-field input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.profile-edit-field select option {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
 .profile-edit-dialog__error {
   margin: 0;
   color: var(--color-danger);
@@ -325,6 +340,11 @@
   border-radius: var(--radius-control);
   font-weight: var(--font-weight-bold, 700);
   cursor: pointer;
+  transition: background var(--transition);
+}
+
+.profile-edit-dialog__save:hover {
+  background: #1e40af;
 }
 
 .setting-list-row__left {
@@ -484,3 +504,30 @@
 .setting-sub-link--danger:hover {
   color: var(--color-danger);
 }
+
+/* ── 다크 모드: 프로필 수정 모달 저장 버튼 ── */
+:root[data-theme='dark'] .profile-edit-dialog__save,
+:root.dark .profile-edit-dialog__save,
+html.dark .profile-edit-dialog__save,
+body.dark .profile-edit-dialog__save {
+  color: #ffffff;
+  background: #2563eb;
+}
+
+:root[data-theme='dark'] .profile-edit-dialog__save:hover,
+:root.dark .profile-edit-dialog__save:hover,
+html.dark .profile-edit-dialog__save:hover,
+body.dark .profile-edit-dialog__save:hover {
+  background: #1d4ed8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not(.light) .profile-edit-dialog__save {
+    color: #ffffff;
+    background: #2563eb;
+  }
+  :root:not([data-theme='light']):not(.light) .profile-edit-dialog__save:hover {
+    background: #1d4ed8;
+  }
+}
+

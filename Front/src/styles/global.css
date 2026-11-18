@@ -56,28 +56,86 @@
   --font-weight-extrabold: 800;
   --font-weight-ultrabold: 850;
   --font-weight-black: 900;
+  --color-warning: #d97706;
+  --color-warning-soft: #fef3c7;
+  --color-text-subtle: #475569;
+}
+
+/* 다크 모드: 클래스/데이터 속성 및 prefers-color-scheme 지원 */
+:root[data-theme='dark'],
+:root.dark,
+html.dark,
+body.dark {
+  color: #f8fafc;
+  background: #0f172a;
+  --color-bg: #0f172a;
+  --color-surface: #172033;
+  --color-surface-subtle: #1e293b;
+  --color-text: #f8fafc;
+  --color-text-subtle: #cbd5e1;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+  --color-primary: #60a5fa;
+  --color-primary-strong: #93c5fd;
+  --color-primary-soft: #172554;
+  --color-danger: #fb7185;
+  --color-danger-soft: #3f1422;
+  --color-success: #34d399;
+  --color-success-soft: #063126;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #3f2905;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.28), 0 12px 34px rgb(0 0 0 / 0.24);
+  --shadow-float: 0 18px 48px rgb(0 0 0 / 0.52);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    color: #e2e8f0;
+  :root:not([data-theme='light']):not(.light) {
+    color: #f8fafc;
     background: #0f172a;
     --color-bg: #0f172a;
     --color-surface: #172033;
-    --color-surface-subtle: #202b40;
-    --color-text: #f1f5f9;
+    --color-surface-subtle: #1e293b;
+    --color-text: #f8fafc;
+    --color-text-subtle: #cbd5e1;
     --color-muted: #94a3b8;
     --color-border: #334155;
     --color-primary: #60a5fa;
     --color-primary-strong: #93c5fd;
     --color-primary-soft: #172554;
     --color-danger: #fb7185;
-    --color-danger-soft: #4c0519;
+    --color-danger-soft: #3f1422;
     --color-success: #34d399;
-    --color-success-soft: #052e2b;
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.18), 0 12px 34px rgb(0 0 0 / 0.16);
-    --shadow-float: 0 18px 48px rgb(0 0 0 / 0.42);
+    --color-success-soft: #063126;
+    --color-warning: #fbbf24;
+    --color-warning-soft: #3f2905;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.28), 0 12px 34px rgb(0 0 0 / 0.24);
+    --shadow-float: 0 18px 48px rgb(0 0 0 / 0.52);
   }
+}
+
+/* 수동 라이트 모드 강제 */
+:root[data-theme='light'],
+:root.light,
+html.light,
+body.light {
+  color: #0f172a;
+  background: #f8fafc;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f1f5f9;
+  --color-text: #0f172a;
+  --color-text-subtle: #475569;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-primary: #1d4ed8;
+  --color-primary-strong: #00236f;
+  --color-primary-soft: #eff6ff;
+  --color-danger: #e11d48;
+  --color-danger-soft: #fff1f2;
+  --color-success: #059669;
+  --color-success-soft: #ecfdf5;
+  --color-warning: #d97706;
+  --color-warning-soft: #fef3c7;
 }
 
 *, *::before, *::after {

@@ -11,6 +11,7 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
+  color-scheme: light;
 }
 
 .demo-controls__field {
@@ -26,7 +27,7 @@
 .demo-controls__label {
   font-size: 11px;
   font-weight: 700;
-  color: var(--color-muted, #64748b);
+  color: #64748b;
   letter-spacing: -0.02em;
   flex-shrink: 0;
 }
@@ -34,7 +35,7 @@
 .demo-controls__date {
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text, #0f172a);
+  color: #1e293b;
   letter-spacing: -0.02em;
   flex-shrink: 0;
 }
@@ -50,10 +51,10 @@
   height: 32px;
   margin: 0;
   border-radius: 8px;
-  border: 1px solid #d7dee8;
+  border: 1px solid #cbd5e1;
   background-color: #fff;
   background-image: none;
-  color: var(--color-text, #0f172a);
+  color: #1e293b;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -79,6 +80,11 @@
   color-scheme: light;
 }
 
+.demo-controls .demo-controls__time::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
 .demo-controls .demo-controls__time::-webkit-calendar-picker-indicator {
   display: block;
   margin: 0 0 0 4px;
@@ -98,6 +104,11 @@
   background-size: 12px;
 }
 
+.demo-controls .demo-controls__select option {
+  background-color: #fff;
+  color: #1e293b;
+}
+
 .demo-controls .demo-controls__chip {
   -webkit-appearance: none;
   appearance: none;
@@ -105,9 +116,18 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--color-muted, #64748b);
+  color: #334155;
+  background-color: #fff;
+  border: 1px solid #cbd5e1;
   cursor: pointer;
   white-space: nowrap;
+  transition: color var(--transition, 180ms ease), background-color var(--transition, 180ms ease), border-color var(--transition, 180ms ease);
+}
+
+.demo-controls .demo-controls__chip:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
 }
 
 .demo-controls .demo-controls__chip.is-active {
@@ -118,6 +138,95 @@
 
 .demo-controls__field--gps {
   flex: 1 1 100%;
+}
+
+/* ========================================
+   다크 모드: 흰색 정보 패널 내부 어두운 글자색 유지
+   다크 모드에서도 흰색 정보 패널 내부는 밝은 배경용 어두운 글자색을 강제 유지
+   ======================================== */
+:root[data-theme='dark'] .demo-controls,
+:root.dark .demo-controls,
+html.dark .demo-controls,
+body.dark .demo-controls {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] .demo-controls .demo-controls__time,
+:root[data-theme='dark'] .demo-controls .demo-controls__select,
+:root[data-theme='dark'] .demo-controls .demo-controls__date,
+:root.dark .demo-controls .demo-controls__time,
+:root.dark .demo-controls .demo-controls__select,
+:root.dark .demo-controls .demo-controls__date,
+html.dark .demo-controls .demo-controls__time,
+html.dark .demo-controls .demo-controls__select,
+html.dark .demo-controls .demo-controls__date,
+body.dark .demo-controls .demo-controls__time,
+body.dark .demo-controls .demo-controls__select,
+body.dark .demo-controls .demo-controls__date {
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+:root[data-theme='dark'] .demo-controls .demo-controls__select option,
+:root.dark .demo-controls .demo-controls__select option,
+html.dark .demo-controls .demo-controls__select option,
+body.dark .demo-controls .demo-controls__select option {
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+}
+
+:root[data-theme='dark'] .demo-controls .demo-controls__label,
+:root.dark .demo-controls .demo-controls__label,
+html.dark .demo-controls .demo-controls__label,
+body.dark .demo-controls .demo-controls__label {
+  color: #64748b !important;
+}
+
+:root[data-theme='dark'] .demo-controls .demo-controls__chip:not(.is-active),
+:root.dark .demo-controls .demo-controls__chip:not(.is-active),
+html.dark .demo-controls .demo-controls__chip:not(.is-active),
+body.dark .demo-controls .demo-controls__chip:not(.is-active) {
+  color: #334155 !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+:root[data-theme='dark'] .demo-controls .demo-controls__chip:not(.is-active):hover,
+:root.dark .demo-controls .demo-controls__chip:not(.is-active):hover,
+html.dark .demo-controls .demo-controls__chip:not(.is-active):hover,
+body.dark .demo-controls .demo-controls__chip:not(.is-active):hover {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not(.light) .demo-controls {
+    color-scheme: light;
+  }
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__time,
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__select,
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__date {
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__select option {
+    color: #1e293b !important;
+    background-color: #ffffff !important;
+  }
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__label {
+    color: #64748b !important;
+  }
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__chip:not(.is-active) {
+    color: #334155 !important;
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+  :root:not([data-theme='light']):not(.light) .demo-controls .demo-controls__chip:not(.is-active):hover {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+  }
 }
 
 @media (max-width: 480px) {

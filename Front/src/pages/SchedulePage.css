@@ -7,12 +7,12 @@
   margin: 0 auto;
 }
 
-.schedule-page__intro h1 { margin: 0; font-size: var(--font-size-page-title, 19px); font-weight: var(--font-weight-extrabold, 800); letter-spacing: -0.035em; }
+.schedule-page__intro h1 { margin: 0; font-size: var(--font-size-page-title, 19px); font-weight: var(--font-weight-extrabold, 800); color: var(--color-text); letter-spacing: -0.035em; }
 .schedule-page__intro p { margin: 3px 0 0; color: var(--color-muted); font-size: var(--font-size-subtext, 11px); }
 .schedule-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; }
 .schedule-toolbar__period, .schedule-toolbar__actions { display: flex; align-items: center; gap: 6px; }
 .schedule-toolbar__period { min-width: 0; }
-.schedule-toolbar__period h2 { margin: 0; font-size: var(--font-size-section-title, 14px); font-weight: var(--font-weight-extrabold, 800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.schedule-toolbar__period h2 { margin: 0; font-size: var(--font-size-section-title, 14px); font-weight: var(--font-weight-extrabold, 800); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .schedule-toolbar__actions { flex-shrink: 0; }
 .schedule-icon-button { display: grid; flex: 0 0 auto; width: 30px; height: 30px; padding: 0; color: var(--color-muted); background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 9px; place-items: center; cursor: pointer; transition: background var(--transition), transform var(--transition); }
 .schedule-icon-button:hover { color: var(--color-primary); background: var(--color-primary-soft); }
@@ -257,7 +257,7 @@
 .schedule-details { padding: 14px; }
 .schedule-details__heading { display: flex; min-width: 0; flex-wrap: wrap; align-items: center; gap: 6px; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border); }
 .schedule-details__heading > span { display: grid; width: 24px; height: 24px; color: var(--color-primary); background: var(--color-primary-soft); border-radius: 7px; place-items: center; }
-.schedule-details__heading h2 { flex: 1; min-width: 0; margin: 0; font-size: var(--font-size-section-title, 14px); font-weight: var(--font-weight-extrabold, 800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.schedule-details__heading h2 { flex: 1; min-width: 0; margin: 0; font-size: var(--font-size-section-title, 14px); font-weight: var(--font-weight-extrabold, 800); color: var(--color-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .schedule-details__heading > small { color: var(--color-primary); font-size: var(--font-size-badge, 10px); font-weight: var(--font-weight-bold, 700); }
 .schedule-detail { display: flex; align-items: center; gap: 8px; padding: 10px 8px; margin-top: 7px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-control); }
 .schedule-detail time { flex: 0 0 43px; color: var(--color-muted); font-size: var(--font-size-subtext, 11px); font-weight: var(--font-weight-bold, 700); }
@@ -298,6 +298,8 @@
 }
 .schedule-dialog label, .schedule-dialog__field { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 6px; font-size: var(--font-size-body, 12px); font-weight: var(--font-weight-bold, 700); }
 .schedule-dialog input, .schedule-dialog select { width: 100%; min-width: 0; padding: 10px; color: var(--color-text); background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 9px; font: inherit; }
+.schedule-dialog input::placeholder { color: var(--color-muted); opacity: 0.9; }
+.schedule-dialog select option { color: var(--color-text); background: var(--color-surface); }
 .schedule-dialog__picker { position: relative; width: 100%; }
 .schedule-dialog__picker-face { display: flex; width: 100%; min-width: 0; min-height: 40px; align-items: center; justify-content: space-between; gap: 8px; padding: 10px; color: var(--color-text); background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 9px; font: inherit; }
 .schedule-dialog__picker-face > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -322,3 +324,194 @@
   .schedule-dialog, .schedule-dialog .course-search__results { scrollbar-width: none; }
   .schedule-dialog::-webkit-scrollbar, .schedule-dialog .course-search__results::-webkit-scrollbar { display: none; }
 }
+
+/* ========================================
+   시간표 및 일정 다크 모드 지원
+   ======================================== */
+
+:root[data-theme='dark'] .timetable-event--recommend,
+:root.dark .timetable-event--recommend,
+html.dark .timetable-event--recommend,
+body.dark .timetable-event--recommend {
+  color: #d8b4fe;
+  background: rgba(126, 34, 206, 0.25);
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+:root[data-theme='dark'] .schedule-kind--teaching,
+:root.dark .schedule-kind--teaching,
+html.dark .schedule-kind--teaching,
+body.dark .schedule-kind--teaching {
+  color: #d8b4fe;
+  background: rgba(126, 34, 206, 0.25);
+}
+
+:root[data-theme='dark'] .calendar-day--outside,
+:root.dark .calendar-day--outside,
+html.dark .calendar-day--outside,
+body.dark .calendar-day--outside {
+  opacity: 0.3;
+}
+
+:root[data-theme='dark'] .calendar-day--selected .calendar-day__number,
+:root.dark .calendar-day--selected .calendar-day__number,
+html.dark .calendar-day--selected .calendar-day__number,
+body.dark .calendar-day--selected .calendar-day__number {
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
+:root[data-theme='dark'] .schedule-icon-button--primary,
+:root.dark .schedule-icon-button--primary,
+html.dark .schedule-icon-button--primary,
+body.dark .schedule-icon-button--primary {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+:root[data-theme='dark'] .schedule-dialog__modes button[aria-pressed='true'],
+:root.dark .schedule-dialog__modes button[aria-pressed='true'],
+html.dark .schedule-dialog__modes button[aria-pressed='true'],
+body.dark .schedule-dialog__modes button[aria-pressed='true'] {
+  color: #ffffff;
+  background: #2563eb;
+}
+
+:root[data-theme='dark'] .schedule-save-button,
+:root.dark .schedule-save-button,
+html.dark .schedule-save-button,
+body.dark .schedule-save-button {
+  color: #ffffff;
+  background: #2563eb;
+}
+
+:root[data-theme='dark'] .schedule-save-button:hover,
+:root.dark .schedule-save-button:hover,
+html.dark .schedule-save-button:hover,
+body.dark .schedule-save-button:hover {
+  background: #1d4ed8;
+}
+
+:root[data-theme='dark'] .schedule-dialog,
+:root.dark .schedule-dialog,
+html.dark .schedule-dialog,
+body.dark .schedule-dialog {
+  color: #f8fafc;
+  background: #172033;
+  border-color: #334155;
+}
+
+:root[data-theme='dark'] .schedule-dialog input,
+:root[data-theme='dark'] .schedule-dialog select,
+:root[data-theme='dark'] .schedule-dialog__picker-face,
+:root.dark .schedule-dialog input,
+:root.dark .schedule-dialog select,
+:root.dark .schedule-dialog__picker-face,
+html.dark .schedule-dialog input,
+html.dark .schedule-dialog select,
+html.dark .schedule-dialog__picker-face,
+body.dark .schedule-dialog input,
+body.dark .schedule-dialog select,
+body.dark .schedule-dialog__picker-face {
+  color: #f8fafc;
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:root[data-theme='dark'] .schedule-dialog select option,
+:root.dark .schedule-dialog select option,
+html.dark .schedule-dialog select option,
+body.dark .schedule-dialog select option {
+  color: #f8fafc;
+  background: #1e293b;
+}
+
+:root[data-theme='dark'] .schedule-dialog input::placeholder,
+:root.dark .schedule-dialog input::placeholder,
+html.dark .schedule-dialog input::placeholder,
+body.dark .schedule-dialog input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+:root[data-theme='dark'] .weekend-toggle,
+:root.dark .weekend-toggle,
+html.dark .weekend-toggle,
+body.dark .weekend-toggle {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: var(--color-border);
+}
+
+:root[data-theme='dark'] .weekend-toggle__button,
+:root.dark .weekend-toggle__button,
+html.dark .weekend-toggle__button,
+body.dark .weekend-toggle__button {
+  color: var(--color-text-subtle);
+}
+
+:root[data-theme='dark'] .weekend-toggle__button.is-active,
+:root.dark .weekend-toggle__button.is-active,
+html.dark .weekend-toggle__button.is-active,
+body.dark .weekend-toggle__button.is-active {
+  color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not(.light) .timetable-event--recommend {
+    color: #d8b4fe;
+    background: rgba(126, 34, 206, 0.25);
+    border-color: rgba(168, 85, 247, 0.6);
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-kind--teaching {
+    color: #d8b4fe;
+    background: rgba(126, 34, 206, 0.25);
+  }
+  :root:not([data-theme='light']):not(.light) .calendar-day--outside { opacity: 0.3; }
+  :root:not([data-theme='light']):not(.light) .calendar-day--selected .calendar-day__number {
+    color: #ffffff;
+    background: var(--color-primary);
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-dialog {
+    color: #f8fafc;
+    background: #172033;
+    border-color: #334155;
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-dialog input,
+  :root:not([data-theme='light']):not(.light) .schedule-dialog select,
+  :root:not([data-theme='light']):not(.light) .schedule-dialog__picker-face {
+    color: #f8fafc;
+    background: #1e293b;
+    border-color: #334155;
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-dialog select option {
+    color: #f8fafc;
+    background: #1e293b;
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-dialog input::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-dialog__modes button[aria-pressed='true'] {
+    color: #ffffff;
+    background: #2563eb;
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-save-button {
+    color: #ffffff;
+    background: #2563eb;
+  }
+  :root:not([data-theme='light']):not(.light) .schedule-save-button:hover {
+    background: #1d4ed8;
+  }
+  :root:not([data-theme='light']):not(.light) .weekend-toggle {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: var(--color-border);
+  }
+  :root:not([data-theme='light']):not(.light) .weekend-toggle__button {
+    color: var(--color-text-subtle);
+  }
+  :root:not([data-theme='light']):not(.light) .weekend-toggle__button.is-active {
+    color: #ffffff;
+  }
+}
+
