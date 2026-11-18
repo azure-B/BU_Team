@@ -44,7 +44,6 @@
 .campus-next-moves__content button { display: inline-flex; align-items: center; gap: 4px; min-height: 30px; margin-top: 7px; padding: 5px 8px; border: 1px solid var(--color-border); border-radius: 7px; background: var(--color-surface); color: var(--color-primary); font: inherit; font-size: 10px; cursor: pointer; }
 .campus-next-moves__content button:disabled { color: var(--color-muted); cursor: default; }
 .campus-next-moves__empty { margin: 0; padding: 12px 0; color: var(--color-muted); font-size: 11px; line-height: 1.6; }
-.campus-next-moves__ended-title { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: 12px; font-weight: 600; }
 .campus-map.is-picking { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .campus-map.is-picking .campus-map__drawing, .campus-map.is-picking .campus-map__building { cursor: crosshair; }
 .campus-map.is-picking .campus-map__controls { bottom: 155px; }
