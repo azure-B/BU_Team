@@ -8,15 +8,15 @@
 .campus-preview__header h1 { margin: 0; color: var(--color-text); font-size: var(--font-size-page-title); font-weight: var(--font-weight-extrabold); letter-spacing: -0.04em; }
 .campus-preview__header p { margin: 5px 0 0; color: var(--color-muted); font-size: var(--font-size-subtext); }
 .campus-preview__form { display: flex; flex-direction: column; gap: 13px; }
-.campus-location { display: flex; align-items: center; gap: 12px; padding: 7px 13px; }
+.campus-location { display: flex; align-items: center; gap: 12px; padding: 5px 13px; }
 .campus-location__rail { width: 17px; display: flex; align-items: center; flex-direction: column; color: var(--color-primary); }
 .campus-location__rail i { width: 9px; height: 9px; border: 2px solid var(--color-success); border-radius: 50%; }
-.campus-location__rail span { height: 22px; margin: 4px 0; border-left: 2px dotted var(--color-border); }
+.campus-location__rail span { height: 16px; margin: 3px 0; border-left: 2px dotted var(--color-border); }
 .campus-location__fields { flex: 1; min-width: 0; }
-.campus-location__field { min-height: 37px; display: flex; align-items: center; gap: 12px; position: relative; }
+.campus-location__field { min-height: 30px; display: flex; align-items: center; gap: 12px; position: relative; }
 .campus-location__field + .campus-location__field { border-top: 1px solid var(--color-border); }
 .campus-location__field > span { flex-shrink: 0; font-size: var(--font-size-subtext); color: var(--color-muted); }
-.campus-location__field select { appearance: none; width: 100%; min-width: 0; min-height: 35px; padding: 0 18px 0 0; border: 0; border-radius: 4px; background: transparent; color: var(--color-text); font: inherit; font-size: var(--font-size-body); font-weight: 700; cursor: pointer; }
+.campus-location__field select { appearance: none; width: 100%; min-width: 0; min-height: 28px; padding: 0 18px 0 0; border: 0; border-radius: 4px; background: transparent; color: var(--color-text); font: inherit; font-size: var(--font-size-body); font-weight: 700; cursor: pointer; }
 .campus-location__field option { background: var(--color-surface); color: var(--color-text); }
 .campus-location__field > svg { position: absolute; right: 0; color: var(--color-muted); pointer-events: none; }
 .campus-location__swap { display: grid; flex-shrink: 0; width: 38px; height: 30px; place-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface-subtle); color: var(--color-primary); cursor: pointer; }
