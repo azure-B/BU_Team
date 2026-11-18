@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { validate } from '../middlewares/validate.middleware';
 import {
   routeLatenessSchema,
+  walkingRouteSchema,
   cafeteriaQuerySchema,
   facilityQuerySchema,
   classroomQuerySchema,
@@ -12,9 +13,13 @@ import {
   getCafeteriaMenu,
   getClassrooms,
   getRouteAndLateness,
+  getMapConfig,
+  getWalkingRoute,
 } from '../controllers/campus.controller';
 
 const router = Router();
+router.get('/map/config', getMapConfig);
+router.post('/map/route', validate({ body: walkingRouteSchema }), getWalkingRoute as any);
 
 // 건물 목록 조회
 router.get('/buildings', getBuildings as any);

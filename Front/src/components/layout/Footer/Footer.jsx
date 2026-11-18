@@ -569,7 +569,7 @@ export default function Footer() {
   const { state } = useSchedule()
   const isHome = path === '/' || path === '/home' || path === '/dashboard'
   const isSchedule = path === '/schedule' || path.startsWith('/schedule')
-  const isCampus = path === '/campus'
+  const isCampus = path === '/campus' || (import.meta.env.DEV && path === '/campus/map-preview')
   const isMyPage = path === '/mypage'
 
   return (
@@ -604,15 +604,14 @@ export default function Footer() {
             <span aria-hidden="true" />
             <strong>AI 비서</strong>
           </button>
-          <button
+          <Link
             className={`bottom-nav__item ${isCampus ? 'bottom-nav__item--active' : ''}`}
-            type="button"
+            to={import.meta.env.DEV ? '/campus/map-preview' : '/campus'}
             aria-current={isCampus ? 'page' : undefined}
-            onClick={() => window.alert('공사중입니다.')}
           >
             <Compass size={24} weight={isCampus ? 'fill' : 'regular'} aria-hidden="true" />
             <span>캠퍼스</span>
-          </button>
+          </Link>
           <Link
             className={`bottom-nav__item ${isMyPage ? 'bottom-nav__item--active' : ''}`}
             to="/mypage"

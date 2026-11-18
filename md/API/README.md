@@ -191,6 +191,19 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 
 ## 7. 캠퍼스 데이터 (Campus) - B파트
 
+### GET /api/v1/campus/map/config
+- **설명**: 지도 SDK용 공개 JavaScript 키, 중심 좌표, REST 키 설정 여부를 반환한다. REST 키 값은 반환하지 않는다. `/api/campus/map/config` 별칭 지원.
+- **응답**: `{ success: true, data: { javascriptKey, walkingConfigured, center: { lat, lng } } }`
+- **관련 파일**: `Back/src/controllers/campus.controller.ts`, `Back/src/services/campus-map.service.ts`
+
+### POST /api/v1/campus/map/route
+- **설명**: 카카오 도보 API에 `priority=DISTANCE`, `summary=false`로 요청해 상세 보행 경로를 반환한다. 도보 제휴 권한 필요. `/api/campus/map/route` 별칭 지원.
+- **요청 Body**: `{ origin: { lat, lng }, destination: { lat, lng } }` (숫자 좌표 필수, 동일 지점 불가)
+- **응답**: `{ success: true, data: { source: 'kakao', distanceMeters, durationSeconds, path: [{ lat, lng }] } }`
+- **오류**: 입력 400, 경로 없음 422, 호출 한도 429, 응답 오류 502, 키/제휴 권한 문제 503, 연결/시간 초과 504. 고정 시간이나 직선거리로 대체하지 않는다.
+- **로그**: HTTP 상태와 숫자 결과 코드만 기록하며 키·출발/도착 좌표·원본 응답은 기록하지 않는다.
+- **관련 파일**: `Back/src/services/campus-map.service.ts`, `Back/src/validations/campus.validation.ts`
+
 ### GET /api/v1/campus/buildings
 - **설명**: 백석대 건물 목록 조회
 

@@ -1,7 +1,7 @@
 # 프로젝트 폴더 구조
 
 > **SSOT**: 폴더·파일이 실제로 추가·삭제·이동될 때만 갱신한다.
-> 마지막 갱신: 2026-11-05
+> 마지막 갱신: 2026-11-18
 
 ```
 asdasd/
@@ -32,10 +32,12 @@ asdasd/
 │   │   │   ├── index.js         — Axios 인스턴스 (토큰 인터셉터 포함)
 │   │   │   ├── courseCatalogCache.js, courseCatalogCache.test.js — 개설 강의 10분 메모리 캐시 및 검증
 │   │   │   ├── authApi.js       — 로그인/회원가입 인증 API 클라이언트
+│   │   │   ├── campusMapApi.js  — 지도 설정·건물 목록·상세 도보 경로 API
 │   │   │   └── dashboardApi.js  — 일정/과제(Top 3)/캠퍼스 동선 API 클라이언트
 │   │   ├── assets/              — 이미지, 폰트
 │   │   ├── components/
 │   │   │   ├── common/
+│   │   │   │   ├── KakaoCampusMap.jsx — 카카오 지도 SDK·지점 선택·마커·경로 표시
 │   │   │   │   ├── Button/      — Button.jsx, Button.css, index.js
 │   │   │   │   ├── Card/        — Card.jsx, Card.css, index.js
 │   │   │   │   └── SectionCard/ — SectionCard.jsx, SectionCard.css, index.js
@@ -60,11 +62,13 @@ asdasd/
 │   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
 │   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 영구 반복 수업
 │   │   │   ├── CampusPage.jsx / CampusPage.css — 캠퍼스 탭(학식·카페·학습·활동)
+│   │   │   ├── CampusMapPreviewPage.jsx / CampusMapPreviewPage.css — 개발 서버 전용 캠퍼스 지도·길찾기 연동 화면
 │   │   │   ├── ChatStatsPage.jsx / ChatStatsPage.css — 비서 처리 통계
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/
 │   │   │   └── global.css       — CSS 디자인 토큰 (Variables)
 │   │   ├── utils/               — 유틸 (chatStats 등)
+│   │   │   └── loadKakaoMap.js  — 카카오 지도 SDK 비동기 로더
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── publish/                 — npm run build 결과 (정적 배포용 HTML)
@@ -86,6 +90,8 @@ asdasd/
 │   │   ├── routes/              — auth, schedules, tasks, campus, dashboard
 │   │   ├── data/                — faqSeeds, professors, departmentOffices, academicCalendar, campusBuildings, elevatorWaitSlots, shuttleTimetable
 │   │   ├── services/            — auth, schedule, task, campus, dashboard, chat(router/llm/kbStore/scheduleIntent/campusIntent/noticeIntent/shuttleIntent/gapIntent)
+│   │   │   ├── campus-map.service.ts — 상세 도보 경로 및 지도 설정
+│   │   │   └── campus-map.service.test.ts — 카카오 응답·좌표 변환·오류·키 미노출 검증
 │   │   ├── validations/         — schedule, task, campus Zod 스키마
 │   │   ├── utils/               — app-error, captain-calculator
 │   │   ├── app.ts               — Express 앱 구성

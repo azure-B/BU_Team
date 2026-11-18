@@ -44,6 +44,11 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      '/campus-api': {
+        target: 'http://localhost:5180',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/campus-api/, '/api/campus'),
+      },
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,

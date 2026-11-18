@@ -1,6 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import * as campusService from '../services/campus.service';
 import { calculateRouteAndLateness } from '../utils/captain-route-calculator';
+import * as campusMapService from '../services/campus-map.service';
+
+export const getMapConfig = (req: Request, res: Response) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ success: true, data: campusMapService.getMapConfig() });
+};
+
+export const getWalkingRoute = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json({ success: true, data: await campusMapService.getWalkingRoute(req.body) });
+  } catch (error) { next(error); }
+};
 
 // 건물 목록 조회
 export const getBuildings = async (req: Request, res: Response, next: NextFunction) => {
