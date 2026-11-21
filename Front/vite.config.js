@@ -40,15 +40,10 @@ export default defineConfig({
     },
   },
 
-  /* 개발 서버 설정 */
+  /* 개발 서버 설정 — 캠퍼스 지도/도보도 공통 /api(VITE_API_URL·Render env)를 사용 */
   server: {
     port: 3000,
     proxy: {
-      '/campus-api': {
-        target: 'http://localhost:5180',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/campus-api/, '/api/campus'),
-      },
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,

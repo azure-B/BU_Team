@@ -3,6 +3,10 @@ import { AppError } from '../utils/app-error';
 export type MapPoint = { lat: number; lng: number };
 export type WalkingRouteInput = { origin: MapPoint; destination: MapPoint };
 
+/**
+ * 지도 SDK 키는 Render/루트 env의 KAKAO_JAVASCRIPT_KEY를 사용한다.
+ * 도보 길찾기는 기존 KAKAO_REST_API_KEY(동일 Render env)를 사용한다.
+ */
 export function getMapConfig() {
   return {
     javascriptKey: process.env.KAKAO_JAVASCRIPT_KEY?.trim() || '',
