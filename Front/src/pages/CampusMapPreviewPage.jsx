@@ -9,7 +9,21 @@ import './CampusMapPreviewPage.css'
 const CURRENT = { id: 'current', name: '현재 위치' }
 const pointName = (point, role) => !point || point.id === 'custom' ? `${role} 위치` : point.name
 const validPoint = (p) => Number.isFinite(p?.lat) && Number.isFinite(p?.lng)
-const coordinate = ({ lat, lng }) => ({ lat, lng })
+/** 경로 API용 — 건물이면 id/name 포함해 대시보드 도보 분과 맞춤 */
+function routePoint(point) {
+  const payload = { lat: point.lat, lng: point.lng }
+  if (point.id && point.id !== 'current' && point.id !== 'custom') {
+    payload.buildingId = point.id
+    if (point.name) payload.name = point.name
+  }
+  return payload
+}
+const ROUTE_SOURCE_LABEL = {
+  campus: '교내 이동 기준',
+  kakao: '카카오 도보 경로',
+  osrm: '보행 경로',
+  haversine: '직선 추정 경로',
+}
 function readPosition() {
   return new Promise((resolve, reject) => {
     if (!window.isSecureContext || !navigator.geolocation) {
@@ -120,7 +134,7 @@ export default function CampusMapPreviewPage() {
         setFrom(origin)
       }
       if (origin.lat === to.lat && origin.lng === to.lng) throw new Error('출발 위치와 다른 도착 위치를 선택해 주세요.')
-      const data = await getWalkingRoute(coordinate(origin), coordinate(to), controller.signal)
+      const data = await getWalkingRoute(routePoint(origin), routePoint(to), controller.signal)
       if (version !== epoch.current) return
       setRoute({ ...data, from: origin, to, arriveAt: new Date(Date.now() + data.durationSeconds * 1000) })
     } catch (error) {
@@ -165,7 +179,7 @@ export default function CampusMapPreviewPage() {
       {loadingData && <p className="campus-preview__message">지도·건물 정보를 불러오는 중…</p>}
       <KakaoCampusMap config={config} from={from} to={to} route={route} picking={picking} draft={draft} onPick={setDraft} onConfirm={() => finishPick(true)} onCancel={() => finishPick(false)} onCurrent={useCurrentLocation} onReady={setMapReady} resetKey={resetKey} />
       <SectionCard className="campus-journey" aria-label="이동 정보">
-        <div className="campus-journey__heading"><span><Footprints size={17} weight="fill" />도보 이동</span><span className="campus-journey__example">{route ? ({ kakao: '카카오 도보 경로', osrm: '보행 경로', haversine: '직선 추정 경로' }[route.source] || '도보 경로') : '경로 선택 중'}</span></div>
+        <div className="campus-journey__heading"><span><Footprints size={17} weight="fill" />도보 이동</span><span className="campus-journey__example">{route ? (ROUTE_SOURCE_LABEL[route.source] || '도보 경로') : '경로 선택 중'}</span></div>
         <div className="campus-journey__stats">
           <div><span>예상 소요 시간</span><strong>{minutes}<small>분</small></strong></div>
           <div><span>이동 거리</span><strong>{route ? Math.round(route.distanceMeters).toLocaleString('ko-KR') : '—'}<small>m</small></strong></div>

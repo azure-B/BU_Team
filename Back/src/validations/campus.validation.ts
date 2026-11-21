@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-const mapPointSchema = z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) });
+const mapPointSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  buildingId: z.string().min(1).optional(),
+  name: z.string().min(1).optional(),
+});
 export const walkingRouteSchema = z.object({ origin: mapPointSchema, destination: mapPointSchema })
   .refine((input) => input.origin.lat !== input.destination.lat || input.origin.lng !== input.destination.lng,
     { message: '출발 위치와 도착 위치가 같습니다.', path: ['destination'] });

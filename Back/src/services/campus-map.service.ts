@@ -1,22 +1,32 @@
 import { AppError } from '../utils/app-error';
+import { CAMPUS_BUILDINGS, CAMPUS_WALK_MINUTES, walkMinutesBetween } from '../data/campusBuildings';
 import { CAMPUS_HILL_M_PER_MIN } from '../utils/walk-speed';
 import { haversineMeters } from '../utils/kakao-walking';
 
-export type MapPoint = { lat: number; lng: number };
+export type MapPoint = {
+  lat: number;
+  lng: number;
+  buildingId?: string;
+  name?: string;
+};
 export type WalkingRouteInput = { origin: MapPoint; destination: MapPoint };
 export type WalkingRouteResult = {
-  source: 'kakao' | 'osrm' | 'haversine';
+  source: 'kakao' | 'osrm' | 'haversine' | 'campus';
   distanceMeters: number;
   durationSeconds: number;
   path: MapPoint[];
+  walkMinutes?: number;
 };
 
 const KAKAO_WALKING_URL = 'https://apis-navi.kakaomobility.com/affiliate/walking/v1/directions';
 const OSRM_FOOT_URL = 'https://router.project-osrm.org/route/v1/foot';
+/** OSRM 평지 ETA 대비 캠퍼스 언덕·가방 보행 보정 (대시보드 5분 ≈ OSRM 2분의 ~2.5~3배) */
+const CAMPUS_OSRM_FACTOR = 3;
 
 /**
  * 지도 SDK 키는 Render/루트 env의 KAKAO_JAVASCRIPT_KEY를 사용한다.
- * 도보: 카카오 제휴 → OSRM foot → 직선 추정 순으로 폴백한다.
+ * 도보 경로 geometry: 카카오 제휴 → OSRM foot → 직선.
+ * 시간·거리는 가능하면 대시보드 CampusEdge(CAMPUS_WALK_MINUTES)를 우선한다.
  */
 export function getMapConfig() {
   return {
@@ -31,6 +41,61 @@ function metersBetween(a: MapPoint, b: MapPoint) {
   return haversineMeters(a.lat, a.lng, b.lat, b.lng);
 }
 
+export function resolveBuildingName(point: MapPoint): string | null {
+  const named = point.name?.trim();
+  if (named && CAMPUS_WALK_MINUTES[named]) return named;
+  if (named) {
+    const byName = CAMPUS_BUILDINGS.find((b) => b.name === named || b.aliases.includes(named));
+    if (byName) return byName.name;
+  }
+  if (point.buildingId) {
+    const byId = CAMPUS_BUILDINGS.find((b) => b.id === point.buildingId);
+    if (byId) return byId.name;
+  }
+  return null;
+}
+
+/** 대시보드와 동일한 교내 도보 분 → 초·미터(언덕 50m/min) */
+export function campusEdgeTiming(fromName: string, toName: string) {
+  const walkMinutes = walkMinutesBetween(fromName, toName);
+  if (walkMinutes == null || walkMinutes < 0) return null;
+  return {
+    walkMinutes,
+    durationSeconds: Math.max(1, walkMinutes * 60),
+    distanceMeters: Math.max(1, walkMinutes * CAMPUS_HILL_M_PER_MIN),
+  };
+}
+
+function applyDashboardTiming(
+  geometry: WalkingRouteResult,
+  input: WalkingRouteInput,
+): WalkingRouteResult {
+  const fromName = resolveBuildingName(input.origin);
+  const toName = resolveBuildingName(input.destination);
+  if (fromName && toName) {
+    const edge = campusEdgeTiming(fromName, toName);
+    if (edge) {
+      return {
+        ...geometry,
+        source: 'campus',
+        walkMinutes: edge.walkMinutes,
+        durationSeconds: edge.durationSeconds,
+        distanceMeters: edge.distanceMeters,
+      };
+    }
+  }
+
+  // 건물 표에 없으면 OSRM/카카오 평지 ETA를 캠퍼스 기준으로 ~3배
+  if (geometry.source === 'osrm' || geometry.source === 'kakao') {
+    return {
+      ...geometry,
+      durationSeconds: Math.max(1, Math.round(geometry.durationSeconds * CAMPUS_OSRM_FACTOR)),
+      distanceMeters: Math.max(1, Math.round(geometry.distanceMeters * CAMPUS_OSRM_FACTOR)),
+    };
+  }
+  return geometry;
+}
+
 function haversineRoute(input: WalkingRouteInput): WalkingRouteResult {
   const distanceMeters = Math.max(1, Math.round(metersBetween(input.origin, input.destination)));
   const durationSeconds = Math.max(1, Math.round((distanceMeters / CAMPUS_HILL_M_PER_MIN) * 60));
@@ -38,7 +103,10 @@ function haversineRoute(input: WalkingRouteInput): WalkingRouteResult {
     source: 'haversine',
     distanceMeters,
     durationSeconds,
-    path: [input.origin, input.destination],
+    path: [
+      { lat: input.origin.lat, lng: input.origin.lng },
+      { lat: input.destination.lat, lng: input.destination.lng },
+    ],
   };
 }
 
@@ -195,11 +263,18 @@ export async function getWalkingRoute(
   }
 
   const kakao = await tryKakaoWalking(input, request);
-  if (kakao) return kakao;
+  const geometry = kakao || (await tryOsrmWalking(input, request)) || haversineRoute(input);
+  if (!kakao && geometry.source === 'haversine') {
+    console.warn('[campus-map] using haversine walking fallback');
+  }
 
-  const osrm = await tryOsrmWalking(input, request);
-  if (osrm) return osrm;
-
-  console.warn('[campus-map] using haversine walking fallback');
-  return haversineRoute(input);
+  const timed = applyDashboardTiming(geometry, input);
+  console.info('[campus-map] walking timing', {
+    geometrySource: geometry.source,
+    timingSource: timed.source,
+    walkMinutes: timed.walkMinutes ?? null,
+    durationSeconds: timed.durationSeconds,
+    distanceMeters: timed.distanceMeters,
+  });
+  return timed;
 }

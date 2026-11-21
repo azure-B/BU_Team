@@ -13,6 +13,7 @@ async function request(path, { method = 'GET', body, signal } = {}) {
 
 export const getMapConfig = (signal) => request('/map/config', { signal })
 export const getMapBuildings = async (signal) => (await api.get('/campus/buildings', { signal })).data
+/** 건물 선택 시 buildingId/name을 넣어 대시보드 CampusEdge 분과 맞춘다. */
 export const getWalkingRoute = (origin, destination, signal) => request('/map/route', {
   method: 'POST',
   body: { origin, destination },

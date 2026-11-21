@@ -197,9 +197,10 @@ Base URL: `http://localhost:5001/api/v1` (프론트엔드 배포 호환을 위�
 - **관련 파일**: `Back/src/controllers/campus.controller.ts`, `Back/src/services/campus-map.service.ts`
 
 ### POST /api/v1/campus/map/route
-- **설명**: 도보 경로를 반환한다. 우선 카카오 도보 제휴 API → 실패 시 OSRM foot → 그래도 실패 시 직선(haversine) 추정. `/api/campus/map/route` 별칭 지원.
-- **요청 Body**: `{ origin: { lat, lng }, destination: { lat, lng } }` (숫자 좌표 필수, 동일 지점 불가)
-- **응답**: `{ success: true, data: { source: 'kakao' | 'osrm' | 'haversine', distanceMeters, durationSeconds, path: [{ lat, lng }] } }`
+- **설명**: 도보 경로 geometry는 카카오 도보 제휴 → OSRM foot → 직선. **시간·거리**는 건물 쌍이면 대시보드와 같은 `CAMPUS_WALK_MINUTES`(CampusEdge)를 쓰고, 아니면 OSRM/카카오 ETA에 캠퍼스 보정(~3배)을 적용한다. `/api/campus/map/route` 별칭 지원.
+- **요청 Body**: `{ origin: { lat, lng, buildingId?, name? }, destination: { lat, lng, buildingId?, name? } }` (좌표 필수, 동일 지점 불가)
+- **응답**: `{ success: true, data: { source: 'campus' | 'kakao' | 'osrm' | 'haversine', distanceMeters, durationSeconds, path, walkMinutes? } }`
+- **예**: 지혜관→본부동 → `walkMinutes=5`, `durationSeconds=300`, `distanceMeters=250` (50m/min 언덕 기준)
 - **오류**: 입력 400(좌표/동일지점). 경로 공급자 실패 시 폴백하므로 제휴 미승인만으로 503을 내지 않는다.
 - **로그**: HTTP 상태와 숫자 결과 코드만 기록하며 키·출발/도착 좌표·원본 응답은 기록하지 않는다.
 - **관련 파일**: `Back/src/services/campus-map.service.ts`, `Back/src/validations/campus.validation.ts`
