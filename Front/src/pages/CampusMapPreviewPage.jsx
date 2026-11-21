@@ -165,7 +165,7 @@ export default function CampusMapPreviewPage() {
       {loadingData && <p className="campus-preview__message">지도·건물 정보를 불러오는 중…</p>}
       <KakaoCampusMap config={config} from={from} to={to} route={route} picking={picking} draft={draft} onPick={setDraft} onConfirm={() => finishPick(true)} onCancel={() => finishPick(false)} onCurrent={useCurrentLocation} onReady={setMapReady} resetKey={resetKey} />
       <SectionCard className="campus-journey" aria-label="이동 정보">
-        <div className="campus-journey__heading"><span><Footprints size={17} weight="fill" />도보 이동</span><span className="campus-journey__example">{route ? '카카오 도보 경로' : '경로 선택 중'}</span></div>
+        <div className="campus-journey__heading"><span><Footprints size={17} weight="fill" />도보 이동</span><span className="campus-journey__example">{route ? ({ kakao: '카카오 도보 경로', osrm: '보행 경로', haversine: '직선 추정 경로' }[route.source] || '도보 경로') : '경로 선택 중'}</span></div>
         <div className="campus-journey__stats">
           <div><span>예상 소요 시간</span><strong>{minutes}<small>분</small></strong></div>
           <div><span>이동 거리</span><strong>{route ? Math.round(route.distanceMeters).toLocaleString('ko-KR') : '—'}<small>m</small></strong></div>
