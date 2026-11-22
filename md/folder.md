@@ -63,7 +63,7 @@ asdasd/
 │   │   │   ├── ScheduleMonthlyPage.jsx — 월간 달력 및 날짜별 상세
 │   │   │   ├── ScheduleWeeklyPage.jsx  — 주간 시간표 및 영구 반복 수업
 │   │   │   ├── CampusPage.jsx / CampusPage.css — 캠퍼스 탭(학식·카페·학습·활동)
-│   │   │   ├── CampusMapPreviewPage.jsx / CampusMapPreviewPage.css — `/campus` 캠퍼스 지도·길찾기 연동 화면
+│   │   │   ├── CampusMapPreviewPage.jsx / CampusMapPreviewPage.css / CampusMapPreviewPage.test.js — `/campus` 캠퍼스 지도·길찾기 화면 및 출발 좌표 보존 검증
 │   │   │   ├── ChatStatsPage.jsx / ChatStatsPage.css — 비서 처리 통계
 │   │   │   └── NotFoundPage.jsx
 │   │   ├── styles/

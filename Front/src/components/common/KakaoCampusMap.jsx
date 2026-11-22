@@ -4,7 +4,7 @@ import { loadKakaoMap } from '../../utils/loadKakaoMap'
 
 const valid = (point) => Number.isFinite(point?.lat) && Number.isFinite(point?.lng)
 
-export default function KakaoCampusMap({ config, from, to, route, picking, draft, onPick, onConfirm, onCancel, onCurrent, onReady, resetKey }) {
+export default function KakaoCampusMap({ config, from, to, route, picking, draft, onPick, onConfirm, onCancel, onCurrent, mapFocus, onReady, resetKey }) {
   const container = useRef(null)
   const mapRef = useRef(null)
   const [ready, setReady] = useState(false)
@@ -71,6 +71,9 @@ export default function KakaoCampusMap({ config, from, to, route, picking, draft
   useEffect(() => {
     if (ready && valid(from)) mapRef.current?.panTo(new window.kakao.maps.LatLng(from.lat, from.lng))
   }, [ready, from])
+  useEffect(() => {
+    if (ready && valid(mapFocus)) mapRef.current?.panTo(new window.kakao.maps.LatLng(mapFocus.lat, mapFocus.lng))
+  }, [ready, mapFocus])
   useEffect(() => {
     if (!ready || !resetKey || !mapRef.current) return
     mapRef.current.setLevel(3)

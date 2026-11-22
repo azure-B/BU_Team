@@ -44,6 +44,7 @@ export default function CampusMapPreviewPage() {
   const [route, setRoute] = useState(null)
   const [config, setConfig] = useState(null)
   const [mapReady, setMapReady] = useState(false)
+  const [mapFocus, setMapFocus] = useState(null)
   const [resetKey, setResetKey] = useState(0)
   const [buildings, setBuildings] = useState([])
   const [configError, setConfigError] = useState('')
@@ -95,6 +96,14 @@ export default function CampusMapPreviewPage() {
       setMessage(`현재 위치를 확인했습니다. 위치 정확도 약 ${Math.round(position.accuracy)}m입니다.`)
     } catch (error) { if (version === epoch.current) setMessage(error.message) }
     finally { if (version === epoch.current) setLoading(false) }
+  }
+  async function moveMapToCurrentLocation() {
+    const version = epoch.current
+    try {
+      const position = await readPosition()
+      if (version !== epoch.current) return
+      setMapFocus(position)
+    } catch (error) { if (version === epoch.current) setMessage(error.message) }
   }
   function selectLocation(target, value) {
     if (value === 'pick') {
@@ -177,7 +186,7 @@ export default function CampusMapPreviewPage() {
       <p className="campus-preview__message" role="status">{message}</p>
       {(configError || buildingError) && <div className="campus-map__api-error" role="alert"><p>{configError || buildingError}</p><button type="button" onClick={() => { invalidate(); setPicking(null); setDraft(null); setRetry((n) => n + 1) }}>서버 연결 다시 시도</button></div>}
       {loadingData && <p className="campus-preview__message">지도·건물 정보를 불러오는 중…</p>}
-      <KakaoCampusMap config={config} from={from} to={to} route={route} picking={picking} draft={draft} onPick={setDraft} onConfirm={() => finishPick(true)} onCancel={() => finishPick(false)} onCurrent={useCurrentLocation} onReady={setMapReady} resetKey={resetKey} />
+      <KakaoCampusMap config={config} from={from} to={to} route={route} picking={picking} draft={draft} onPick={setDraft} onConfirm={() => finishPick(true)} onCancel={() => finishPick(false)} onCurrent={moveMapToCurrentLocation} mapFocus={mapFocus} onReady={setMapReady} resetKey={resetKey} />
       <SectionCard className="campus-journey" aria-label="이동 정보">
         <div className="campus-journey__heading"><span><Footprints size={17} weight="fill" />도보 이동</span><span className="campus-journey__example">{route ? (ROUTE_SOURCE_LABEL[route.source] || '도보 경로') : '경로 선택 중'}</span></div>
         <div className="campus-journey__stats">
